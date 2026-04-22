@@ -7,11 +7,13 @@ import type {
 
 /**
  * Personal-Access-Token credential for MemberPass. Tokens are minted
- * at /settings/tokens in the MemberPass dashboard and start with the
- * `mpt_` prefix. They carry (a) fine-grained ability strings and
- * (b) a `scope:team:{id}` tuple, so one token is always scoped to a
- * single team. The credential test hits `/v1/teams/current` — it only
- * requires `team:view`, so it works for every ability combination.
+ * at /settings/tokens in the MemberPass dashboard. Production tokens
+ * start with `mpt_live_`; non-production (staging, local) tokens start
+ * with `mpt_test_`. Every token carries (a) fine-grained ability
+ * strings and (b) a `scope:team:{id}` tuple, so one token is always
+ * scoped to a single team. The credential test hits `/v1/teams/current`
+ * — it only requires `team:view`, so it works for every ability
+ * combination.
  */
 export class MemberPassApi implements ICredentialType {
   name = 'memberPassApi';
@@ -29,8 +31,8 @@ export class MemberPassApi implements ICredentialType {
       default: '',
       required: true,
       description:
-        'Personal access token minted at app.memberpass.net/settings/tokens. Must at minimum carry the team:view ability.',
-      placeholder: 'mpt_...',
+        'Personal access token minted at app.memberpass.net/settings/tokens. Production tokens start with `mpt_live_`; non-production tokens start with `mpt_test_`. Must at minimum carry the `team:view` ability.',
+      placeholder: 'mpt_live_<id>_<secret>',
     },
     {
       displayName: 'Base URL',

@@ -42,12 +42,24 @@ export class MemberPass implements INodeType {
         noDataExpression: true,
         options: [
           { name: 'Access Code', value: 'accessCode' },
+          { name: 'Activity', value: 'activity' },
+          { name: 'Analytics', value: 'analytics' },
+          { name: 'Bot', value: 'bot' },
+          { name: 'Distribution', value: 'distribution' },
+          { name: 'Group', value: 'group' },
           { name: 'Member', value: 'member' },
+          { name: 'Payment Method', value: 'paymentMethod' },
           { name: 'Plan', value: 'plan' },
           { name: 'Project', value: 'project' },
           { name: 'Resource', value: 'resource' },
+          { name: 'Role', value: 'role' },
           { name: 'Subscriber', value: 'subscriber' },
           { name: 'Subscription', value: 'subscription' },
+          { name: 'Team', value: 'team' },
+          { name: 'Team Member', value: 'teamMember' },
+          { name: 'Token', value: 'token' },
+          { name: 'Webhook Delivery', value: 'webhookDelivery' },
+          { name: 'Webhook Endpoint', value: 'webhookEndpoint' },
         ],
         default: 'project',
       },
@@ -64,6 +76,9 @@ export class MemberPass implements INodeType {
           { name: 'Update', value: 'update', action: 'Update a project', description: 'Update an existing project' },
           { name: 'Archive', value: 'archive', action: 'Archive a project', description: 'Soft-delete a project' },
           { name: 'Restore', value: 'restore', action: 'Restore a project', description: 'Restore an archived project' },
+          { name: 'Delete', value: 'delete', action: 'Delete a project', description: 'Permanently delete a project' },
+          { name: 'List', value: 'list', action: 'List projects', description: 'List all projects visible to the current team' },
+          { name: 'Get', value: 'get', action: 'Get a project', description: 'Fetch a project by UUID' },
           { name: 'Find by Handle', value: 'findByHandle', action: 'Find a project by handle', description: 'Return the first project whose handle matches' },
         ],
         default: 'create',
@@ -102,7 +117,7 @@ export class MemberPass implements INodeType {
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['project'], operation: ['update', 'archive', 'restore'] } },
+        displayOptions: { show: { resource: ['project'], operation: ['update', 'archive', 'restore', 'delete', 'get'] } },
         description: 'UUID of the project',
       },
       {
@@ -132,6 +147,8 @@ export class MemberPass implements INodeType {
           { name: 'Publish', value: 'publish', action: 'Publish a plan', description: 'Make a plan publicly purchasable' },
           { name: 'Unpublish', value: 'unpublish', action: 'Unpublish a plan', description: 'Hide a plan from purchase' },
           { name: 'Get', value: 'get', action: 'Get a plan', description: 'Fetch a plan by UUID' },
+          { name: 'List', value: 'list', action: 'List plans', description: 'List all plans under a project' },
+          { name: 'Delete', value: 'delete', action: 'Delete a plan', description: 'Permanently delete a plan' },
           { name: 'Find by Name', value: 'findByName', action: 'Find a plan by name', description: 'Return the first plan whose name matches' },
         ],
         default: 'create',
@@ -150,7 +167,7 @@ export class MemberPass implements INodeType {
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['plan'], operation: ['update', 'publish', 'unpublish', 'get'] } },
+        displayOptions: { show: { resource: ['plan'], operation: ['update', 'publish', 'unpublish', 'get', 'delete'] } },
       },
       {
         displayName: 'Plan Name',
@@ -225,6 +242,7 @@ export class MemberPass implements INodeType {
         options: [
           { name: 'Cancel', value: 'cancel', action: 'Cancel a subscription', description: 'Cancel a subscription immediately or at period end' },
           { name: 'Get', value: 'get', action: 'Get a subscription', description: 'Fetch a subscription by UUID' },
+          { name: 'List', value: 'list', action: 'List subscriptions', description: 'List subscriptions filtered by status or plan' },
         ],
         default: 'cancel',
       },
@@ -234,7 +252,20 @@ export class MemberPass implements INodeType {
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['subscription'] } },
+        displayOptions: { show: { resource: ['subscription'], operation: ['cancel', 'get'] } },
+      },
+      {
+        displayName: 'Filters',
+        name: 'subscriptionListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['subscription'], operation: ['list'] } },
+        options: [
+          { displayName: 'Status', name: 'status', type: 'string', default: '', description: 'Filter by subscription status (e.g. active, cancelled, trial)' },
+          { displayName: 'Plan ID', name: 'planId', type: 'string', default: '', description: 'Filter by plan UUID' },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1, maxValue: 200 }, default: 50 },
+        ],
       },
       {
         displayName: 'Cancel at Period End',
@@ -257,6 +288,7 @@ export class MemberPass implements INodeType {
           { name: 'Unban', value: 'unban', action: 'Unban a member', description: 'Lift a previous ban' },
           { name: 'Kick', value: 'kick', action: 'Kick a member', description: 'Remove a member without a permanent ban' },
           { name: 'Get', value: 'get', action: 'Get a member', description: 'Fetch a member by UUID' },
+          { name: 'List', value: 'list', action: 'List members', description: 'List members of a project' },
         ],
         default: 'ban',
       },
@@ -274,7 +306,19 @@ export class MemberPass implements INodeType {
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['member'] } },
+        displayOptions: { show: { resource: ['member'], operation: ['ban', 'unban', 'kick', 'get'] } },
+      },
+      {
+        displayName: 'Filters',
+        name: 'memberListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['member'], operation: ['list'] } },
+        options: [
+          { displayName: 'Status', name: 'status', type: 'string', default: '', description: 'Filter by member status (e.g. active, banned, kicked)' },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1, maxValue: 200 }, default: 50 },
+        ],
       },
       {
         displayName: 'Reason',
@@ -324,6 +368,9 @@ export class MemberPass implements INodeType {
         displayOptions: { show: { resource: ['accessCode'] } },
         options: [
           { name: 'Bulk Generate', value: 'bulkGenerate', action: 'Bulk generate access codes', description: 'Generate a batch of single-use access codes for a plan' },
+          { name: 'List', value: 'list', action: 'List access codes', description: 'List all access codes under a plan' },
+          { name: 'Delete', value: 'delete', action: 'Delete an access code', description: 'Revoke a single access code' },
+          { name: 'Preview', value: 'preview', action: 'Preview access code generation', description: 'Dry-run generation to preview the codes that would be issued' },
         ],
         default: 'bulkGenerate',
       },
@@ -344,13 +391,22 @@ export class MemberPass implements INodeType {
         displayOptions: { show: { resource: ['accessCode'] } },
       },
       {
+        displayName: 'Access Code ID',
+        name: 'accessCodeId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['accessCode'], operation: ['delete'] } },
+        description: 'UUID of the access code to revoke',
+      },
+      {
         displayName: 'Quantity',
         name: 'quantity',
         type: 'number',
         typeOptions: { minValue: 1, maxValue: 1000 },
         default: 10,
         required: true,
-        displayOptions: { show: { resource: ['accessCode'], operation: ['bulkGenerate'] } },
+        displayOptions: { show: { resource: ['accessCode'], operation: ['bulkGenerate', 'preview'] } },
       },
       {
         displayName: 'Expires In Days',
@@ -360,6 +416,18 @@ export class MemberPass implements INodeType {
         default: 30,
         displayOptions: { show: { resource: ['accessCode'], operation: ['bulkGenerate'] } },
         description: 'Days until the generated codes expire if unused',
+      },
+      {
+        displayName: 'Filters',
+        name: 'accessCodeListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['accessCode'], operation: ['list'] } },
+        options: [
+          { displayName: 'Status', name: 'status', type: 'string', default: '', description: 'Filter by access code status (e.g. active, redeemed, expired)' },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1, maxValue: 200 }, default: 50 },
+        ],
       },
 
       // === RESOURCE ===
@@ -371,6 +439,10 @@ export class MemberPass implements INodeType {
         displayOptions: { show: { resource: ['resource'] } },
         options: [
           { name: 'Create', value: 'create', action: 'Create a resource', description: 'Attach an external deliverable to a project' },
+          { name: 'List', value: 'list', action: 'List resources', description: 'List all resources attached to a project' },
+          { name: 'Get', value: 'get', action: 'Get a resource', description: 'Fetch a resource by UUID' },
+          { name: 'Unlink', value: 'unlink', action: 'Unlink a resource', description: 'Detach a resource from delivery without deleting it' },
+          { name: 'Delete', value: 'delete', action: 'Delete a resource', description: 'Permanently delete a resource' },
         ],
         default: 'create',
       },
@@ -381,6 +453,15 @@ export class MemberPass implements INodeType {
         default: '',
         required: true,
         displayOptions: { show: { resource: ['resource'] } },
+      },
+      {
+        displayName: 'Resource ID',
+        name: 'resourceId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['resource'], operation: ['get', 'unlink', 'delete'] } },
+        description: 'UUID of the resource',
       },
       {
         displayName: 'Title',
@@ -411,6 +492,446 @@ export class MemberPass implements INodeType {
         required: true,
         displayOptions: { show: { resource: ['resource'], operation: ['create'] } },
         description: 'Chat ID, channel username, or URL — depending on the resource type',
+      },
+
+      // === PAYMENT METHOD ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['paymentMethod'] } },
+        options: [
+          { name: 'List', value: 'list', action: 'List payment methods', description: 'List all payment methods for a project' },
+          { name: 'Get', value: 'get', action: 'Get a payment method', description: 'Fetch a payment method by UUID' },
+        ],
+        default: 'list',
+      },
+      {
+        displayName: 'Project ID',
+        name: 'projectId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['paymentMethod'] } },
+      },
+      {
+        displayName: 'Method ID',
+        name: 'methodId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['paymentMethod'], operation: ['get'] } },
+        description: 'UUID of the payment method',
+      },
+
+      // === WEBHOOK ENDPOINT ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['webhookEndpoint'] } },
+        options: [
+          { name: 'List', value: 'list', action: 'List webhook endpoints', description: 'List all webhook endpoints for the current team' },
+          { name: 'Create', value: 'create', action: 'Create a webhook endpoint', description: 'Register a new webhook endpoint' },
+          { name: 'Delete', value: 'delete', action: 'Delete a webhook endpoint', description: 'Remove a webhook endpoint' },
+          { name: 'Rotate Secret', value: 'rotateSecret', action: 'Rotate the signing secret', description: 'Rotate the HMAC signing secret for a webhook endpoint' },
+          { name: 'Test', value: 'test', action: 'Send a test delivery', description: 'Trigger a test delivery from MemberPass to the endpoint' },
+        ],
+        default: 'list',
+      },
+      {
+        displayName: 'Endpoint ID',
+        name: 'endpointId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['webhookEndpoint'], operation: ['delete', 'rotateSecret', 'test'] } },
+        description: 'UUID of the webhook endpoint',
+      },
+      {
+        displayName: 'Name',
+        name: 'name',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['webhookEndpoint'], operation: ['create'] } },
+        description: 'Human-readable label for the endpoint',
+      },
+      {
+        displayName: 'URL',
+        name: 'url',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['webhookEndpoint'], operation: ['create'] } },
+        description: 'HTTPS URL that will receive event deliveries',
+      },
+      {
+        displayName: 'Events',
+        name: 'events',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['webhookEndpoint'], operation: ['create'] } },
+        description: 'Comma-separated list of event types to subscribe to (e.g. subscription.created,payment.succeeded)',
+      },
+      {
+        displayName: 'Additional Fields',
+        name: 'webhookEndpointFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['webhookEndpoint'], operation: ['create'] } },
+        options: [
+          { displayName: 'Project ID', name: 'project_id', type: 'string', default: '', description: 'Restrict deliveries to a single project' },
+          { displayName: 'Allowed IPs', name: 'allowed_ips', type: 'string', default: '', description: 'Comma-separated list of IP addresses permitted to receive deliveries' },
+          { displayName: 'Is Active', name: 'is_active', type: 'boolean', default: true },
+        ],
+      },
+
+      // === WEBHOOK DELIVERY ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['webhookDelivery'] } },
+        options: [
+          { name: 'List', value: 'list', action: 'List webhook deliveries', description: 'List recent webhook event deliveries by event type' },
+        ],
+        default: 'list',
+      },
+      {
+        displayName: 'Event Type',
+        name: 'type',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['webhookDelivery'], operation: ['list'] } },
+        description: 'Event type to filter by (e.g. subscription.created)',
+      },
+      {
+        displayName: 'Additional Fields',
+        name: 'webhookDeliveryFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['webhookDelivery'], operation: ['list'] } },
+        options: [
+          { displayName: 'Project ID', name: 'project_id', type: 'string', default: '' },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1, maxValue: 10 }, default: 10 },
+        ],
+      },
+
+      // === TOKEN ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['token'] } },
+        options: [
+          { name: 'List', value: 'list', action: 'List API tokens', description: 'List all API tokens for the current team' },
+          { name: 'Get', value: 'get', action: 'Get an API token', description: 'Fetch an API token by UUID' },
+          { name: 'Revoke', value: 'revoke', action: 'Revoke an API token', description: 'Revoke an API token immediately' },
+        ],
+        default: 'list',
+      },
+      {
+        displayName: 'Token ID',
+        name: 'tokenId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['token'], operation: ['get', 'revoke'] } },
+        description: 'UUID of the API token',
+      },
+
+      // === TEAM ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['team'] } },
+        options: [
+          { name: 'List', value: 'list', action: 'List teams', description: 'List all teams the caller belongs to' },
+          { name: 'Get', value: 'get', action: 'Get a team', description: 'Fetch a team by UUID' },
+          { name: 'Get Current', value: 'getCurrent', action: 'Get the current team', description: 'Fetch the team that owns the API token' },
+        ],
+        default: 'list',
+      },
+      {
+        displayName: 'Team ID',
+        name: 'teamId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['team'], operation: ['get'] } },
+        description: 'UUID of the team',
+      },
+
+      // === TEAM MEMBER ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['teamMember'] } },
+        options: [
+          { name: 'List', value: 'list', action: 'List team members', description: 'List all members of a team' },
+          { name: 'Get', value: 'get', action: 'Get a team member', description: 'Fetch a single team member' },
+        ],
+        default: 'list',
+      },
+      {
+        displayName: 'Team ID',
+        name: 'teamId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['teamMember'] } },
+      },
+      {
+        displayName: 'User ID',
+        name: 'userId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['teamMember'], operation: ['get'] } },
+        description: 'UUID of the team member (user)',
+      },
+
+      // === ROLE ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['role'] } },
+        options: [
+          { name: 'List', value: 'list', action: 'List roles', description: 'List all roles defined for the current team' },
+          { name: 'Get', value: 'get', action: 'Get a role', description: 'Fetch a role by UUID' },
+        ],
+        default: 'list',
+      },
+      {
+        displayName: 'Role ID',
+        name: 'roleId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['role'], operation: ['get'] } },
+        description: 'UUID of the role',
+      },
+
+      // === GROUP ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['group'] } },
+        options: [
+          { name: 'List', value: 'list', action: 'List groups', description: 'List all groups for the current team' },
+          { name: 'Get', value: 'get', action: 'Get a group', description: 'Fetch a group by UUID' },
+        ],
+        default: 'list',
+      },
+      {
+        displayName: 'Group ID',
+        name: 'groupId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['group'], operation: ['get'] } },
+        description: 'UUID of the group',
+      },
+
+      // === ACTIVITY ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['activity'] } },
+        options: [
+          { name: 'List', value: 'list', action: 'List activity log entries', description: 'List activity log entries for a subject' },
+        ],
+        default: 'list',
+      },
+      {
+        displayName: 'Subject Type',
+        name: 'subjectType',
+        type: 'options',
+        options: [
+          { name: 'Project', value: 'project' },
+          { name: 'Subscription', value: 'subscription' },
+          { name: 'Member', value: 'member' },
+          { name: 'Plan', value: 'plan' },
+          { name: 'Access Code', value: 'access-code' },
+        ],
+        default: 'project',
+        required: true,
+        displayOptions: { show: { resource: ['activity'], operation: ['list'] } },
+      },
+      {
+        displayName: 'Subject ID',
+        name: 'subjectId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['activity'], operation: ['list'] } },
+        description: 'UUID of the subject to query activity for',
+      },
+      {
+        displayName: 'Limit',
+        name: 'activityLimit',
+        type: 'number',
+        typeOptions: { minValue: 1, maxValue: 200 },
+        default: 50,
+        displayOptions: { show: { resource: ['activity'], operation: ['list'] } },
+      },
+
+      // === BOT ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['bot'] } },
+        options: [
+          { name: 'Get Status', value: 'getStatus', action: 'Get bot status', description: 'Fetch the current bot connection status for a project' },
+        ],
+        default: 'getStatus',
+      },
+      {
+        displayName: 'Project ID',
+        name: 'projectId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['bot'] } },
+      },
+
+      // === DISTRIBUTION ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['distribution'] } },
+        options: [
+          { name: 'Get Bot Link', value: 'getBotLink', action: 'Get bot link', description: 'Fetch the Telegram bot link for a project' },
+          { name: 'Get Portal URL', value: 'getPortalUrl', action: 'Get portal URL', description: 'Fetch the public portal URL for a project' },
+          { name: 'Get Deep Link', value: 'getDeepLink', action: 'Get a deep link', description: 'Generate a Telegram deep link targeting an access code, plan, or custom payload' },
+        ],
+        default: 'getBotLink',
+      },
+      {
+        displayName: 'Project ID',
+        name: 'projectId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['distribution'] } },
+      },
+      {
+        displayName: 'Deep Link Target',
+        name: 'deepLinkTarget',
+        type: 'collection',
+        placeholder: 'Add Target',
+        default: {},
+        displayOptions: { show: { resource: ['distribution'], operation: ['getDeepLink'] } },
+        description: 'Provide exactly one of access_code, plan_id, or custom',
+        options: [
+          { displayName: 'Access Code', name: 'access_code', type: 'string', default: '' },
+          { displayName: 'Plan ID', name: 'plan_id', type: 'string', default: '' },
+          { displayName: 'Custom', name: 'custom', type: 'string', default: '' },
+        ],
+      },
+
+      // === ANALYTICS ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['analytics'] } },
+        options: [
+          { name: 'Get Dashboard', value: 'getDashboard', action: 'Get dashboard analytics', description: 'Fetch aggregated dashboard metrics' },
+          { name: 'Get Earnings', value: 'getEarnings', action: 'Get earnings analytics', description: 'Fetch earnings time-series data' },
+          { name: 'Get Subscribers', value: 'getSubscribers', action: 'Get subscriber analytics', description: 'Fetch subscriber growth analytics' },
+          { name: 'Get Transaction Breakdown', value: 'getTransactionBreakdown', action: 'Get transaction breakdown', description: 'Fetch a transaction breakdown by dimension' },
+          { name: 'Get Plan Performance', value: 'getPlanPerformance', action: 'Get plan performance', description: 'Fetch per-plan performance analytics for a project' },
+          { name: 'List Transactions', value: 'listTransactions', action: 'List transactions', description: 'List raw transactions for a project' },
+        ],
+        default: 'getDashboard',
+      },
+      {
+        displayName: 'Project ID',
+        name: 'analyticsProjectId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['analytics'], operation: ['getPlanPerformance', 'listTransactions'] } },
+      },
+      {
+        displayName: 'Dimension',
+        name: 'dimension',
+        type: 'options',
+        options: [
+          { name: 'Plan', value: 'plan' },
+          { name: 'Payment Provider', value: 'payment_provider' },
+          { name: 'Currency', value: 'currency' },
+          { name: 'Project', value: 'project' },
+        ],
+        default: 'plan',
+        required: true,
+        displayOptions: { show: { resource: ['analytics'], operation: ['getTransactionBreakdown'] } },
+      },
+      {
+        displayName: 'Granularity',
+        name: 'granularity',
+        type: 'options',
+        options: [
+          { name: 'Day', value: 'day' },
+          { name: 'Week', value: 'week' },
+          { name: 'Month', value: 'month' },
+        ],
+        default: 'day',
+        displayOptions: { show: { resource: ['analytics'], operation: ['getEarnings'] } },
+      },
+      {
+        displayName: 'Additional Fields',
+        name: 'analyticsFilters',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: {
+          show: {
+            resource: ['analytics'],
+            operation: [
+              'getDashboard',
+              'getEarnings',
+              'getSubscribers',
+              'getTransactionBreakdown',
+              'getPlanPerformance',
+              'listTransactions',
+            ],
+          },
+        },
+        options: [
+          { displayName: 'Project ID', name: 'project_id', type: 'string', default: '', description: 'Scope to a single project (where optional)' },
+          { displayName: 'Period', name: 'period', type: 'string', default: '', description: 'Pre-set period like 7d, 30d, mtd, ytd' },
+          { displayName: 'From', name: 'from', type: 'string', default: '', description: 'ISO 8601 start date' },
+          { displayName: 'To', name: 'to', type: 'string', default: '', description: 'ISO 8601 end date' },
+          { displayName: 'Compare Period', name: 'compare_period', type: 'string', default: '', description: 'Comparison window (e.g. prev_period)' },
+          { displayName: 'Cursor', name: 'cursor', type: 'string', default: '', description: 'Opaque pagination cursor' },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1, maxValue: 200 }, default: 50 },
+        ],
       },
     ],
   };
@@ -468,6 +989,30 @@ async function dispatch(
       return dispatchAccessCode.call(this, operation, i);
     case 'resource':
       return dispatchResource.call(this, operation, i);
+    case 'paymentMethod':
+      return dispatchPaymentMethod.call(this, operation, i);
+    case 'webhookEndpoint':
+      return dispatchWebhookEndpoint.call(this, operation, i);
+    case 'webhookDelivery':
+      return dispatchWebhookDelivery.call(this, operation, i);
+    case 'token':
+      return dispatchToken.call(this, operation, i);
+    case 'team':
+      return dispatchTeam.call(this, operation, i);
+    case 'teamMember':
+      return dispatchTeamMember.call(this, operation, i);
+    case 'role':
+      return dispatchRole.call(this, operation, i);
+    case 'group':
+      return dispatchGroup.call(this, operation, i);
+    case 'activity':
+      return dispatchActivity.call(this, operation, i);
+    case 'bot':
+      return dispatchBot.call(this, operation, i);
+    case 'distribution':
+      return dispatchDistribution.call(this, operation, i);
+    case 'analytics':
+      return dispatchAnalytics.call(this, operation, i);
     default:
       throw new Error(`Unknown resource: ${resource}`);
   }
@@ -501,6 +1046,20 @@ async function dispatchProject(
   if (operation === 'restore') {
     const projectId = this.getNodeParameter('projectId', i) as string;
     return memberPassApiRequest.call(this, 'POST', `/projects/${projectId}/restore`);
+  }
+
+  if (operation === 'delete') {
+    const projectId = this.getNodeParameter('projectId', i) as string;
+    return memberPassApiRequest.call(this, 'DELETE', `/projects/${projectId}`);
+  }
+
+  if (operation === 'list') {
+    return memberPassApiRequest.call(this, 'GET', '/projects');
+  }
+
+  if (operation === 'get') {
+    const projectId = this.getNodeParameter('projectId', i) as string;
+    return memberPassApiRequest.call(this, 'GET', `/projects/${projectId}`);
   }
 
   if (operation === 'findByHandle') {
@@ -553,6 +1112,15 @@ async function dispatchPlan(
     return memberPassApiRequest.call(this, 'GET', `/projects/${projectId}/plans/${planId}`);
   }
 
+  if (operation === 'list') {
+    return memberPassApiRequest.call(this, 'GET', `/projects/${projectId}/plans`);
+  }
+
+  if (operation === 'delete') {
+    const planId = this.getNodeParameter('planId', i) as string;
+    return memberPassApiRequest.call(this, 'DELETE', `/projects/${projectId}/plans/${planId}`);
+  }
+
   if (operation === 'findByName') {
     const planName = this.getNodeParameter('planName', i) as string;
     return memberPassApiRequest.call(
@@ -572,6 +1140,21 @@ async function dispatchSubscription(
   operation: string,
   i: number,
 ): Promise<IDataObject> {
+  if (operation === 'list') {
+    const filters = this.getNodeParameter('subscriptionListFilters', i, {}) as IDataObject;
+    const qs: IDataObject = {};
+    if (filters.status) {
+      qs.status = filters.status;
+    }
+    if (filters.planId) {
+      qs.plan_id = filters.planId;
+    }
+    if (filters.limit !== undefined && filters.limit !== '') {
+      qs.limit = filters.limit;
+    }
+    return memberPassApiRequest.call(this, 'GET', '/subscriptions', undefined, qs);
+  }
+
   const subscriptionId = this.getNodeParameter('subscriptionId', i) as string;
 
   if (operation === 'cancel') {
@@ -597,6 +1180,19 @@ async function dispatchMember(
   i: number,
 ): Promise<IDataObject> {
   const projectId = this.getNodeParameter('projectId', i) as string;
+
+  if (operation === 'list') {
+    const filters = this.getNodeParameter('memberListFilters', i, {}) as IDataObject;
+    const qs: IDataObject = {};
+    if (filters.status) {
+      qs.status = filters.status;
+    }
+    if (filters.limit !== undefined && filters.limit !== '') {
+      qs.limit = filters.limit;
+    }
+    return memberPassApiRequest.call(this, 'GET', `/projects/${projectId}/members`, undefined, qs);
+  }
+
   const memberId = this.getNodeParameter('memberId', i) as string;
 
   if (operation === 'ban' || operation === 'kick') {
@@ -670,6 +1266,44 @@ async function dispatchAccessCode(
     );
   }
 
+  if (operation === 'list') {
+    const filters = this.getNodeParameter('accessCodeListFilters', i, {}) as IDataObject;
+    const qs: IDataObject = {};
+    if (filters.status) {
+      qs.status = filters.status;
+    }
+    if (filters.limit !== undefined && filters.limit !== '') {
+      qs.limit = filters.limit;
+    }
+    return memberPassApiRequest.call(
+      this,
+      'GET',
+      `/projects/${projectId}/plans/${planId}/access-codes`,
+      undefined,
+      qs,
+    );
+  }
+
+  if (operation === 'delete') {
+    const accessCodeId = this.getNodeParameter('accessCodeId', i) as string;
+    return memberPassApiRequest.call(
+      this,
+      'DELETE',
+      `/projects/${projectId}/plans/${planId}/access-codes/${accessCodeId}`,
+    );
+  }
+
+  if (operation === 'preview') {
+    const quantity = this.getNodeParameter('quantity', i) as number;
+    return memberPassApiRequest.call(
+      this,
+      'GET',
+      `/projects/${projectId}/plans/${planId}/access-codes/preview`,
+      undefined,
+      { quantity },
+    );
+  }
+
   throw new Error(`Unknown access code operation: ${operation}`);
 }
 
@@ -689,7 +1323,390 @@ async function dispatchResource(
     return memberPassApiRequest.call(this, 'POST', `/projects/${projectId}/resources`, body);
   }
 
+  if (operation === 'list') {
+    return memberPassApiRequest.call(this, 'GET', `/projects/${projectId}/resources`);
+  }
+
+  if (operation === 'get') {
+    const resourceId = this.getNodeParameter('resourceId', i) as string;
+    return memberPassApiRequest.call(this, 'GET', `/projects/${projectId}/resources/${resourceId}`);
+  }
+
+  if (operation === 'unlink') {
+    const resourceId = this.getNodeParameter('resourceId', i) as string;
+    return memberPassApiRequest.call(
+      this,
+      'POST',
+      `/projects/${projectId}/resources/${resourceId}/unlink`,
+    );
+  }
+
+  if (operation === 'delete') {
+    const resourceId = this.getNodeParameter('resourceId', i) as string;
+    return memberPassApiRequest.call(
+      this,
+      'DELETE',
+      `/projects/${projectId}/resources/${resourceId}`,
+    );
+  }
+
   throw new Error(`Unknown resource operation: ${operation}`);
+}
+
+async function dispatchPaymentMethod(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  const projectId = this.getNodeParameter('projectId', i) as string;
+
+  if (operation === 'list') {
+    return memberPassApiRequest.call(this, 'GET', `/projects/${projectId}/payment-methods`);
+  }
+
+  if (operation === 'get') {
+    const methodId = this.getNodeParameter('methodId', i) as string;
+    return memberPassApiRequest.call(
+      this,
+      'GET',
+      `/projects/${projectId}/payment-methods/${methodId}`,
+    );
+  }
+
+  throw new Error(`Unknown payment method operation: ${operation}`);
+}
+
+async function dispatchWebhookEndpoint(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  if (operation === 'list') {
+    return memberPassApiRequest.call(this, 'GET', '/webhook-endpoints');
+  }
+
+  if (operation === 'create') {
+    const name = this.getNodeParameter('name', i) as string;
+    const url = this.getNodeParameter('url', i) as string;
+    const eventsInput = this.getNodeParameter('events', i) as string;
+    const extras = this.getNodeParameter('webhookEndpointFields', i, {}) as IDataObject;
+
+    const events = eventsInput
+      .split(',')
+      .map((event) => event.trim())
+      .filter((event) => event.length > 0);
+
+    const body: IDataObject = compactBody({
+      name,
+      url,
+      events,
+      project_id: extras.project_id,
+    });
+
+    if (extras.allowed_ips) {
+      body.allowed_ips = String(extras.allowed_ips)
+        .split(',')
+        .map((ip) => ip.trim())
+        .filter((ip) => ip.length > 0);
+    }
+
+    if (extras.is_active !== undefined) {
+      body.is_active = extras.is_active;
+    }
+
+    return memberPassApiRequest.call(this, 'POST', '/webhook-endpoints', body);
+  }
+
+  const endpointId = this.getNodeParameter('endpointId', i) as string;
+
+  if (operation === 'delete') {
+    return memberPassApiRequest.call(this, 'DELETE', `/webhook-endpoints/${endpointId}`);
+  }
+
+  if (operation === 'rotateSecret') {
+    return memberPassApiRequest.call(
+      this,
+      'POST',
+      `/webhook-endpoints/${endpointId}/rotate-secret`,
+    );
+  }
+
+  if (operation === 'test') {
+    return memberPassApiRequest.call(this, 'POST', `/webhook-endpoints/${endpointId}/test`);
+  }
+
+  throw new Error(`Unknown webhook endpoint operation: ${operation}`);
+}
+
+async function dispatchWebhookDelivery(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  if (operation === 'list') {
+    const type = this.getNodeParameter('type', i) as string;
+    const filters = this.getNodeParameter('webhookDeliveryFilters', i, {}) as IDataObject;
+
+    const qs: IDataObject = { type };
+    if (filters.project_id) {
+      qs.project_id = filters.project_id;
+    }
+    if (filters.limit !== undefined && filters.limit !== '') {
+      qs.limit = filters.limit;
+    }
+
+    return memberPassApiRequest.call(this, 'GET', '/webhook-events', undefined, qs);
+  }
+
+  throw new Error(`Unknown webhook delivery operation: ${operation}`);
+}
+
+async function dispatchToken(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  if (operation === 'list') {
+    return memberPassApiRequest.call(this, 'GET', '/tokens');
+  }
+
+  const tokenId = this.getNodeParameter('tokenId', i) as string;
+
+  if (operation === 'get') {
+    return memberPassApiRequest.call(this, 'GET', `/tokens/${tokenId}`);
+  }
+
+  if (operation === 'revoke') {
+    return memberPassApiRequest.call(this, 'DELETE', `/tokens/${tokenId}`);
+  }
+
+  throw new Error(`Unknown token operation: ${operation}`);
+}
+
+async function dispatchTeam(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  if (operation === 'list') {
+    return memberPassApiRequest.call(this, 'GET', '/teams');
+  }
+
+  if (operation === 'getCurrent') {
+    return memberPassApiRequest.call(this, 'GET', '/teams/current');
+  }
+
+  if (operation === 'get') {
+    const teamId = this.getNodeParameter('teamId', i) as string;
+    return memberPassApiRequest.call(this, 'GET', `/teams/${teamId}`);
+  }
+
+  throw new Error(`Unknown team operation: ${operation}`);
+}
+
+async function dispatchTeamMember(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  const teamId = this.getNodeParameter('teamId', i) as string;
+
+  if (operation === 'list') {
+    return memberPassApiRequest.call(this, 'GET', `/teams/${teamId}/members`);
+  }
+
+  if (operation === 'get') {
+    const userId = this.getNodeParameter('userId', i) as string;
+    return memberPassApiRequest.call(this, 'GET', `/teams/${teamId}/members/${userId}`);
+  }
+
+  throw new Error(`Unknown team member operation: ${operation}`);
+}
+
+async function dispatchRole(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  if (operation === 'list') {
+    return memberPassApiRequest.call(this, 'GET', '/roles');
+  }
+
+  if (operation === 'get') {
+    const roleId = this.getNodeParameter('roleId', i) as string;
+    return memberPassApiRequest.call(this, 'GET', `/roles/${roleId}`);
+  }
+
+  throw new Error(`Unknown role operation: ${operation}`);
+}
+
+async function dispatchGroup(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  if (operation === 'list') {
+    return memberPassApiRequest.call(this, 'GET', '/groups');
+  }
+
+  if (operation === 'get') {
+    const groupId = this.getNodeParameter('groupId', i) as string;
+    return memberPassApiRequest.call(this, 'GET', `/groups/${groupId}`);
+  }
+
+  throw new Error(`Unknown group operation: ${operation}`);
+}
+
+async function dispatchActivity(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  if (operation === 'list') {
+    const subjectType = this.getNodeParameter('subjectType', i) as string;
+    const subjectId = this.getNodeParameter('subjectId', i) as string;
+    const limit = this.getNodeParameter('activityLimit', i, 50) as number;
+
+    const qs: IDataObject = {
+      subject_type: subjectType,
+      subject_id: subjectId,
+    };
+    if (limit) {
+      qs.limit = limit;
+    }
+
+    return memberPassApiRequest.call(this, 'GET', '/activity', undefined, qs);
+  }
+
+  throw new Error(`Unknown activity operation: ${operation}`);
+}
+
+async function dispatchBot(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  const projectId = this.getNodeParameter('projectId', i) as string;
+
+  if (operation === 'getStatus') {
+    return memberPassApiRequest.call(this, 'GET', `/projects/${projectId}/bot`);
+  }
+
+  throw new Error(`Unknown bot operation: ${operation}`);
+}
+
+async function dispatchDistribution(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  const projectId = this.getNodeParameter('projectId', i) as string;
+
+  if (operation === 'getBotLink') {
+    return memberPassApiRequest.call(
+      this,
+      'GET',
+      `/projects/${projectId}/distribution/bot-link`,
+    );
+  }
+
+  if (operation === 'getPortalUrl') {
+    return memberPassApiRequest.call(
+      this,
+      'GET',
+      `/projects/${projectId}/distribution/portal-url`,
+    );
+  }
+
+  if (operation === 'getDeepLink') {
+    const target = this.getNodeParameter('deepLinkTarget', i, {}) as IDataObject;
+    const qs: IDataObject = {};
+    if (target.access_code) {
+      qs.access_code = target.access_code;
+    }
+    if (target.plan_id) {
+      qs.plan_id = target.plan_id;
+    }
+    if (target.custom) {
+      qs.custom = target.custom;
+    }
+
+    return memberPassApiRequest.call(
+      this,
+      'GET',
+      `/projects/${projectId}/distribution/deep-link`,
+      undefined,
+      qs,
+    );
+  }
+
+  throw new Error(`Unknown distribution operation: ${operation}`);
+}
+
+async function dispatchAnalytics(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  const filters = this.getNodeParameter('analyticsFilters', i, {}) as IDataObject;
+  const qs: IDataObject = {};
+  const passthrough: Array<keyof IDataObject> = [
+    'project_id',
+    'period',
+    'from',
+    'to',
+    'compare_period',
+    'cursor',
+    'limit',
+  ];
+  for (const key of passthrough) {
+    const value = filters[key];
+    if (value !== undefined && value !== '') {
+      qs[key as string] = value;
+    }
+  }
+
+  if (operation === 'getDashboard') {
+    return memberPassApiRequest.call(this, 'GET', '/analytics/dashboard', undefined, qs);
+  }
+
+  if (operation === 'getEarnings') {
+    const granularity = this.getNodeParameter('granularity', i, '') as string;
+    if (granularity) {
+      qs.granularity = granularity;
+    }
+    return memberPassApiRequest.call(this, 'GET', '/analytics/earnings', undefined, qs);
+  }
+
+  if (operation === 'getSubscribers') {
+    return memberPassApiRequest.call(this, 'GET', '/analytics/subscribers', undefined, qs);
+  }
+
+  if (operation === 'getTransactionBreakdown') {
+    const dimension = this.getNodeParameter('dimension', i) as string;
+    qs.dimension = dimension;
+    return memberPassApiRequest.call(
+      this,
+      'GET',
+      '/analytics/transactions/breakdown',
+      undefined,
+      qs,
+    );
+  }
+
+  if (operation === 'getPlanPerformance') {
+    const projectId = this.getNodeParameter('analyticsProjectId', i) as string;
+    qs.project_id = projectId;
+    return memberPassApiRequest.call(this, 'GET', '/analytics/plan-performance', undefined, qs);
+  }
+
+  if (operation === 'listTransactions') {
+    const projectId = this.getNodeParameter('analyticsProjectId', i) as string;
+    qs.project_id = projectId;
+    return memberPassApiRequest.call(this, 'GET', '/analytics/transactions', undefined, qs);
+  }
+
+  throw new Error(`Unknown analytics operation: ${operation}`);
 }
 
 function extractData(response: IDataObject): IDataObject | IDataObject[] {
