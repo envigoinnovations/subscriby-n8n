@@ -1,0 +1,18 @@
+{
+  "node": "n8n-nodes-base.memberPass",
+  "nodeVersion": "1.0",
+  "codexVersion": "1.0",
+  "categories": ["Marketing & Content", "Sales"],
+  "resources": {
+    "primaryDocumentation": [
+      {
+        "url": "https://docs.memberpass.net/integrations/n8n"
+      }
+    ],
+    "credentialDocumentation": [
+      {
+        "url": "https://docs.memberpass.net/api/authentication"
+      }
+    ]
+  }
+}

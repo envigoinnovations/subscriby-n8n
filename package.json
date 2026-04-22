@@ -1,0 +1,58 @@
+{
+  "name": "n8n-nodes-memberpass",
+  "version": "1.0.0",
+  "description": "n8n community node for MemberPass — monetise Telegram communities via subscriptions, access codes, and webhook events.",
+  "keywords": [
+    "n8n-community-node-package",
+    "memberpass",
+    "telegram",
+    "subscription",
+    "membership"
+  ],
+  "license": "MIT",
+  "homepage": "https://docs.memberpass.net/integrations/n8n",
+  "author": {
+    "name": "Envigo Innovations",
+    "email": "support@memberpass.net",
+    "url": "https://memberpass.net"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/envigo-innovations/memberpass-n8n.git"
+  },
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "format": "prettier nodes credentials --write",
+    "lint": "eslint nodes credentials package.json",
+    "lintfix": "eslint nodes credentials package.json --fix",
+    "prepublishOnly": "npm run build && npm run lint -- --quiet"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/MemberPassApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/MemberPass/MemberPass.node.js",
+      "dist/nodes/MemberPassTrigger/MemberPassTrigger.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-n8n-nodes-base": "^1.16.3",
+    "gulp": "^5.0.0",
+    "n8n-workflow": "^1.75.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}
