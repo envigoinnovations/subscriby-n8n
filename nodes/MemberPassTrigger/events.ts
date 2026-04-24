@@ -1,0 +1,87 @@
+/**
+ * Canonical catalogue of MemberPass webhook events exposed by this package.
+ *
+ * Single source of truth — imported by MemberPassTrigger.node.ts and by the
+ * README generation process. When MemberPass adds a new event, update this
+ * file only; the trigger node multiOptions list and README events table both
+ * derive from it.
+ *
+ * Event names mirror the catalogue published at
+ * https://docs.memberpass.net/webhooks/event-reference.
+ */
+export const EVENT_CATALOG = [
+  { family: 'Access Code', name: 'Access Code — Expired', value: 'access_code.expired' },
+  { family: 'Access Code', name: 'Access Code — Generated', value: 'access_code.generated' },
+  { family: 'Access Code', name: 'Access Code — Redeemed', value: 'access_code.redeemed' },
+  { family: 'Billing', name: 'Billing — Account Locked', value: 'billing.account_locked' },
+  { family: 'Billing', name: 'Billing — Grace Period Warning', value: 'billing.grace_period_warning' },
+  { family: 'Billing', name: 'Billing — Invoice Created', value: 'billing.invoice_created' },
+  { family: 'Billing', name: 'Billing — Invoice Overdue', value: 'billing.invoice_overdue' },
+  { family: 'Billing', name: 'Billing — Invoice Paid', value: 'billing.invoice_paid' },
+  { family: 'Billing', name: 'Billing — Payment Failed', value: 'billing.payment_failed' },
+  { family: 'Billing', name: 'Billing — Tier Cancelled', value: 'billing.tier_cancelled' },
+  { family: 'Billing', name: 'Billing — Tier Downgraded', value: 'billing.tier_downgraded' },
+  { family: 'Billing', name: 'Billing — Tier Upgraded', value: 'billing.tier_upgraded' },
+  { family: 'Group', name: 'Group — Created', value: 'group.created' },
+  { family: 'Group', name: 'Group — Deleted', value: 'group.deleted' },
+  { family: 'Group', name: 'Group — Updated', value: 'group.updated' },
+  { family: 'Member', name: 'Member — Banned', value: 'member.banned' },
+  { family: 'Member', name: 'Member — Churned', value: 'member.churned' },
+  { family: 'Member', name: 'Member — Converted', value: 'member.converted' },
+  { family: 'Member', name: 'Member — Joined', value: 'member.joined' },
+  { family: 'Member', name: 'Member — Kicked', value: 'member.kicked' },
+  { family: 'Member', name: 'Member — Removed', value: 'member.removed' },
+  { family: 'Member', name: 'Member — Resource Added', value: 'member.resource_added' },
+  { family: 'Member', name: 'Member — Resource Removed', value: 'member.resource_removed' },
+  { family: 'Member', name: 'Member — Trial Joined', value: 'member.trial_joined' },
+  { family: 'Member', name: 'Member — Unbanned', value: 'member.unbanned' },
+  { family: 'Payment', name: 'Payment — Failed', value: 'payment.failed' },
+  { family: 'Payment', name: 'Payment — Pending', value: 'payment.pending' },
+  { family: 'Payment', name: 'Payment — Refunded', value: 'payment.refunded' },
+  { family: 'Payment', name: 'Payment — Succeeded', value: 'payment.succeeded' },
+  { family: 'Plan', name: 'Plan — Activated', value: 'plan.activated' },
+  { family: 'Plan', name: 'Plan — Created', value: 'plan.created' },
+  { family: 'Plan', name: 'Plan — Deactivated', value: 'plan.deactivated' },
+  { family: 'Plan', name: 'Plan — Deleted', value: 'plan.deleted' },
+  { family: 'Plan', name: 'Plan — Sync Completed', value: 'plan.sync_completed' },
+  { family: 'Plan', name: 'Plan — Updated', value: 'plan.updated' },
+  { family: 'Project', name: 'Project — Archived', value: 'project.archived' },
+  { family: 'Project', name: 'Project — Bot Connected', value: 'project.bot.connected' },
+  { family: 'Project', name: 'Project — Bot Disconnected', value: 'project.bot.disconnected' },
+  { family: 'Project', name: 'Project — Created', value: 'project.created' },
+  { family: 'Project', name: 'Project — Deleted', value: 'project.deleted' },
+  { family: 'Project', name: 'Project — Restored', value: 'project.restored' },
+  { family: 'Project', name: 'Project — Updated', value: 'project.updated' },
+  { family: 'Project Resource', name: 'Project Resource — Created', value: 'project.resource.created' },
+  { family: 'Project Resource', name: 'Project Resource — Deleted', value: 'project.resource.deleted' },
+  { family: 'Project Resource', name: 'Project Resource — Linked', value: 'project.resource.linked' },
+  { family: 'Project Resource', name: 'Project Resource — Unlinked', value: 'project.resource.unlinked' },
+  { family: 'Role', name: 'Role — Created', value: 'role.created' },
+  { family: 'Role', name: 'Role — Deleted', value: 'role.deleted' },
+  { family: 'Role', name: 'Role — Updated', value: 'role.updated' },
+  { family: 'Subscription', name: 'Subscription — Activated', value: 'subscription.activated' },
+  { family: 'Subscription', name: 'Subscription — Cancelled', value: 'subscription.cancelled' },
+  { family: 'Subscription', name: 'Subscription — Created', value: 'subscription.created' },
+  { family: 'Subscription', name: 'Subscription — Downgraded', value: 'subscription.downgraded' },
+  { family: 'Subscription', name: 'Subscription — Expired', value: 'subscription.expired' },
+  { family: 'Subscription', name: 'Subscription — Past Due', value: 'subscription.past_due' },
+  { family: 'Subscription', name: 'Subscription — Paused', value: 'subscription.paused' },
+  { family: 'Subscription', name: 'Subscription — Reactivated', value: 'subscription.reactivated' },
+  { family: 'Subscription', name: 'Subscription — Refunded', value: 'subscription.refunded' },
+  { family: 'Subscription', name: 'Subscription — Renewed', value: 'subscription.renewed' },
+  { family: 'Subscription', name: 'Subscription — Trial Converting', value: 'subscription.trial_converting' },
+  { family: 'Subscription', name: 'Subscription — Trial Expired', value: 'subscription.trial_expired' },
+  { family: 'Subscription', name: 'Subscription — Trial Started', value: 'subscription.trial_started' },
+  { family: 'Subscription', name: 'Subscription — Unpaid', value: 'subscription.unpaid' },
+  { family: 'Subscription', name: 'Subscription — Unpaused', value: 'subscription.unpaused' },
+  { family: 'Subscription', name: 'Subscription — Upgraded', value: 'subscription.upgraded' },
+  { family: 'Team', name: 'Team — Created', value: 'team.created' },
+  { family: 'Team', name: 'Team — Deleted', value: 'team.deleted' },
+  { family: 'Team Member', name: 'Team Member — Invited', value: 'team.member.invited' },
+  { family: 'Team Member', name: 'Team Member — Joined', value: 'team.member.joined' },
+  { family: 'Team Member', name: 'Team Member — Removed', value: 'team.member.removed' },
+  { family: 'Team Member', name: 'Team Member — Role Changed', value: 'team.member.role_changed' },
+] as const;
+
+export type MemberPassEvent = typeof EVENT_CATALOG[number]['value'];
+export type MemberPassEventFamily = typeof EVENT_CATALOG[number]['family'];
