@@ -5,6 +5,7 @@ import type {
   INodeTypeDescription,
   IDataObject,
 } from 'n8n-workflow';
+import { NodeOperationError } from 'n8n-workflow';
 import { memberPassApiRequest, compactBody } from './GenericFunctions';
 
 /**
@@ -72,14 +73,14 @@ export class MemberPass implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['project'] } },
         options: [
-          { name: 'Create', value: 'create', action: 'Create a project', description: 'Create a new project' },
-          { name: 'Update', value: 'update', action: 'Update a project', description: 'Update an existing project' },
           { name: 'Archive', value: 'archive', action: 'Archive a project', description: 'Soft-delete a project' },
-          { name: 'Restore', value: 'restore', action: 'Restore a project', description: 'Restore an archived project' },
+          { name: 'Create', value: 'create', action: 'Create a project', description: 'Create a new project' },
           { name: 'Delete', value: 'delete', action: 'Delete a project', description: 'Permanently delete a project' },
-          { name: 'List', value: 'list', action: 'List projects', description: 'List all projects visible to the current team' },
-          { name: 'Get', value: 'get', action: 'Get a project', description: 'Fetch a project by UUID' },
           { name: 'Find by Handle', value: 'findByHandle', action: 'Find a project by handle', description: 'Return the first project whose handle matches' },
+          { name: 'Get', value: 'get', action: 'Get a project', description: 'Fetch a project by UUID' },
+          { name: 'List', value: 'list', action: 'List projects', description: 'List all projects visible to the current team' },
+          { name: 'Restore', value: 'restore', action: 'Restore a project', description: 'Restore an archived project' },
+          { name: 'Update', value: 'update', action: 'Update a project', description: 'Update an existing project' },
         ],
         default: 'create',
       },
@@ -121,7 +122,7 @@ export class MemberPass implements INodeType {
         description: 'UUID of the project',
       },
       {
-        displayName: 'Fields to Update',
+        displayName: 'Update Fields',
         name: 'updateFields',
         type: 'collection',
         placeholder: 'Add Field',
@@ -143,13 +144,13 @@ export class MemberPass implements INodeType {
         displayOptions: { show: { resource: ['plan'] } },
         options: [
           { name: 'Create', value: 'create', action: 'Create a plan', description: 'Create a subscription plan under a project' },
-          { name: 'Update', value: 'update', action: 'Update a plan', description: 'Update plan attributes' },
-          { name: 'Publish', value: 'publish', action: 'Publish a plan', description: 'Make a plan publicly purchasable' },
-          { name: 'Unpublish', value: 'unpublish', action: 'Unpublish a plan', description: 'Hide a plan from purchase' },
-          { name: 'Get', value: 'get', action: 'Get a plan', description: 'Fetch a plan by UUID' },
-          { name: 'List', value: 'list', action: 'List plans', description: 'List all plans under a project' },
           { name: 'Delete', value: 'delete', action: 'Delete a plan', description: 'Permanently delete a plan' },
           { name: 'Find by Name', value: 'findByName', action: 'Find a plan by name', description: 'Return the first plan whose name matches' },
+          { name: 'Get', value: 'get', action: 'Get a plan', description: 'Fetch a plan by UUID' },
+          { name: 'List', value: 'list', action: 'List plans', description: 'List all plans under a project' },
+          { name: 'Publish', value: 'publish', action: 'Publish a plan', description: 'Make a plan publicly purchasable' },
+          { name: 'Unpublish', value: 'unpublish', action: 'Unpublish a plan', description: 'Hide a plan from purchase' },
+          { name: 'Update', value: 'update', action: 'Update a plan', description: 'Update plan attributes' },
         ],
         default: 'create',
       },
@@ -218,7 +219,7 @@ export class MemberPass implements INodeType {
         displayOptions: { show: { resource: ['plan'], operation: ['create'] } },
       },
       {
-        displayName: 'Fields to Update',
+        displayName: 'Update Fields',
         name: 'updateFields',
         type: 'collection',
         placeholder: 'Add Field',
@@ -264,7 +265,7 @@ export class MemberPass implements INodeType {
         options: [
           { displayName: 'Status', name: 'status', type: 'string', default: '', description: 'Filter by subscription status (e.g. active, cancelled, trial)' },
           { displayName: 'Plan ID', name: 'planId', type: 'string', default: '', description: 'Filter by plan UUID' },
-          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1, maxValue: 200 }, default: 50 },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
         ],
       },
       {
@@ -273,7 +274,7 @@ export class MemberPass implements INodeType {
         type: 'boolean',
         default: true,
         displayOptions: { show: { resource: ['subscription'], operation: ['cancel'] } },
-        description: 'Whether to let the subscription run until its current period ends. Off = cancel immediately',
+        description: 'Whether to let the subscription run until its current period ends. Off = cancel immediately.',
       },
 
       // === MEMBER ===
@@ -285,10 +286,10 @@ export class MemberPass implements INodeType {
         displayOptions: { show: { resource: ['member'] } },
         options: [
           { name: 'Ban', value: 'ban', action: 'Ban a member', description: 'Ban a member from the project community' },
-          { name: 'Unban', value: 'unban', action: 'Unban a member', description: 'Lift a previous ban' },
-          { name: 'Kick', value: 'kick', action: 'Kick a member', description: 'Remove a member without a permanent ban' },
           { name: 'Get', value: 'get', action: 'Get a member', description: 'Fetch a member by UUID' },
+          { name: 'Kick', value: 'kick', action: 'Kick a member', description: 'Remove a member without a permanent ban' },
           { name: 'List', value: 'list', action: 'List members', description: 'List members of a project' },
+          { name: 'Unban', value: 'unban', action: 'Unban a member', description: 'Lift a previous ban' },
         ],
         default: 'ban',
       },
@@ -317,7 +318,7 @@ export class MemberPass implements INodeType {
         displayOptions: { show: { resource: ['member'], operation: ['list'] } },
         options: [
           { displayName: 'Status', name: 'status', type: 'string', default: '', description: 'Filter by member status (e.g. active, banned, kicked)' },
-          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1, maxValue: 200 }, default: 50 },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
         ],
       },
       {
@@ -337,7 +338,7 @@ export class MemberPass implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['subscriber'] } },
         options: [
-          { name: 'Find by Telegram ID', value: 'findByTelegramId', action: 'Find a subscriber by Telegram ID', description: 'Return the subscriber whose Telegram user id matches' },
+          { name: 'Find by Telegram ID', value: 'findByTelegramId', action: 'Find a subscriber by telegram id', description: 'Return the subscriber whose Telegram user ID matches' },
         ],
         default: 'findByTelegramId',
       },
@@ -426,7 +427,7 @@ export class MemberPass implements INodeType {
         displayOptions: { show: { resource: ['accessCode'], operation: ['list'] } },
         options: [
           { displayName: 'Status', name: 'status', type: 'string', default: '', description: 'Filter by access code status (e.g. active, redeemed, expired)' },
-          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1, maxValue: 200 }, default: 50 },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
         ],
       },
 
@@ -439,10 +440,10 @@ export class MemberPass implements INodeType {
         displayOptions: { show: { resource: ['resource'] } },
         options: [
           { name: 'Create', value: 'create', action: 'Create a resource', description: 'Attach an external deliverable to a project' },
-          { name: 'List', value: 'list', action: 'List resources', description: 'List all resources attached to a project' },
-          { name: 'Get', value: 'get', action: 'Get a resource', description: 'Fetch a resource by UUID' },
-          { name: 'Unlink', value: 'unlink', action: 'Unlink a resource', description: 'Detach a resource from delivery without deleting it' },
           { name: 'Delete', value: 'delete', action: 'Delete a resource', description: 'Permanently delete a resource' },
+          { name: 'Get', value: 'get', action: 'Get a resource', description: 'Fetch a resource by UUID' },
+          { name: 'List', value: 'list', action: 'List resources', description: 'List all resources attached to a project' },
+          { name: 'Unlink', value: 'unlink', action: 'Unlink a resource', description: 'Detach a resource from delivery without deleting it' },
         ],
         default: 'create',
       },
@@ -533,9 +534,9 @@ export class MemberPass implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['webhookEndpoint'] } },
         options: [
-          { name: 'List', value: 'list', action: 'List webhook endpoints', description: 'List all webhook endpoints for the current team' },
           { name: 'Create', value: 'create', action: 'Create a webhook endpoint', description: 'Register a new webhook endpoint' },
           { name: 'Delete', value: 'delete', action: 'Delete a webhook endpoint', description: 'Remove a webhook endpoint' },
+          { name: 'List', value: 'list', action: 'List webhook endpoints', description: 'List all webhook endpoints for the current team' },
           { name: 'Rotate Secret', value: 'rotateSecret', action: 'Rotate the signing secret', description: 'Rotate the HMAC signing secret for a webhook endpoint' },
           { name: 'Test', value: 'test', action: 'Send a test delivery', description: 'Trigger a test delivery from MemberPass to the endpoint' },
         ],
@@ -621,7 +622,7 @@ export class MemberPass implements INodeType {
         displayOptions: { show: { resource: ['webhookDelivery'], operation: ['list'] } },
         options: [
           { displayName: 'Project ID', name: 'project_id', type: 'string', default: '' },
-          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1, maxValue: 10 }, default: 10 },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
         ],
       },
 
@@ -643,6 +644,7 @@ export class MemberPass implements INodeType {
         displayName: 'Token ID',
         name: 'tokenId',
         type: 'string',
+								typeOptions: { password: true },
         default: '',
         required: true,
         displayOptions: { show: { resource: ['token'], operation: ['get', 'revoke'] } },
@@ -767,11 +769,11 @@ export class MemberPass implements INodeType {
         name: 'subjectType',
         type: 'options',
         options: [
-          { name: 'Project', value: 'project' },
-          { name: 'Subscription', value: 'subscription' },
+          { name: 'Access Code', value: 'access-code' },
           { name: 'Member', value: 'member' },
           { name: 'Plan', value: 'plan' },
-          { name: 'Access Code', value: 'access-code' },
+          { name: 'Project', value: 'project' },
+          { name: 'Subscription', value: 'subscription' },
         ],
         default: 'project',
         required: true,
@@ -863,9 +865,9 @@ export class MemberPass implements INodeType {
         options: [
           { name: 'Get Dashboard', value: 'getDashboard', action: 'Get dashboard analytics', description: 'Fetch aggregated dashboard metrics' },
           { name: 'Get Earnings', value: 'getEarnings', action: 'Get earnings analytics', description: 'Fetch earnings time-series data' },
+          { name: 'Get Plan Performance', value: 'getPlanPerformance', action: 'Get plan performance', description: 'Fetch per-plan performance analytics for a project' },
           { name: 'Get Subscribers', value: 'getSubscribers', action: 'Get subscriber analytics', description: 'Fetch subscriber growth analytics' },
           { name: 'Get Transaction Breakdown', value: 'getTransactionBreakdown', action: 'Get transaction breakdown', description: 'Fetch a transaction breakdown by dimension' },
-          { name: 'Get Plan Performance', value: 'getPlanPerformance', action: 'Get plan performance', description: 'Fetch per-plan performance analytics for a project' },
           { name: 'List Transactions', value: 'listTransactions', action: 'List transactions', description: 'List raw transactions for a project' },
         ],
         default: 'getDashboard',
@@ -924,13 +926,13 @@ export class MemberPass implements INodeType {
           },
         },
         options: [
-          { displayName: 'Project ID', name: 'project_id', type: 'string', default: '', description: 'Scope to a single project (where optional)' },
-          { displayName: 'Period', name: 'period', type: 'string', default: '', description: 'Pre-set period like 7d, 30d, mtd, ytd' },
-          { displayName: 'From', name: 'from', type: 'string', default: '', description: 'ISO 8601 start date' },
-          { displayName: 'To', name: 'to', type: 'string', default: '', description: 'ISO 8601 end date' },
           { displayName: 'Compare Period', name: 'compare_period', type: 'string', default: '', description: 'Comparison window (e.g. prev_period)' },
           { displayName: 'Cursor', name: 'cursor', type: 'string', default: '', description: 'Opaque pagination cursor' },
-          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1, maxValue: 200 }, default: 50 },
+          { displayName: 'From', name: 'from', type: 'string', default: '', description: 'ISO 8601 start date' },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Period', name: 'period', type: 'string', default: '', description: 'Pre-set period like 7d, 30d, mtd, ytd' },
+          { displayName: 'Project ID', name: 'project_id', type: 'string', default: '', description: 'Scope to a single project (where optional)' },
+          { displayName: 'To', name: 'to', type: 'string', default: '', description: 'ISO 8601 end date' },
         ],
       },
     ],
@@ -1014,7 +1016,7 @@ async function dispatch(
     case 'analytics':
       return dispatchAnalytics.call(this, operation, i);
     default:
-      throw new Error(`Unknown resource: ${resource}`);
+      throw new NodeOperationError(this.getNode(), `Unknown resource: ${resource}`);
   }
 }
 
@@ -1067,7 +1069,7 @@ async function dispatchProject(
     return memberPassApiRequest.call(this, 'GET', '/projects', undefined, { handle });
   }
 
-  throw new Error(`Unknown project operation: ${operation}`);
+  throw new NodeOperationError(this.getNode(), `Unknown project operation: ${operation}`);
 }
 
 async function dispatchPlan(
@@ -1132,7 +1134,7 @@ async function dispatchPlan(
     );
   }
 
-  throw new Error(`Unknown plan operation: ${operation}`);
+  throw new NodeOperationError(this.getNode(), `Unknown plan operation: ${operation}`);
 }
 
 async function dispatchSubscription(
@@ -1171,7 +1173,7 @@ async function dispatchSubscription(
     return memberPassApiRequest.call(this, 'GET', `/subscriptions/${subscriptionId}`);
   }
 
-  throw new Error(`Unknown subscription operation: ${operation}`);
+  throw new NodeOperationError(this.getNode(), `Unknown subscription operation: ${operation}`);
 }
 
 async function dispatchMember(
@@ -1217,7 +1219,7 @@ async function dispatchMember(
     return memberPassApiRequest.call(this, 'GET', `/projects/${projectId}/members/${memberId}`);
   }
 
-  throw new Error(`Unknown member operation: ${operation}`);
+  throw new NodeOperationError(this.getNode(), `Unknown member operation: ${operation}`);
 }
 
 async function dispatchSubscriber(
@@ -1238,7 +1240,7 @@ async function dispatchSubscriber(
     );
   }
 
-  throw new Error(`Unknown subscriber operation: ${operation}`);
+  throw new NodeOperationError(this.getNode(), `Unknown subscriber operation: ${operation}`);
 }
 
 async function dispatchAccessCode(
@@ -1304,7 +1306,7 @@ async function dispatchAccessCode(
     );
   }
 
-  throw new Error(`Unknown access code operation: ${operation}`);
+  throw new NodeOperationError(this.getNode(), `Unknown access code operation: ${operation}`);
 }
 
 async function dispatchResource(
@@ -1350,7 +1352,7 @@ async function dispatchResource(
     );
   }
 
-  throw new Error(`Unknown resource operation: ${operation}`);
+  throw new NodeOperationError(this.getNode(), `Unknown resource operation: ${operation}`);
 }
 
 async function dispatchPaymentMethod(
@@ -1373,7 +1375,7 @@ async function dispatchPaymentMethod(
     );
   }
 
-  throw new Error(`Unknown payment method operation: ${operation}`);
+  throw new NodeOperationError(this.getNode(), `Unknown payment method operation: ${operation}`);
 }
 
 async function dispatchWebhookEndpoint(
@@ -1435,7 +1437,7 @@ async function dispatchWebhookEndpoint(
     return memberPassApiRequest.call(this, 'POST', `/webhook-endpoints/${endpointId}/test`);
   }
 
-  throw new Error(`Unknown webhook endpoint operation: ${operation}`);
+  throw new NodeOperationError(this.getNode(), `Unknown webhook endpoint operation: ${operation}`);
 }
 
 async function dispatchWebhookDelivery(
@@ -1458,7 +1460,7 @@ async function dispatchWebhookDelivery(
     return memberPassApiRequest.call(this, 'GET', '/webhook-events', undefined, qs);
   }
 
-  throw new Error(`Unknown webhook delivery operation: ${operation}`);
+  throw new NodeOperationError(this.getNode(), `Unknown webhook delivery operation: ${operation}`);
 }
 
 async function dispatchToken(
@@ -1480,7 +1482,7 @@ async function dispatchToken(
     return memberPassApiRequest.call(this, 'DELETE', `/tokens/${tokenId}`);
   }
 
-  throw new Error(`Unknown token operation: ${operation}`);
+  throw new NodeOperationError(this.getNode(), `Unknown token operation: ${operation}`);
 }
 
 async function dispatchTeam(
@@ -1501,7 +1503,7 @@ async function dispatchTeam(
     return memberPassApiRequest.call(this, 'GET', `/teams/${teamId}`);
   }
 
-  throw new Error(`Unknown team operation: ${operation}`);
+  throw new NodeOperationError(this.getNode(), `Unknown team operation: ${operation}`);
 }
 
 async function dispatchTeamMember(
@@ -1520,7 +1522,7 @@ async function dispatchTeamMember(
     return memberPassApiRequest.call(this, 'GET', `/teams/${teamId}/members/${userId}`);
   }
 
-  throw new Error(`Unknown team member operation: ${operation}`);
+  throw new NodeOperationError(this.getNode(), `Unknown team member operation: ${operation}`);
 }
 
 async function dispatchRole(
@@ -1537,7 +1539,7 @@ async function dispatchRole(
     return memberPassApiRequest.call(this, 'GET', `/roles/${roleId}`);
   }
 
-  throw new Error(`Unknown role operation: ${operation}`);
+  throw new NodeOperationError(this.getNode(), `Unknown role operation: ${operation}`);
 }
 
 async function dispatchGroup(
@@ -1554,7 +1556,7 @@ async function dispatchGroup(
     return memberPassApiRequest.call(this, 'GET', `/groups/${groupId}`);
   }
 
-  throw new Error(`Unknown group operation: ${operation}`);
+  throw new NodeOperationError(this.getNode(), `Unknown group operation: ${operation}`);
 }
 
 async function dispatchActivity(
@@ -1578,7 +1580,7 @@ async function dispatchActivity(
     return memberPassApiRequest.call(this, 'GET', '/activity', undefined, qs);
   }
 
-  throw new Error(`Unknown activity operation: ${operation}`);
+  throw new NodeOperationError(this.getNode(), `Unknown activity operation: ${operation}`);
 }
 
 async function dispatchBot(
@@ -1592,7 +1594,7 @@ async function dispatchBot(
     return memberPassApiRequest.call(this, 'GET', `/projects/${projectId}/bot`);
   }
 
-  throw new Error(`Unknown bot operation: ${operation}`);
+  throw new NodeOperationError(this.getNode(), `Unknown bot operation: ${operation}`);
 }
 
 async function dispatchDistribution(
@@ -1640,7 +1642,7 @@ async function dispatchDistribution(
     );
   }
 
-  throw new Error(`Unknown distribution operation: ${operation}`);
+  throw new NodeOperationError(this.getNode(), `Unknown distribution operation: ${operation}`);
 }
 
 async function dispatchAnalytics(
@@ -1706,7 +1708,7 @@ async function dispatchAnalytics(
     return memberPassApiRequest.call(this, 'GET', '/analytics/transactions', undefined, qs);
   }
 
-  throw new Error(`Unknown analytics operation: ${operation}`);
+  throw new NodeOperationError(this.getNode(), `Unknown analytics operation: ${operation}`);
 }
 
 function extractData(response: IDataObject): IDataObject | IDataObject[] {

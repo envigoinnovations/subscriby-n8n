@@ -26,15 +26,17 @@
 		"build": "tsc && gulp build:icons",
 		"dev": "tsc --watch",
 		"format": "prettier nodes credentials --write",
-		"lint": "eslint nodes credentials package.json",
-		"lintfix": "eslint nodes credentials package.json --fix",
-		"prepublishOnly": "npm run build"
+		"lint": "eslint --ext .ts nodes credentials package.json",
+		"lintfix": "eslint --ext .ts nodes credentials package.json --fix",
+		"prepublishOnly": "npm run build",
+		"release": "n8n-node release"
 	},
 	"files": [
 		"dist"
 	],
 	"n8n": {
 		"n8nNodesApiVersion": 1,
+		"strict": true,
 		"credentials": [
 			"dist/credentials/MemberPassApi.credentials.js"
 		],
@@ -44,6 +46,7 @@
 		]
 	},
 	"devDependencies": {
+		"@n8n/node-cli": ">=0.23.0",
 		"@types/node": "^22.9.0",
 		"@typescript-eslint/parser": "^8.18.0",
 		"eslint": "^8.57.0",

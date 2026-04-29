@@ -6,6 +6,7 @@ import type {
   IWebhookResponseData,
   IDataObject,
 } from 'n8n-workflow';
+import { NodeOperationError } from 'n8n-workflow';
 import { createHmac, timingSafeEqual } from 'crypto';
 
 import { memberPassApiRequest } from '../MemberPass/GenericFunctions';
@@ -92,7 +93,7 @@ export class MemberPassTrigger implements INodeType {
         const workflowId = this.getWorkflow().id ?? 'workflow';
 
         if (!events || events.length === 0) {
-          throw new Error('Select at least one event to subscribe to.');
+          throw new NodeOperationError(this.getNode(), 'Select at least one event to subscribe to.');
         }
 
         const body: IDataObject = {
@@ -123,7 +124,7 @@ export class MemberPassTrigger implements INodeType {
         const secret = response.secret as string | undefined;
 
         if (!endpointId) {
-          throw new Error('MemberPass did not return a webhook endpoint id.');
+          throw new NodeOperationError(this.getNode(), 'MemberPass did not return a webhook endpoint id.');
         }
 
         const webhookData = this.getWorkflowStaticData('node');
