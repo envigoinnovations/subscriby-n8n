@@ -116,6 +116,56 @@ function extractErrorRemediation(error: JsonObject): string | undefined {
 }
 
 /**
+ * Iterate every page of a paginated MemberPass list endpoint and return
+ * the concatenated `data` rows. Follows Laravel's `meta.current_page` /
+ * `meta.last_page` pagination envelope and stops as soon as the cursor
+ * reaches the last page or an empty page comes back. Defensively capped
+ * at 100 pages so a runaway endpoint can never trap a worker.
+ */
+export async function memberPassApiRequestAllItems(
+  this: ApiContext,
+  method: IHttpRequestMethods,
+  path: string,
+  qs: IDataObject = {},
+): Promise<IDataObject[]> {
+  const all: IDataObject[] = [];
+  const perPage = Math.min(Number(qs.per_page ?? 100), 100);
+  let page = 1;
+  const safetyCap = 100;
+
+  while (page <= safetyCap) {
+    const response = (await memberPassApiRequest.call(this, method, path, undefined, {
+      ...qs,
+      per_page: perPage,
+      page,
+    })) as IDataObject;
+
+    const rows = (response.data as IDataObject[] | undefined) ?? [];
+    all.push(...rows);
+
+    const meta = response.meta as
+      | { current_page?: number; last_page?: number }
+      | undefined;
+
+    if (rows.length === 0) {
+      break;
+    }
+
+    if (!meta || typeof meta.last_page !== 'number') {
+      break;
+    }
+
+    if ((meta.current_page ?? page) >= meta.last_page) {
+      break;
+    }
+
+    page += 1;
+  }
+
+  return all;
+}
+
+/**
  * Build the payload map that MemberPass expects, dropping keys whose
  * value is explicitly `undefined` or an empty string. n8n assigns empty
  * strings to unfilled optional fields, which the API rejects.

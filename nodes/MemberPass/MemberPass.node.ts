@@ -6,7 +6,7 @@ import type {
   IDataObject,
 } from 'n8n-workflow';
 import { NodeOperationError } from 'n8n-workflow';
-import { memberPassApiRequest, compactBody } from './GenericFunctions';
+import { memberPassApiRequest, memberPassApiRequestAllItems, compactBody } from './GenericFunctions';
 
 /**
  * Primary action node — exposes every write + search route documented at
@@ -265,6 +265,7 @@ export class MemberPass implements INodeType {
         options: [
           { displayName: 'Status', name: 'status', type: 'string', default: '', description: 'Filter by subscription status (e.g. active, cancelled, trial)' },
           { displayName: 'Plan ID', name: 'planId', type: 'string', default: '', description: 'Filter by plan UUID' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
           { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
         ],
       },
@@ -318,6 +319,7 @@ export class MemberPass implements INodeType {
         displayOptions: { show: { resource: ['member'], operation: ['list'] } },
         options: [
           { displayName: 'Status', name: 'status', type: 'string', default: '', description: 'Filter by member status (e.g. active, banned, kicked)' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
           { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
         ],
       },
@@ -427,6 +429,7 @@ export class MemberPass implements INodeType {
         displayOptions: { show: { resource: ['accessCode'], operation: ['list'] } },
         options: [
           { displayName: 'Status', name: 'status', type: 'string', default: '', description: 'Filter by access code status (e.g. active, redeemed, expired)' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
           { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
         ],
       },
@@ -1056,7 +1059,8 @@ async function dispatchProject(
   }
 
   if (operation === 'list') {
-    return memberPassApiRequest.call(this, 'GET', '/projects');
+    const rows = await memberPassApiRequestAllItems.call(this, 'GET', '/projects');
+    return { data: rows };
   }
 
   if (operation === 'get') {
@@ -1115,7 +1119,8 @@ async function dispatchPlan(
   }
 
   if (operation === 'list') {
-    return memberPassApiRequest.call(this, 'GET', `/projects/${projectId}/plans`);
+    const rows = await memberPassApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/plans`);
+    return { data: rows };
   }
 
   if (operation === 'delete') {
@@ -1151,9 +1156,11 @@ async function dispatchSubscription(
     if (filters.planId) {
       qs.plan_id = filters.planId;
     }
-    if (filters.limit !== undefined && filters.limit !== '') {
-      qs.limit = filters.limit;
+    if (filters.returnAll === true) {
+      const rows = await memberPassApiRequestAllItems.call(this, 'GET', '/subscriptions', qs);
+      return { data: rows };
     }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
     return memberPassApiRequest.call(this, 'GET', '/subscriptions', undefined, qs);
   }
 
@@ -1189,9 +1196,11 @@ async function dispatchMember(
     if (filters.status) {
       qs.status = filters.status;
     }
-    if (filters.limit !== undefined && filters.limit !== '') {
-      qs.limit = filters.limit;
+    if (filters.returnAll === true) {
+      const rows = await memberPassApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/members`, qs);
+      return { data: rows };
     }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
     return memberPassApiRequest.call(this, 'GET', `/projects/${projectId}/members`, undefined, qs);
   }
 
@@ -1274,9 +1283,16 @@ async function dispatchAccessCode(
     if (filters.status) {
       qs.status = filters.status;
     }
-    if (filters.limit !== undefined && filters.limit !== '') {
-      qs.limit = filters.limit;
+    if (filters.returnAll === true) {
+      const rows = await memberPassApiRequestAllItems.call(
+        this,
+        'GET',
+        `/projects/${projectId}/plans/${planId}/access-codes`,
+        qs,
+      );
+      return { data: rows };
     }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
     return memberPassApiRequest.call(
       this,
       'GET',
@@ -1326,7 +1342,8 @@ async function dispatchResource(
   }
 
   if (operation === 'list') {
-    return memberPassApiRequest.call(this, 'GET', `/projects/${projectId}/resources`);
+    const rows = await memberPassApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/resources`);
+    return { data: rows };
   }
 
   if (operation === 'get') {
@@ -1363,7 +1380,8 @@ async function dispatchPaymentMethod(
   const projectId = this.getNodeParameter('projectId', i) as string;
 
   if (operation === 'list') {
-    return memberPassApiRequest.call(this, 'GET', `/projects/${projectId}/payment-methods`);
+    const rows = await memberPassApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/payment-methods`);
+    return { data: rows };
   }
 
   if (operation === 'get') {
@@ -1384,7 +1402,8 @@ async function dispatchWebhookEndpoint(
   i: number,
 ): Promise<IDataObject> {
   if (operation === 'list') {
-    return memberPassApiRequest.call(this, 'GET', '/webhook-endpoints');
+    const rows = await memberPassApiRequestAllItems.call(this, 'GET', '/webhook-endpoints');
+    return { data: rows };
   }
 
   if (operation === 'create') {
@@ -1469,7 +1488,8 @@ async function dispatchToken(
   i: number,
 ): Promise<IDataObject> {
   if (operation === 'list') {
-    return memberPassApiRequest.call(this, 'GET', '/tokens');
+    const rows = await memberPassApiRequestAllItems.call(this, 'GET', '/tokens');
+    return { data: rows };
   }
 
   const tokenId = this.getNodeParameter('tokenId', i) as string;
@@ -1531,7 +1551,8 @@ async function dispatchRole(
   i: number,
 ): Promise<IDataObject> {
   if (operation === 'list') {
-    return memberPassApiRequest.call(this, 'GET', '/roles');
+    const rows = await memberPassApiRequestAllItems.call(this, 'GET', '/roles');
+    return { data: rows };
   }
 
   if (operation === 'get') {
@@ -1548,7 +1569,8 @@ async function dispatchGroup(
   i: number,
 ): Promise<IDataObject> {
   if (operation === 'list') {
-    return memberPassApiRequest.call(this, 'GET', '/groups');
+    const rows = await memberPassApiRequestAllItems.call(this, 'GET', '/groups');
+    return { data: rows };
   }
 
   if (operation === 'get') {
