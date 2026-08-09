@@ -1,11 +1,11 @@
-# n8n-nodes-memberpass
+# n8n-nodes-subscriby
 
-Community node for [n8n](https://n8n.io/) that drives [MemberPass](https://www.memberpass.net) — subscription + access-code monetisation for Telegram communities.
+Community node for [n8n](https://n8n.io/) that drives [Subscriby](https://www.subscriby.net) — subscription + access-code monetisation for Telegram communities.
 
 Provides two nodes:
 
-- **MemberPass Trigger** — starts a workflow when a MemberPass event fires. Covers subscriptions, payments, members, access codes, plans, projects, project resources, bot connectivity, billing, groups, roles, teams, and team members (71 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `MP-Signature` HMAC on every request.
-- **MemberPass** — action node for every documented route on `api.memberpass.net`. Covers 19 resources across creator-facing surfaces (projects, plans, subscriptions, subscribers, members, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, bot status, distribution links).
+- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, plans, projects, project resources, bot connectivity, billing, groups, roles, teams, and team members (71 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
+- **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 19 resources across creator-facing surfaces (projects, plans, subscriptions, subscribers, members, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, bot status, distribution links).
 
 ## Installation
 
@@ -14,30 +14,30 @@ Provides two nodes:
 Inside n8n:
 
 1. **Settings → Community Nodes → Install**
-2. Enter `n8n-nodes-memberpass`
+2. Enter `n8n-nodes-subscriby`
 3. Agree to the community-node warning and restart n8n
 
 ### Manual install (self-hosted)
 
 ```bash
 cd ~/.n8n/custom
-npm install n8n-nodes-memberpass
+npm install n8n-nodes-subscriby
 ```
 
 Restart the n8n process after install.
 
 ## Setup
 
-1. Mint an API token at `https://app.memberpass.net/settings/tokens`. Every token is auto-bound to a team (`scope:team:<uuid>`); you pick the abilities it carries. See the [ability catalogue](https://docs.memberpass.net/api/abilities) for the full list. Minimums per use-case:
+1. Mint an API token at `https://app.subscriby.net/settings/tokens`. Every token is auto-bound to a team (`scope:team:<uuid>`); you pick the abilities it carries. See the [ability catalogue](https://docs.subscriby.net/api/abilities) for the full list. Minimums per use-case:
    - **Trigger node** — `webhook-endpoint:manage`. Restrict to a single project by also scoping the token to that project (`scope:project:<uuid>`).
    - **Read-only workflows** — combine `*:view` / `*:view-any` abilities for the resources you list or fetch (e.g. `project:view-any`, `project-subscription:view`, `project-subscription-plan:view`, `project-access-code:view-any`, `team-member:view-any`, `role:view`, `group:view`, `activity:read`, `dashboard:read`, `distribution:read`, `billing:read`).
    - **Write workflows** — add the matching `*:create` / `*:update` / `*:delete` abilities (e.g. `project:create`, `project-subscription-plan:update`, `project-access-code:create`, `project-resource:delete`). Cancelling a subscription is `project-subscription:update`; banning/kicking a member is `project-user:update`.
-2. In n8n, **Credentials → New → MemberPass API** and paste the `mpt_...` token. Leave the base URL at the default unless you are self-hosting.
-3. Add a **MemberPass Trigger** node, pick one or more events, optionally scope to a single project, and activate the workflow. On activation n8n registers the endpoint with MemberPass. Deactivating the workflow deletes the endpoint.
+2. In n8n, **Credentials → New → Subscriby API** and paste the `sbt_...` token. Leave the base URL at the default unless you are self-hosting.
+3. Add a **Subscriby Trigger** node, pick one or more events, optionally scope to a single project, and activate the workflow. On activation n8n registers the endpoint with Subscriby. Deactivating the workflow deletes the endpoint.
 
 ## Supported events (71)
 
-The full catalogue is defined in [`nodes/MemberPassTrigger/events.ts`](nodes/MemberPassTrigger/events.ts) and mirrors the [event reference](https://docs.memberpass.net/webhooks/event-reference).
+The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/event-reference).
 
 | Family           | Count | Events                                                                                                                                                                                                                                                                                                 |
 | ---------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -94,16 +94,16 @@ To test against a local n8n:
 ```bash
 npm link
 cd ~/.n8n/custom
-npm link n8n-nodes-memberpass
+npm link n8n-nodes-subscriby
 n8n start
 ```
 
 ## Links
 
-- [MemberPass documentation](https://docs.memberpass.net)
-- [n8n integration guide](https://docs.memberpass.net/integrations/n8n)
-- [API reference](https://docs.memberpass.net/api)
-- [Event reference](https://docs.memberpass.net/webhooks/event-reference)
+- [Subscriby documentation](https://docs.subscriby.net)
+- [n8n integration guide](https://docs.subscriby.net/integrations/n8n)
+- [API reference](https://docs.subscriby.net/api)
+- [Event reference](https://docs.subscriby.net/webhooks/event-reference)
 
 ## License
 

@@ -9,38 +9,38 @@ import type {
 import { NodeOperationError } from 'n8n-workflow';
 import { createHmac, timingSafeEqual } from 'crypto';
 
-import { memberPassApiRequest } from '../MemberPass/GenericFunctions';
+import { subscribyApiRequest } from '../Subscriby/GenericFunctions';
 import { EVENT_CATALOG } from './events';
 
 /**
- * Webhook trigger that subscribes to one or more MemberPass event types.
+ * Webhook trigger that subscribes to one or more Subscriby event types.
  *
  * Lifecycle:
  *  - create():  POST /webhook-subscriptions → receives {id, secret}
  *  - delete():  DELETE /webhook-subscriptions/{id}
- *  - webhook(): validates MP-Signature, returns event envelope to the workflow
+ *  - webhook(): validates SB-Signature, returns event envelope to the workflow
  *
  * Subscribed event names match the catalog at
- * https://docs.memberpass.net/webhooks/event-reference (71 events covering
+ * https://docs.subscriby.net/webhooks/event-reference (71 events covering
  * subscriptions, payments, members, access codes, plans, projects, groups,
  * roles, teams, billing, project resources, and bot connectivity).
  */
-export class MemberPassTrigger implements INodeType {
+export class SubscribyTrigger implements INodeType {
   description: INodeTypeDescription = {
-    displayName: 'MemberPass Trigger',
-    name: 'memberPassTrigger',
-    icon: 'file:memberpass.svg',
+    displayName: 'Subscriby Trigger',
+    name: 'subscribyTrigger',
+    icon: 'file:subscriby.svg',
     group: ['trigger'],
     version: 1,
-    description: 'Starts a workflow when a MemberPass event fires (subscription, payment, member, access code, plan, project).',
+    description: 'Starts a workflow when a Subscriby event fires (subscription, payment, member, access code, plan, project).',
     defaults: {
-      name: 'MemberPass Trigger',
+      name: 'Subscriby Trigger',
     },
     inputs: [],
     outputs: ['main'],
     credentials: [
       {
-        name: 'memberPassApi',
+        name: 'subscribyApi',
         required: true,
       },
     ],
@@ -49,7 +49,7 @@ export class MemberPassTrigger implements INodeType {
         name: 'default',
         httpMethod: 'POST',
         responseMode: 'onReceived',
-        path: 'memberpass',
+        path: 'subscriby',
       },
     ],
     properties: [
@@ -74,7 +74,7 @@ export class MemberPassTrigger implements INodeType {
         name: 'verifySignature',
         type: 'boolean',
         default: true,
-        description: 'Whether to validate the MP-Signature HMAC on every incoming request. Disable only for local debugging.',
+        description: 'Whether to validate the SB-Signature HMAC on every incoming request. Disable only for local debugging.',
       },
     ],
   };
@@ -106,7 +106,7 @@ export class MemberPassTrigger implements INodeType {
           body.project_id = projectId;
         }
 
-        const response = await memberPassApiRequest.call(
+        const response = await subscribyApiRequest.call(
           this,
           'POST',
           '/webhook-subscriptions',
@@ -124,7 +124,7 @@ export class MemberPassTrigger implements INodeType {
         const secret = response.secret as string | undefined;
 
         if (!endpointId) {
-          throw new NodeOperationError(this.getNode(), 'MemberPass did not return a webhook endpoint id.');
+          throw new NodeOperationError(this.getNode(), 'Subscriby did not return a webhook endpoint id.');
         }
 
         const webhookData = this.getWorkflowStaticData('node');
@@ -145,7 +145,7 @@ export class MemberPassTrigger implements INodeType {
         }
 
         try {
-          await memberPassApiRequest.call(
+          await subscribyApiRequest.call(
             this,
             'DELETE',
             `/webhook-subscriptions/${endpointId}`,
@@ -181,8 +181,8 @@ export class MemberPassTrigger implements INodeType {
       const secret = webhookData.secret as string | undefined;
       const rawBody = (req as unknown as { rawBody?: Buffer | string }).rawBody;
       const signatureHeader =
-        (req.headers['mp-signature'] as string | undefined) ||
-        (req.headers['MP-Signature'] as string | undefined);
+        (req.headers['sb-signature'] as string | undefined) ||
+        (req.headers['SB-Signature'] as string | undefined);
 
       if (secret && signatureHeader && rawBody) {
         if (!isValidSignature(signatureHeader, rawBody, secret)) {
@@ -209,7 +209,7 @@ export class MemberPassTrigger implements INodeType {
 }
 
 /**
- * Verify the `MP-Signature: t=<unix>,v1=<hex>` header against the raw
+ * Verify the `SB-Signature: t=<unix>,v1=<hex>` header against the raw
  * request body using the shared secret returned from create(). Uses a
  * constant-time compare so timing can't leak whether the digest matched.
  */

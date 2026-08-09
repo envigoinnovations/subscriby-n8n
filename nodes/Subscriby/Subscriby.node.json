@@ -1,17 +1,17 @@
 {
-  "node": "n8n-nodes-base.memberPass",
+  "node": "n8n-nodes-base.subscriby",
   "nodeVersion": "1.0",
   "codexVersion": "1.0",
   "categories": ["Marketing & Content", "Sales"],
   "resources": {
     "primaryDocumentation": [
       {
-        "url": "https://docs.memberpass.net/integrations/n8n"
+        "url": "https://docs.subscriby.net/integrations/n8n"
       }
     ],
     "credentialDocumentation": [
       {
-        "url": "https://docs.memberpass.net/api/authentication"
+        "url": "https://docs.subscriby.net/api/authentication"
       }
     ]
   }

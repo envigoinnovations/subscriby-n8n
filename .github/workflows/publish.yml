@@ -24,7 +24,7 @@
 #   2. Under "Publish access" → "Trusted Publishers", click "Add a publisher".
 #   3. Select GitHub Actions and fill in:
 #        Repository owner: envigoinnovations
-#        Repository name:  memberpass-n8n
+#        Repository name:  subscriby-n8n
 #        Workflow name:    publish.yml
 #        Environment:      (leave blank unless you use GitHub Environments)
 #   4. Leave the NPM_TOKEN secret unset in this repository. GitHub's OIDC

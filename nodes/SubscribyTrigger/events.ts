@@ -1,13 +1,13 @@
 /**
- * Canonical catalogue of MemberPass webhook events exposed by this package.
+ * Canonical catalogue of Subscriby webhook events exposed by this package.
  *
- * Single source of truth — imported by MemberPassTrigger.node.ts and by the
- * README generation process. When MemberPass adds a new event, update this
+ * Single source of truth — imported by SubscribyTrigger.node.ts and by the
+ * README generation process. When Subscriby adds a new event, update this
  * file only; the trigger node multiOptions list and README events table both
  * derive from it.
  *
  * Event names mirror the catalogue published at
- * https://docs.memberpass.net/webhooks/event-reference.
+ * https://docs.subscriby.net/webhooks/event-reference.
  */
 export const EVENT_CATALOG = [
   { family: 'Access Code', name: 'Access Code — Expired', value: 'access_code.expired' },
@@ -83,5 +83,5 @@ export const EVENT_CATALOG = [
   { family: 'Team Member', name: 'Team Member — Role Changed', value: 'team.member.role_changed' },
 ] as const;
 
-export type MemberPassEvent = typeof EVENT_CATALOG[number]['value'];
-export type MemberPassEventFamily = typeof EVENT_CATALOG[number]['family'];
+export type SubscribyEvent = typeof EVENT_CATALOG[number]['value'];
+export type SubscribyEventFamily = typeof EVENT_CATALOG[number]['family'];
