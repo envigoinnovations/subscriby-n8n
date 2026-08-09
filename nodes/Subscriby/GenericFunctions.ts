@@ -19,11 +19,11 @@ type ApiContext =
 
 /**
  * HTTP client wrapper that forwards auth + base URL from the configured
- * MemberPass credential and translates MemberPass's `{error: {code, message,
+ * Subscriby credential and translates Subscriby's `{error: {code, message,
  * docs_url, remediation}}` envelope into an n8n NodeApiError the UI can
  * render with remediation guidance.
  */
-export async function memberPassApiRequest(
+export async function subscribyApiRequest(
   this: ApiContext,
   method: IHttpRequestMethods,
   path: string,
@@ -31,8 +31,8 @@ export async function memberPassApiRequest(
   qs: IDataObject | undefined = undefined,
   options: Partial<IHttpRequestOptions> = {},
 ): Promise<IDataObject> {
-  const credentials = await this.getCredentials('memberPassApi');
-  const baseUrl = ((credentials.baseUrl as string) || 'https://api.memberpass.net/v1').replace(
+  const credentials = await this.getCredentials('subscribyApi');
+  const baseUrl = ((credentials.baseUrl as string) || 'https://api.subscriby.net/v1').replace(
     /\/$/,
     '',
   );
@@ -70,7 +70,7 @@ export async function memberPassApiRequest(
   try {
     return (await this.helpers.httpRequestWithAuthentication.call(
       this,
-      'memberPassApi',
+      'subscribyApi',
       requestOptions,
     )) as IDataObject;
   } catch (error) {
@@ -82,7 +82,7 @@ export async function memberPassApiRequest(
 }
 
 /**
- * MemberPass requires an Idempotency-Key header on every mutation. n8n
+ * Subscriby requires an Idempotency-Key header on every mutation. n8n
  * generates one per request so retries from a user re-running a node do
  * not double-charge or double-create.
  */
@@ -98,7 +98,7 @@ function extractErrorMessage(error: JsonObject): string {
     return String(envelope.message);
   }
 
-  return (error?.message as string) || 'MemberPass request failed.';
+  return (error?.message as string) || 'Subscriby request failed.';
 }
 
 function extractErrorRemediation(error: JsonObject): string | undefined {
@@ -116,13 +116,13 @@ function extractErrorRemediation(error: JsonObject): string | undefined {
 }
 
 /**
- * Iterate every page of a paginated MemberPass list endpoint and return
+ * Iterate every page of a paginated Subscriby list endpoint and return
  * the concatenated `data` rows. Follows Laravel's `meta.current_page` /
  * `meta.last_page` pagination envelope and stops as soon as the cursor
  * reaches the last page or an empty page comes back. Defensively capped
  * at 100 pages so a runaway endpoint can never trap a worker.
  */
-export async function memberPassApiRequestAllItems(
+export async function subscribyApiRequestAllItems(
   this: ApiContext,
   method: IHttpRequestMethods,
   path: string,
@@ -134,7 +134,7 @@ export async function memberPassApiRequestAllItems(
   const safetyCap = 100;
 
   while (page <= safetyCap) {
-    const response = (await memberPassApiRequest.call(this, method, path, undefined, {
+    const response = (await subscribyApiRequest.call(this, method, path, undefined, {
       ...qs,
       per_page: perPage,
       page,
@@ -166,7 +166,7 @@ export async function memberPassApiRequestAllItems(
 }
 
 /**
- * Build the payload map that MemberPass expects, dropping keys whose
+ * Build the payload map that Subscriby expects, dropping keys whose
  * value is explicitly `undefined` or an empty string. n8n assigns empty
  * strings to unfilled optional fields, which the API rejects.
  */
