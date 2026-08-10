@@ -1,5 +1,5 @@
 {
-  "node": "n8n-nodes-base.subscriby",
+  "node": "n8n-nodes-subscriby.subscriby",
   "nodeVersion": "1.0",
   "codexVersion": "1.0",
   "categories": ["Marketing & Content", "Sales"],

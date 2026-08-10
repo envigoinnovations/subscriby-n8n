@@ -30,13 +30,22 @@
 #   4. Leave the NPM_TOKEN secret unset in this repository. GitHub's OIDC
 #      token is used instead — no secret ever touches your repo settings.
 #
-# Option B — npm Automation Token (fallback):
-#   1. On npmjs.com: Access Tokens → Generate New Token → Granular Access Token.
-#      Scope it to this package with "Read and write" publish permission.
+#   Option A is unavailable until the package exists on npm: npm's settings UI
+#   cannot configure a Trusted Publisher for a name that has never been
+#   published (npm/cli#8544). Use Option B for the very first release, then
+#   switch to Option A and delete the secret.
+#
+# Option B — npm Granular Access Token (fallback, and required for release #1):
+#   1. On npmjs.com: Access Tokens → Generate New Token → Granular Access Token,
+#      with "Read and write" packages permission.
+#      For a FIRST publish the token must cover "All packages" (or the owning
+#      org) — a token scoped to "Only select packages" cannot create a package
+#      that does not exist yet, and the publish fails with 404 Not Found.
+#      Once the package exists the token can be re-scoped to it alone.
 #   2. In GitHub: Settings → Secrets and variables → Actions → New secret.
 #      Name it NPM_TOKEN and paste the token value.
 #
-# Both options work with --provenance. Provenance is signed by GitHub's OIDC
+# Both options publish with provenance. Provenance is signed by GitHub's OIDC
 # infrastructure regardless of how npm authentication is handled.
 #
 # ─── TAG CONVENTION ────────────────────────────────────────────────────────────
@@ -49,8 +58,16 @@
 #
 #   npm run release
 #
-# This will lint, build, prompt for a version bump, update the changelog,
-# commit, tag, and push — which triggers this workflow to publish to npm.
+# `n8n-node release` behaves differently depending on where it runs, and detects
+# which via the GITHUB_ACTIONS environment variable:
+#
+#   Locally — runs release-it to prompt for a version bump, write the changelog,
+#     commit, tag, push, and create a GitHub release. It does NOT publish to npm.
+#     The pushed tag is what triggers this workflow.
+#   In CI (here) — runs lint and build, then publishes with provenance enabled
+#     (NPM_CONFIG_PROVENANCE=true). It does not bump the version again.
+#
+# So the same `npm run release` command is correct in both places.
 
 name: Publish
 

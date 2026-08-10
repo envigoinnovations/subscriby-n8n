@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-subscriby",
-	"version": "2.0.0",
+	"version": "1.0.0",
 	"description": "n8n community node for Subscriby — monetise Telegram communities via subscriptions, access codes, and webhook events.",
 	"keywords": [
 		"n8n-community-node",
@@ -21,9 +21,12 @@
 		"type": "git",
 		"url": "https://github.com/envigoinnovations/subscriby-n8n.git"
 	},
-	"main": "dist/index.js",
+	"bugs": {
+		"url": "https://github.com/envigoinnovations/subscriby-n8n/issues"
+	},
 	"scripts": {
-		"build": "tsc && gulp build:icons",
+		"clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+		"build": "npm run clean && tsc && gulp build:icons",
 		"dev": "tsc --watch",
 		"format": "prettier nodes credentials --write",
 		"lint": "eslint nodes credentials package.json",
