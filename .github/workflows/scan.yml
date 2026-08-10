@@ -1,0 +1,29 @@
+# Runs n8n's official verification pre-check against the PUBLISHED package.
+#
+# This scans what is on npm, not the working tree, so run it after a release and
+# before submitting to the n8n Creator Portal. It has to live in CI: the scanner
+# depends on isolated-vm, which needs a native toolchain that Windows dev
+# machines generally do not have.
+#
+# Trigger from the Actions tab, or:
+#
+#   gh workflow run scan.yml
+
+name: Scan
+
+on:
+  workflow_dispatch:
+
+jobs:
+  scan:
+    name: n8n community package scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      - name: Scan published package
+        run: npx --yes @n8n/scan-community-package n8n-nodes-subscriby
