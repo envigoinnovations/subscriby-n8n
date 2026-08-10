@@ -6,7 +6,12 @@ import type {
   IDataObject,
 } from 'n8n-workflow';
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
-import { subscribyApiRequest, subscribyApiRequestAllItems, compactBody } from './GenericFunctions';
+import {
+  subscribyApiRequest,
+  subscribyApiRequestAllItems,
+  compactBody,
+  toNodeError,
+} from './GenericFunctions';
 
 /**
  * Primary action node — exposes every write + search route documented at
@@ -966,7 +971,7 @@ export class Subscriby implements INodeType {
           returnData.push({ json: { error: (error as Error).message }, pairedItem: { item: i } });
           continue;
         }
-        throw error;
+        throw toNodeError(this.getNode(), error);
       }
     }
 

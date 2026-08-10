@@ -9,7 +9,7 @@ import type {
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 import { createHmac, timingSafeEqual } from 'crypto';
 
-import { subscribyApiRequest } from '../Subscriby/GenericFunctions';
+import { subscribyApiRequest, toNodeError } from '../Subscriby/GenericFunctions';
 import { EVENT_CATALOG } from './events';
 
 /**
@@ -162,7 +162,7 @@ export class SubscribyTrigger implements INodeType {
         } catch (error) {
           const status = (error as { httpCode?: string | number }).httpCode;
           if (String(status) !== '404') {
-            throw error;
+            throw toNodeError(this.getNode(), error);
           }
         }
 

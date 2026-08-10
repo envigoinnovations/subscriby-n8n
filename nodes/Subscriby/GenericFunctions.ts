@@ -5,10 +5,11 @@ import type {
   ILoadOptionsFunctions,
   IHttpRequestMethods,
   IHttpRequestOptions,
+  INode,
   JsonObject,
   IWebhookFunctions,
 } from 'n8n-workflow';
-import { NodeApiError } from 'n8n-workflow';
+import { NodeApiError, NodeOperationError } from 'n8n-workflow';
 import { randomUUID } from 'crypto';
 
 type ApiContext =
@@ -79,6 +80,25 @@ export async function subscribyApiRequest(
       description: extractErrorRemediation(error as JsonObject),
     });
   }
+}
+
+/**
+ * Normalise a caught value into an n8n error before it is re-thrown.
+ *
+ * Anything raised by subscribyApiRequest is already a NodeApiError carrying
+ * the API's message and remediation text, so it is passed straight through —
+ * re-wrapping it would nest the error and discard that envelope. Only values
+ * from elsewhere (a helper that threw, a non-Error rejection) get wrapped.
+ *
+ * @param node The node to attribute the error to, from `this.getNode()`.
+ * @param error The caught value, of unknown type.
+ */
+export function toNodeError(node: INode, error: unknown): NodeApiError | NodeOperationError {
+  if (error instanceof NodeApiError || error instanceof NodeOperationError) {
+    return error;
+  }
+
+  return new NodeApiError(node, error as JsonObject);
 }
 
 /**
