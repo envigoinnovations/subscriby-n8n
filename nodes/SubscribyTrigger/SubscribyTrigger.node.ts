@@ -6,7 +6,7 @@ import type {
   IWebhookResponseData,
   IDataObject,
 } from 'n8n-workflow';
-import { NodeOperationError } from 'n8n-workflow';
+import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 import { createHmac, timingSafeEqual } from 'crypto';
 
 import { subscribyApiRequest } from '../Subscriby/GenericFunctions';
@@ -33,11 +33,13 @@ export class SubscribyTrigger implements INodeType {
     group: ['trigger'],
     version: 1,
     description: 'Starts a workflow when a Subscriby event fires (subscription, payment, member, access code, plan, project).',
+    subtitle: '={{$parameter["events"].length === 1 ? $parameter["events"][0] : $parameter["events"].length + " events"}}',
     defaults: {
       name: 'Subscriby Trigger',
     },
     inputs: [],
-    outputs: ['main'],
+    outputs: [NodeConnectionTypes.Main],
+    usableAsTool: true,
     credentials: [
       {
         name: 'subscribyApi',

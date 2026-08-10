@@ -2,6 +2,7 @@ import type {
   IAuthenticateGeneric,
   ICredentialTestRequest,
   ICredentialType,
+  Icon,
   INodeProperties,
 } from 'n8n-workflow';
 
@@ -19,6 +20,8 @@ export class SubscribyApi implements ICredentialType {
   name = 'subscribyApi';
 
   displayName = 'Subscriby API';
+
+  icon: Icon = 'file:subscriby.svg';
 
   documentationUrl = 'https://docs.subscriby.net/integrations/n8n';
 

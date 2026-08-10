@@ -5,7 +5,7 @@ import type {
   INodeTypeDescription,
   IDataObject,
 } from 'n8n-workflow';
-import { NodeOperationError } from 'n8n-workflow';
+import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 import { subscribyApiRequest, subscribyApiRequestAllItems, compactBody } from './GenericFunctions';
 
 /**
@@ -27,8 +27,9 @@ export class Subscriby implements INodeType {
     defaults: {
       name: 'Subscriby',
     },
-    inputs: ['main'],
-    outputs: ['main'],
+    inputs: [NodeConnectionTypes.Main],
+    outputs: [NodeConnectionTypes.Main],
+    usableAsTool: true,
     credentials: [
       {
         name: 'subscribyApi',
