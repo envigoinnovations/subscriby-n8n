@@ -21,7 +21,7 @@ export class SubscribyApi implements ICredentialType {
 
   displayName = 'Subscriby API';
 
-  icon: Icon = 'file:subscriby.svg';
+  icon: Icon = { light: 'file:subscriby.svg', dark: 'file:subscriby.dark.svg' };
 
   documentationUrl = 'https://docs.subscriby.net/integrations/n8n';
 

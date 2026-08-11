@@ -29,7 +29,7 @@ export class SubscribyTrigger implements INodeType {
   description: INodeTypeDescription = {
     displayName: 'Subscriby Trigger',
     name: 'subscribyTrigger',
-    icon: 'file:subscriby.svg',
+    icon: { light: 'file:subscriby.svg', dark: 'file:subscriby.dark.svg' },
     group: ['trigger'],
     version: 1,
     description: 'Starts a workflow when a Subscriby event fires (subscription, payment, member, access code, plan, project).',
@@ -39,7 +39,6 @@ export class SubscribyTrigger implements INodeType {
     },
     inputs: [],
     outputs: [NodeConnectionTypes.Main],
-    usableAsTool: true,
     credentials: [
       {
         name: 'subscribyApi',

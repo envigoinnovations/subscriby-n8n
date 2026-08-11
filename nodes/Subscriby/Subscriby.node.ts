@@ -24,7 +24,7 @@ export class Subscriby implements INodeType {
   description: INodeTypeDescription = {
     displayName: 'Subscriby',
     name: 'subscriby',
-    icon: 'file:subscriby.svg',
+    icon: { light: 'file:subscriby.svg', dark: 'file:subscriby.dark.svg' },
     group: ['transform'],
     version: 1,
     subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
