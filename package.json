@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-subscriby",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "n8n community node for Subscriby — monetise Telegram communities via subscriptions, access codes, and webhook events.",
 	"keywords": [
 		"n8n-community-node",
@@ -53,7 +53,7 @@
 	},
 	"devDependencies": {
 		"@eslint/eslintrc": "^3.0.0",
-		"@n8n/node-cli": ">=0.23.0",
+		"@n8n/node-cli": "0.44.0",
 		"@types/node": "^22.9.0",
 		"@typescript-eslint/parser": "^8.18.0",
 		"eslint": "^9.0.0",
@@ -65,8 +65,5 @@
 	},
 	"peerDependencies": {
 		"n8n-workflow": "*"
-	},
-	"overrides": {
-		"@n8n/eslint-plugin-community-nodes": "0.29.0"
 	}
 }
