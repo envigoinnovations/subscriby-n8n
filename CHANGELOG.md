@@ -54,7 +54,7 @@ pre-check for Creator Portal verification. `1.0.0` failed it on ten counts.
 
 > 10 August 2026
 
-First release under the Subscriby name. This package replaces `n8n-nodes-memberpass`, which is deprecated on npm and will be retired on 12 November 2026.
+First release under the Subscriby name. This package replaces `n8n-nodes-memberpass`, which is deprecated on npm and will be retired on 14 August 2027.
 
 The npm package name is new, so the version number restarts at 1.0.0. Functionally this is a superset of `n8n-nodes-memberpass@1.4.0` — nothing was removed.
 
