@@ -4,7 +4,7 @@ Community node for [n8n](https://n8n.io/) that drives [Subscriby](https://www.su
 
 Provides two nodes:
 
-- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, plans, projects, project resources, bot connectivity, billing, groups, roles, teams, and team members (71 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
+- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, plans, projects, project resources, bot connectivity, billing, groups, roles, teams, and team members (73 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
 - **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 19 resources across creator-facing surfaces (projects, plans, subscriptions, subscribers, members, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, bot status, distribution links).
 
 ## Installation
@@ -35,13 +35,14 @@ Restart the n8n process after install.
 2. In n8n, **Credentials → New → Subscriby API** and paste the `sbt_...` token. Leave the base URL at the default unless you are self-hosting.
 3. Add a **Subscriby Trigger** node, pick one or more events, optionally scope to a single project, and activate the workflow. On activation n8n registers the endpoint with Subscriby. Deactivating the workflow deletes the endpoint.
 
-## Supported events (71)
+## Supported events (73)
 
 The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/event-reference).
 
 | Family           | Count | Events                                                                                                                                                                                                                                                                                                 |
 | ---------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Subscription     | 16    | `subscription.created`, `subscription.activated`, `subscription.renewed`, `subscription.cancelled`, `subscription.expired`, `subscription.downgraded`, `subscription.upgraded`, `subscription.past_due`, `subscription.unpaid`, `subscription.paused`, `subscription.unpaused`, `subscription.reactivated`, `subscription.refunded`, `subscription.trial_started`, `subscription.trial_converting`, `subscription.trial_expired` |
+| Pass             | 2     | `pass.window_opened`, `pass.window_closed`                                                                                                                                                                                                                                                              |
 | Payment          | 4     | `payment.succeeded`, `payment.failed`, `payment.pending`, `payment.refunded`                                                                                                                                                                                                                           |
 | Member           | 10    | `member.joined`, `member.trial_joined`, `member.banned`, `member.unbanned`, `member.kicked`, `member.removed`, `member.churned`, `member.converted`, `member.resource_added`, `member.resource_removed`                                                                                                |
 | Access Code      | 3     | `access_code.generated`, `access_code.redeemed`, `access_code.expired`                                                                                                                                                                                                                                 |

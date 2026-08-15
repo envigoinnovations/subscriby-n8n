@@ -35,6 +35,8 @@ export const EVENT_CATALOG = [
   { family: 'Member', name: 'Member — Resource Removed', value: 'member.resource_removed' },
   { family: 'Member', name: 'Member — Trial Joined', value: 'member.trial_joined' },
   { family: 'Member', name: 'Member — Unbanned', value: 'member.unbanned' },
+  { family: 'Pass', name: 'Pass — Window Closed', value: 'pass.window_closed' },
+  { family: 'Pass', name: 'Pass — Window Opened', value: 'pass.window_opened' },
   { family: 'Payment', name: 'Payment — Failed', value: 'payment.failed' },
   { family: 'Payment', name: 'Payment — Pending', value: 'payment.pending' },
   { family: 'Payment', name: 'Payment — Refunded', value: 'payment.refunded' },

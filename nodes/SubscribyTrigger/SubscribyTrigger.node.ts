@@ -21,8 +21,8 @@ import { EVENT_CATALOG } from './events';
  *  - webhook(): validates SB-Signature, returns event envelope to the workflow
  *
  * Subscribed event names match the catalog at
- * https://docs.subscriby.net/webhooks/event-reference (71 events covering
- * subscriptions, payments, members, access codes, plans, projects, groups,
+ * https://docs.subscriby.net/webhooks/event-reference (73 events covering
+ * subscriptions, payments, members, access codes, plans, passes, projects, groups,
  * roles, teams, billing, project resources, and bot connectivity).
  */
 export class SubscribyTrigger implements INodeType {

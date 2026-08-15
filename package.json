@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-subscriby",
-	"version": "1.0.4",
+	"version": "1.1.0",
 	"description": "n8n community node for Subscriby — monetise Telegram communities via subscriptions, access codes, and webhook events.",
 	"keywords": [
 		"n8n-community-node",
