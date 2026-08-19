@@ -1,6 +1,6 @@
 # n8n-nodes-subscriby
 
-Community node for [n8n](https://n8n.io/) that drives [Subscriby](https://www.subscriby.net) — subscription + access-code monetisation for Telegram communities.
+**Verified community node** for [n8n](https://n8n.io/) that drives [Subscriby](https://www.subscriby.net) — subscription + access-code monetisation for Telegram communities.
 
 Provides two nodes:
 
@@ -15,7 +15,7 @@ Inside n8n:
 
 1. **Settings → Community Nodes → Install**
 2. Enter `n8n-nodes-subscriby`
-3. Agree to the community-node warning and restart n8n
+3. Confirm and restart n8n
 
 ### Manual install (self-hosted)
 
