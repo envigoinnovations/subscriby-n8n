@@ -62,6 +62,7 @@ export class Subscriby implements INodeType {
           { name: 'Role', value: 'role' },
           { name: 'Subscriber', value: 'subscriber' },
           { name: 'Subscription', value: 'subscription' },
+          { name: 'Support Conversation', value: 'supportConversation' },
           { name: 'Team', value: 'team' },
           { name: 'Team Member', value: 'teamMember' },
           { name: 'Token', value: 'token' },
@@ -336,6 +337,78 @@ export class Subscriby implements INodeType {
         default: '',
         displayOptions: { show: { resource: ['member'], operation: ['ban', 'kick'] } },
         description: 'Optional moderator note recorded with the action',
+      },
+
+      // === SUPPORT CONVERSATION ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['supportConversation'] } },
+        options: [
+          { name: 'Assign', value: 'assign', action: 'Assign a support conversation', description: 'Hand the conversation to a team member, or clear the assignment' },
+          { name: 'Get', value: 'get', action: 'Get a support conversation', description: 'Fetch one conversation by UUID' },
+          { name: 'List', value: 'list', action: 'List support conversations', description: 'List conversations, newest activity first' },
+          { name: 'List Messages', value: 'listMessages', action: 'List support messages', description: 'Fetch the messages in a conversation, oldest first' },
+          { name: 'Reply', value: 'reply', action: 'Reply to a support conversation', description: 'Send a reply the member receives on Telegram' },
+          { name: 'Resolve', value: 'resolve', action: 'Resolve a support conversation', description: 'Clear the conversation from the open queue' },
+        ],
+        default: 'list',
+      },
+      {
+        displayName: 'Conversation ID',
+        name: 'conversationId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['supportConversation'], operation: ['get', 'listMessages', 'reply', 'resolve', 'assign'] } },
+      },
+      {
+        displayName: 'Reply',
+        name: 'replyBody',
+        type: 'string',
+        typeOptions: { rows: 3 },
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['supportConversation'], operation: ['reply'] } },
+        description: 'Reaches the member verbatim on Telegram, attributed to you rather than the bot. Max 4000 characters.',
+      },
+      {
+        displayName: 'Internal Note',
+        name: 'replyInternal',
+        type: 'boolean',
+        default: false,
+        displayOptions: { show: { resource: ['supportConversation'], operation: ['reply'] } },
+        description: 'Whether to record a private note for your team instead of replying to the member',
+      },
+      {
+        displayName: 'Assignee',
+        name: 'assignedToUserId',
+        type: 'string',
+        default: '',
+        displayOptions: { show: { resource: ['supportConversation'], operation: ['assign'] } },
+        description: 'Team-member user UUID. Leave empty to clear an existing assignment.',
+      },
+      {
+        displayName: 'Filters',
+        name: 'supportConversationListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['supportConversation'], operation: ['list', 'listMessages'] } },
+        options: [
+          { displayName: 'Assigned To', name: 'assignedTo', type: 'string', default: '', description: 'Only conversations assigned to this team-member UUID' },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Project ID', name: 'projectId', type: 'string', default: '', description: 'Narrow to a single project' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+          { displayName: 'Status', name: 'status', type: 'options', default: 'open', options: [
+            { name: 'Open', value: 'open' },
+            { name: 'Pending', value: 'pending' },
+            { name: 'Resolved', value: 'resolved' },
+            { name: 'Snoozed', value: 'snoozed' },
+          ], description: 'Filter by conversation status' },
+        ],
       },
 
       // === SUBSCRIBER ===
@@ -994,6 +1067,8 @@ async function dispatch(
       return dispatchSubscription.call(this, operation, i);
     case 'member':
       return dispatchMember.call(this, operation, i);
+    case 'supportConversation':
+      return dispatchSupportConversation.call(this, operation, i);
     case 'subscriber':
       return dispatchSubscriber.call(this, operation, i);
     case 'accessCode':
@@ -1187,6 +1262,83 @@ async function dispatchSubscription(
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown subscription operation: ${operation}`);
+}
+
+async function dispatchSupportConversation(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  if (operation === 'list') {
+    const filters = this.getNodeParameter('supportConversationListFilters', i, {}) as IDataObject;
+    const qs: IDataObject = {};
+    if (filters.projectId) {
+      qs.project_id = filters.projectId;
+    }
+    if (filters.status) {
+      qs.status = filters.status;
+    }
+    if (filters.assignedTo) {
+      qs.assigned_to = filters.assignedTo;
+    }
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', '/support/conversations', qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(this, 'GET', '/support/conversations', undefined, qs);
+  }
+
+  const conversationId = this.getNodeParameter('conversationId', i) as string;
+
+  if (operation === 'get') {
+    return subscribyApiRequest.call(this, 'GET', `/support/conversations/${conversationId}`);
+  }
+
+  if (operation === 'listMessages') {
+    const filters = this.getNodeParameter('supportConversationListFilters', i, {}) as IDataObject;
+    const qs: IDataObject = {};
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(
+        this,
+        'GET',
+        `/support/conversations/${conversationId}/messages`,
+        qs,
+      );
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(
+      this,
+      'GET',
+      `/support/conversations/${conversationId}/messages`,
+      undefined,
+      qs,
+    );
+  }
+
+  if (operation === 'reply') {
+    return subscribyApiRequest.call(this, 'POST', `/support/conversations/${conversationId}/messages`, {
+      body: this.getNodeParameter('replyBody', i) as string,
+      internal: this.getNodeParameter('replyInternal', i, false) as boolean,
+    });
+  }
+
+  if (operation === 'resolve') {
+    return subscribyApiRequest.call(this, 'POST', `/support/conversations/${conversationId}/resolve`);
+  }
+
+  if (operation === 'assign') {
+    const assignee = this.getNodeParameter('assignedToUserId', i, '') as string;
+
+    // Sent explicitly rather than compacted away: the API requires the key to be
+    // present, so clearing an assignment is a deliberate null.
+    return subscribyApiRequest.call(this, 'POST', `/support/conversations/${conversationId}/assign`, {
+      assigned_to_user_id: assignee === '' ? null : assignee,
+    });
+  }
+
+  throw new NodeOperationError(this.getNode(), `Unknown support conversation operation: ${operation}`);
 }
 
 async function dispatchMember(

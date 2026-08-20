@@ -4,8 +4,8 @@
 
 Provides two nodes:
 
-- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, plans, projects, project resources, bot connectivity, billing, groups, roles, teams, and team members (73 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
-- **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 19 resources across creator-facing surfaces (projects, plans, subscriptions, subscribers, members, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, bot status, distribution links).
+- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, plans, projects, project resources, bot connectivity, billing, groups, roles, teams, team members, and member support conversations (87 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
+- **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 20 resources across creator-facing surfaces (projects, plans, subscriptions, subscribers, members, support conversations, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, bot status, distribution links).
 
 ## Installation
 
@@ -35,7 +35,7 @@ Restart the n8n process after install.
 2. In n8n, **Credentials → New → Subscriby API** and paste the `sbt_...` token. Leave the base URL at the default unless you are self-hosting.
 3. Add a **Subscriby Trigger** node, pick one or more events, optionally scope to a single project, and activate the workflow. On activation n8n registers the endpoint with Subscriby. Deactivating the workflow deletes the endpoint.
 
-## Supported events (73)
+## Supported events (87)
 
 The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/event-reference).
 
@@ -45,9 +45,11 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Pass             | 2     | `pass.window_opened`, `pass.window_closed`                                                                                                                                                                                                                                                              |
 | Payment          | 4     | `payment.succeeded`, `payment.failed`, `payment.pending`, `payment.refunded`                                                                                                                                                                                                                           |
 | Member           | 10    | `member.joined`, `member.trial_joined`, `member.banned`, `member.unbanned`, `member.kicked`, `member.removed`, `member.churned`, `member.converted`, `member.resource_added`, `member.resource_removed`                                                                                                |
+| Support          | 6     | `support.conversation.opened`, `support.conversation.assigned`, `support.conversation.resolved`, `support.conversation.reopened`, `support.message.received`, `support.message.sent`                                                       |
 | Access Code      | 3     | `access_code.generated`, `access_code.redeemed`, `access_code.expired`                                                                                                                                                                                                                                 |
+| Coupon           | 7     | `coupon.created`, `coupon.updated`, `coupon.activated`, `coupon.deactivated`, `coupon.deleted`, `coupon.redeemed`, `coupon.exhausted`                                                                                                                                                                   |
 | Plan             | 6     | `plan.created`, `plan.updated`, `plan.activated`, `plan.deactivated`, `plan.deleted`, `plan.sync_completed`                                                                                                                                                                                            |
-| Project          | 7     | `project.created`, `project.updated`, `project.archived`, `project.restored`, `project.deleted`, `project.bot.connected`, `project.bot.disconnected`                                                                                                                                                   |
+| Project          | 8     | `project.created`, `project.updated`, `project.archived`, `project.restored`, `project.deleted`, `project.bot.connected`, `project.bot.disconnected`, `project.bot.status_changed`                                                                                                                     |
 | Project Resource | 4     | `project.resource.created`, `project.resource.linked`, `project.resource.unlinked`, `project.resource.deleted`                                                                                                                                                                                         |
 | Billing          | 9     | `billing.invoice_created`, `billing.invoice_paid`, `billing.invoice_overdue`, `billing.payment_failed`, `billing.grace_period_warning`, `billing.account_locked`, `billing.tier_upgraded`, `billing.tier_downgraded`, `billing.tier_cancelled`                                                          |
 | Group            | 3     | `group.created`, `group.updated`, `group.deleted`                                                                                                                                                                                                                                                      |
@@ -64,6 +66,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Subscription     | Cancel, Get, List                                                                                                   |
 | Subscriber       | Find by Telegram ID                                                                                                 |
 | Member           | Ban, Unban, Kick, Get, List                                                                                         |
+| Support Conversation | List, Get, List Messages, Reply, Resolve, Assign                                                                |
 | Access Code      | Bulk Generate, List, Delete, Preview                                                                                |
 | Resource         | Create, List, Get, Unlink, Delete                                                                                   |
 | Payment Method   | List, Get                                                                                                           |
