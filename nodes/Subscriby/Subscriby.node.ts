@@ -375,6 +375,14 @@ export class Subscriby implements INodeType {
         description: 'Reaches the member verbatim on Telegram, attributed to you rather than the bot. Max 4000 characters.',
       },
       {
+        displayName: 'Quote Message ID',
+        name: 'replyToMessageId',
+        type: 'string',
+        default: '',
+        displayOptions: { show: { resource: ['supportConversation'], operation: ['reply'] } },
+        description: 'Optional UUID of a message in this same conversation to quote above the reply. Must belong to this conversation.',
+      },
+      {
         displayName: 'Internal Note',
         name: 'replyInternal',
         type: 'boolean',
@@ -1318,10 +1326,18 @@ async function dispatchSupportConversation(
   }
 
   if (operation === 'reply') {
-    return subscribyApiRequest.call(this, 'POST', `/support/conversations/${conversationId}/messages`, {
+    const payload: IDataObject = {
       body: this.getNodeParameter('replyBody', i) as string,
       internal: this.getNodeParameter('replyInternal', i, false) as boolean,
-    });
+    };
+
+    const quoted = this.getNodeParameter('replyToMessageId', i, '') as string;
+
+    if (quoted) {
+      payload.reply_to_message_id = quoted;
+    }
+
+    return subscribyApiRequest.call(this, 'POST', `/support/conversations/${conversationId}/messages`, payload);
   }
 
   if (operation === 'resolve') {
