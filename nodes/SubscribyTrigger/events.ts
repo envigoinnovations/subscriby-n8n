@@ -22,6 +22,7 @@ export const EVENT_CATALOG = [
   { family: 'Billing', name: 'Billing — Tier Cancelled', value: 'billing.tier_cancelled' },
   { family: 'Billing', name: 'Billing — Tier Downgraded', value: 'billing.tier_downgraded' },
   { family: 'Billing', name: 'Billing — Tier Upgraded', value: 'billing.tier_upgraded' },
+  { family: 'Billing', name: 'Billing — Trial Ending', value: 'billing.trial_ending' },
   { family: 'Coupon', name: 'Coupon — Activated', value: 'coupon.activated' },
   { family: 'Coupon', name: 'Coupon — Created', value: 'coupon.created' },
   { family: 'Coupon', name: 'Coupon — Deactivated', value: 'coupon.deactivated' },

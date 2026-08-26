@@ -4,7 +4,7 @@
 
 Provides two nodes:
 
-- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, plans, projects, project resources, bot connectivity, billing, groups, roles, teams, team members, and member support conversations (87 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
+- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, plans, projects, project resources, bot connectivity, billing, groups, roles, teams, team members, and member support conversations (88 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
 - **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 20 resources across creator-facing surfaces (projects, plans, subscriptions, subscribers, members, support conversations, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, bot status, distribution links).
 
 ## Installation
@@ -35,7 +35,7 @@ Restart the n8n process after install.
 2. In n8n, **Credentials → New → Subscriby API** and paste the `sbt_...` token. Leave the base URL at the default unless you are self-hosting.
 3. Add a **Subscriby Trigger** node, pick one or more events, optionally scope to a single project, and activate the workflow. On activation n8n registers the endpoint with Subscriby. Deactivating the workflow deletes the endpoint.
 
-## Supported events (87)
+## Supported events (88)
 
 The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/event-reference).
 
@@ -51,7 +51,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Plan             | 6     | `plan.created`, `plan.updated`, `plan.activated`, `plan.deactivated`, `plan.deleted`, `plan.sync_completed`                                                                                                                                                                                            |
 | Project          | 8     | `project.created`, `project.updated`, `project.archived`, `project.restored`, `project.deleted`, `project.bot.connected`, `project.bot.disconnected`, `project.bot.status_changed`                                                                                                                     |
 | Project Resource | 4     | `project.resource.created`, `project.resource.linked`, `project.resource.unlinked`, `project.resource.deleted`                                                                                                                                                                                         |
-| Billing          | 9     | `billing.invoice_created`, `billing.invoice_paid`, `billing.invoice_overdue`, `billing.payment_failed`, `billing.grace_period_warning`, `billing.account_locked`, `billing.tier_upgraded`, `billing.tier_downgraded`, `billing.tier_cancelled`                                                          |
+| Billing          | 10    | `billing.invoice_created`, `billing.invoice_paid`, `billing.invoice_overdue`, `billing.payment_failed`, `billing.trial_ending`, `billing.grace_period_warning`, `billing.account_locked`, `billing.tier_upgraded`, `billing.tier_downgraded`, `billing.tier_cancelled`                                   |
 | Group            | 3     | `group.created`, `group.updated`, `group.deleted`                                                                                                                                                                                                                                                      |
 | Role             | 3     | `role.created`, `role.updated`, `role.deleted`                                                                                                                                                                                                                                                         |
 | Team             | 2     | `team.created`, `team.deleted`                                                                                                                                                                                                                                                                         |
