@@ -21,9 +21,10 @@ import { EVENT_CATALOG } from './events';
  *  - webhook(): validates SB-Signature, returns event envelope to the workflow
  *
  * Subscribed event names match the catalog at
- * https://docs.subscriby.net/webhooks/event-reference (73 events covering
- * subscriptions, payments, members, access codes, plans, passes, projects, groups,
- * roles, teams, billing, project resources, and bot connectivity).
+ * https://docs.subscriby.net/webhooks/event-reference. The authoritative list is
+ * EVENT_CATALOG in ./events.ts, which mirrors Subscriby's WebhookEvent enum —
+ * read the count from there rather than restating it here, which is how this
+ * comment came to claim 73 events and omit the coupon and support families.
  */
 export class SubscribyTrigger implements INodeType {
   description: INodeTypeDescription = {
