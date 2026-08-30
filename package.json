@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-subscriby",
-	"version": "1.5.0",
+	"version": "2.0.0",
 	"description": "n8n community node for Subscriby — monetise Telegram communities via subscriptions, access codes, and webhook events.",
 	"keywords": [
 		"n8n-community-node",
@@ -35,7 +35,8 @@
 		"lint": "n8n-node lint",
 		"lintfix": "n8n-node lint --fix",
 		"prepublishOnly": "npm run build",
-		"release": "n8n-node release"
+		"release": "n8n-node release",
+		"sync:readme": "node scripts/sync-readme-events.js"
 	},
 	"files": [
 		"dist"

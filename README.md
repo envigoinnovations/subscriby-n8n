@@ -4,7 +4,7 @@
 
 Provides two nodes:
 
-- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, plans, projects, project resources, bot connectivity, billing, groups, roles, teams, team members, and member support conversations (88 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
+- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, plans, projects, project resources, bot connectivity, billing, groups, roles, teams, team members, and member support conversations (102 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
 - **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 20 resources across creator-facing surfaces (projects, plans, subscriptions, subscribers, members, support conversations, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, bot status, distribution links).
 
 ## Installation
@@ -35,27 +35,29 @@ Restart the n8n process after install.
 2. In n8n, **Credentials → New → Subscriby API** and paste the `sbt_...` token. Leave the base URL at the default unless you are self-hosting.
 3. Add a **Subscriby Trigger** node, pick one or more events, optionally scope to a single project, and activate the workflow. On activation n8n registers the endpoint with Subscriby. Deactivating the workflow deletes the endpoint.
 
-## Supported events (88)
+## Supported events (102)
 
-The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/event-reference).
+The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/event-reference). This table is generated from that file by `npm run sync:readme` — do not edit it by hand.
 
-| Family           | Count | Events                                                                                                                                                                                                                                                                                                 |
-| ---------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Subscription     | 16    | `subscription.created`, `subscription.activated`, `subscription.renewed`, `subscription.cancelled`, `subscription.expired`, `subscription.downgraded`, `subscription.upgraded`, `subscription.past_due`, `subscription.unpaid`, `subscription.paused`, `subscription.unpaused`, `subscription.reactivated`, `subscription.refunded`, `subscription.trial_started`, `subscription.trial_converting`, `subscription.trial_expired` |
-| Pass             | 2     | `pass.window_opened`, `pass.window_closed`                                                                                                                                                                                                                                                              |
-| Payment          | 4     | `payment.succeeded`, `payment.failed`, `payment.pending`, `payment.refunded`                                                                                                                                                                                                                           |
-| Member           | 10    | `member.joined`, `member.trial_joined`, `member.banned`, `member.unbanned`, `member.kicked`, `member.removed`, `member.churned`, `member.converted`, `member.resource_added`, `member.resource_removed`                                                                                                |
-| Support          | 6     | `support.conversation.opened`, `support.conversation.assigned`, `support.conversation.resolved`, `support.conversation.reopened`, `support.message.received`, `support.message.sent`                                                       |
-| Access Code      | 3     | `access_code.generated`, `access_code.redeemed`, `access_code.expired`                                                                                                                                                                                                                                 |
-| Coupon           | 7     | `coupon.created`, `coupon.updated`, `coupon.activated`, `coupon.deactivated`, `coupon.deleted`, `coupon.redeemed`, `coupon.exhausted`                                                                                                                                                                   |
-| Plan             | 6     | `plan.created`, `plan.updated`, `plan.activated`, `plan.deactivated`, `plan.deleted`, `plan.sync_completed`                                                                                                                                                                                            |
-| Project          | 8     | `project.created`, `project.updated`, `project.archived`, `project.restored`, `project.deleted`, `project.bot.connected`, `project.bot.disconnected`, `project.bot.status_changed`                                                                                                                     |
-| Project Resource | 4     | `project.resource.created`, `project.resource.linked`, `project.resource.unlinked`, `project.resource.deleted`                                                                                                                                                                                         |
-| Billing          | 10    | `billing.invoice_created`, `billing.invoice_paid`, `billing.invoice_overdue`, `billing.payment_failed`, `billing.trial_ending`, `billing.grace_period_warning`, `billing.account_locked`, `billing.tier_upgraded`, `billing.tier_downgraded`, `billing.tier_cancelled`                                   |
-| Group            | 3     | `group.created`, `group.updated`, `group.deleted`                                                                                                                                                                                                                                                      |
-| Role             | 3     | `role.created`, `role.updated`, `role.deleted`                                                                                                                                                                                                                                                         |
-| Team             | 2     | `team.created`, `team.deleted`                                                                                                                                                                                                                                                                         |
-| Team Member      | 4     | `team.member.invited`, `team.member.joined`, `team.member.removed`, `team.member.role_changed`                                                                                                                                                                                                         |
+| Family | Count | Events |
+| ------ | ----- | ------ |
+| Subscription | 16 | `subscription.activated`, `subscription.cancelled`, `subscription.created`, `subscription.downgraded`, `subscription.expired`, `subscription.past_due`, `subscription.paused`, `subscription.reactivated`, `subscription.refunded`, `subscription.renewed`, `subscription.trial_converting`, `subscription.trial_expired`, `subscription.trial_started`, `subscription.unpaid`, `subscription.unpaused`, `subscription.upgraded` |
+| Billing | 10 | `billing.account_locked`, `billing.grace_period_warning`, `billing.invoice_created`, `billing.invoice_overdue`, `billing.invoice_paid`, `billing.payment_failed`, `billing.tier_cancelled`, `billing.tier_downgraded`, `billing.tier_upgraded`, `billing.trial_ending` |
+| Member | 10 | `member.banned`, `member.churned`, `member.converted`, `member.joined`, `member.kicked`, `member.removed`, `member.resource_added`, `member.resource_removed`, `member.trial_joined`, `member.unbanned` |
+| Pass | 8 | `pass.holder_missed`, `pass.holder_moved`, `pass.holder_queued`, `pass.holder_stranded`, `pass.window_cancelled`, `pass.window_closed`, `pass.window_opened`, `pass.window_scheduled` |
+| Pass Series | 8 | `pass_series.completed`, `pass_series.leg_added`, `pass_series.leg_completed`, `pass_series.leg_dropped`, `pass_series.leg_substituted`, `pass_series.presale_opened`, `pass_series.purchased`, `pass_series.seats_exhausted` |
+| Project | 8 | `project.archived`, `project.bot.connected`, `project.bot.disconnected`, `project.bot.status_changed`, `project.created`, `project.deleted`, `project.restored`, `project.updated` |
+| Coupon | 7 | `coupon.activated`, `coupon.created`, `coupon.deactivated`, `coupon.deleted`, `coupon.exhausted`, `coupon.redeemed`, `coupon.updated` |
+| Plan | 6 | `plan.activated`, `plan.created`, `plan.deactivated`, `plan.deleted`, `plan.sync_completed`, `plan.updated` |
+| Support | 6 | `support.conversation.assigned`, `support.conversation.opened`, `support.conversation.reopened`, `support.conversation.resolved`, `support.message.received`, `support.message.sent` |
+| Payment | 4 | `payment.failed`, `payment.pending`, `payment.refunded`, `payment.succeeded` |
+| Project Resource | 4 | `project.resource.created`, `project.resource.deleted`, `project.resource.linked`, `project.resource.unlinked` |
+| Team Member | 4 | `team.member.invited`, `team.member.joined`, `team.member.removed`, `team.member.role_changed` |
+| Access Code | 3 | `access_code.expired`, `access_code.generated`, `access_code.redeemed` |
+| Group | 3 | `group.created`, `group.deleted`, `group.updated` |
+| Role | 3 | `role.created`, `role.deleted`, `role.updated` |
+| Team | 2 | `team.created`, `team.deleted` |
+| **Total** | **102** | |
 
 ## Supported actions
 

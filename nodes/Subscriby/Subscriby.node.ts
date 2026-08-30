@@ -55,6 +55,7 @@ export class Subscriby implements INodeType {
           { name: 'Distribution', value: 'distribution' },
           { name: 'Group', value: 'group' },
           { name: 'Member', value: 'member' },
+          { name: 'Pass Window', value: 'passWindow' },
           { name: 'Payment Method', value: 'paymentMethod' },
           { name: 'Plan', value: 'plan' },
           { name: 'Project', value: 'project' },
@@ -142,6 +143,53 @@ export class Subscriby implements INodeType {
         ],
       },
 
+      // === PASS WINDOW ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['passWindow'] } },
+        options: [
+          { name: 'List', value: 'list', action: 'List pass windows', description: "List the dated access windows a project's pass plans generate, with their IDs" },
+        ],
+        default: 'list',
+      },
+      {
+        displayName: 'Project ID',
+        name: 'projectId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['passWindow'] } },
+      },
+      {
+        displayName: 'Filters',
+        name: 'filters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['passWindow'], operation: ['list'] } },
+        options: [
+          { displayName: 'On Sale Only', name: 'sellable_only', type: 'boolean', default: false, description: "Whether to return only windows a customer can buy right now, after the plan's sales cutoff. Not the same as Status." },
+          { displayName: 'Pass Plan ID', name: 'plan_id', type: 'string', default: '', description: 'Narrow to one pass plan. Omit for every pass plan on the project.' },
+          { displayName: 'Starting After', name: 'from', type: 'dateTime', default: '' },
+          { displayName: 'Starting Before', name: 'to', type: 'dateTime', default: '' },
+          {
+            displayName: 'Status',
+            name: 'status',
+            type: 'options',
+            options: [
+              { name: 'Canceled', value: 'canceled' },
+              { name: 'Closed', value: 'closed', description: 'Finished' },
+              { name: 'Open', value: 'open', description: 'Running now' },
+              { name: 'Scheduled', value: 'scheduled', description: 'Not yet open' },
+            ],
+            default: 'scheduled',
+          },
+        ],
+      },
+
       // === PLAN ===
       {
         displayName: 'Operation',
@@ -192,39 +240,246 @@ export class Subscriby implements INodeType {
         default: '',
         required: true,
         displayOptions: { show: { resource: ['plan'], operation: ['create'] } },
+        description: '5-255 characters, unique within the project',
+      },
+      {
+        displayName: 'Plan Kind',
+        name: 'kind',
+        type: 'options',
+        noDataExpression: true,
+        options: [
+          { name: 'Recurring Subscription', value: 'subscription', description: 'Access starts at payment and renews on a cycle' },
+          { name: 'Time-Limited Pass', value: 'pass', description: 'One dated access window per purchase' },
+          { name: 'Pass Series', value: 'pass_series', description: "A season ticket over many of your pass plans' windows" },
+        ],
+        default: 'subscription',
+        required: true,
+        displayOptions: { show: { resource: ['plan'], operation: ['create', 'update'] } },
+        description: 'Decides which fields apply below. The API refuses a block belonging to another kind, so this must match the plan.',
+      },
+      {
+        displayName: 'Currency Name or ID',
+        name: 'currencyId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['plan'], operation: ['create'] } },
+        description: 'UUID from /v1/currencies. Must be supported by an active payment method on the project.',
       },
       {
         displayName: 'Price',
         name: 'price',
         type: 'number',
-        typeOptions: { minValue: 0 },
+        typeOptions: { minValue: 0, numberPrecision: 2 },
         default: 0,
         required: true,
         displayOptions: { show: { resource: ['plan'], operation: ['create'] } },
-        description: 'Price in the smallest currency unit (e.g., cents)',
+        description: 'Decimal, not cents. On a pass this buys one window; on a pass series it buys the whole slate, once.',
       },
       {
-        displayName: 'Currency',
-        name: 'currency',
+        displayName: 'Resource Names or IDs',
+        name: 'resources',
         type: 'string',
-        default: 'USD',
-        required: true,
+        default: '',
         displayOptions: { show: { resource: ['plan'], operation: ['create'] } },
-        description: 'ISO 4217 currency code',
+        description: 'Comma-separated project resource UUIDs. Required on Recurring Subscription and Time-Limited Pass — a plan with no linked resource cannot be redeemed. Optional on Pass Series, where it means a lounge the holder keeps for the whole span.',
+      },
+
+      // --- kind: subscription ---
+      {
+        displayName: 'Billing',
+        name: 'billing',
+        type: 'collection',
+        placeholder: 'Add Billing Field',
+        default: {},
+        displayOptions: { show: { resource: ['plan'], operation: ['create', 'update'], kind: ['subscription'] } },
+        options: [
+          {
+            displayName: 'Billing Cycle',
+            name: 'billing_cycle',
+            type: 'options',
+            options: [
+              { name: 'Day', value: 'day' },
+              { name: 'Lifetime', value: 'lifetime' },
+              { name: 'Month', value: 'month' },
+              { name: 'Week', value: 'week' },
+              { name: 'Year', value: 'year' },
+            ],
+            default: 'month',
+          },
+          { displayName: 'Cardless Trial', name: 'trial_cardless', type: 'boolean', default: false, description: 'Whether the trial can start without a payment method on file' },
+          { displayName: 'Cycle Count', name: 'billing_cycle_count', type: 'number', typeOptions: { minValue: 1, maxValue: 99 }, default: 1, description: 'Must be 1 when Billing Cycle is Lifetime' },
+          { displayName: 'Disabled Renewal', name: 'disabled_renewal', type: 'boolean', default: false, description: 'Whether to charge once and then lapse rather than renewing' },
+          { displayName: 'Recurring', name: 'recurring', type: 'boolean', default: true, description: 'Whether to charge on a repeating cycle. Crypto and platform currencies require this off.' },
+          { displayName: 'Trial Days', name: 'trial_days', type: 'number', typeOptions: { minValue: 0, maxValue: 365 }, default: 0 },
+        ],
+      },
+
+      // --- kind: pass ---
+      {
+        displayName: 'Pass Schedule',
+        name: 'pass',
+        type: 'collection',
+        placeholder: 'Add Schedule Field',
+        default: {},
+        displayOptions: { show: { resource: ['plan'], operation: ['create', 'update'], kind: ['pass'] } },
+        options: [
+          {
+            displayName: 'Cutoff Anchor',
+            name: 'sales_cutoff_anchor',
+            type: 'options',
+            options: [
+              { name: 'Before a Window Ends', value: 'before_end', description: 'Keeps selling while the window runs, so a buyer can join a session already in progress. Needs at least 5 minutes and must be under the shortest slot length.' },
+              { name: 'Before a Window Starts', value: 'before_start', description: 'Nothing sells once a window is running' },
+            ],
+            default: 'before_start',
+          },
+          {
+            displayName: 'Repeats',
+            name: 'recurrence',
+            type: 'options',
+            options: [
+              { name: 'Daily', value: 'daily' },
+              { name: 'Monthly', value: 'monthly' },
+              { name: 'Weekly', value: 'weekly' },
+            ],
+            default: 'weekly',
+            description: 'Decides which slot fields apply: weekly uses Weekday, monthly uses Day of Month, daily uses neither',
+          },
+          {
+            displayName: 'Schedule Mode',
+            name: 'schedule_mode',
+            type: 'options',
+            options: [
+              { name: 'Fixed', value: 'fixed', description: 'Place each window by hand' },
+              { name: 'Repeating', value: 'repeating', description: 'Generate windows from the slots below' },
+            ],
+            default: 'repeating',
+          },
+          { displayName: 'Stop Generating After', name: 'recurrence_ends_at', type: 'dateTime', default: '', description: 'When window generation stops' },
+          { displayName: 'Stop Selling (Minutes)', name: 'sales_cutoff_minutes', type: 'number', typeOptions: { minValue: 0 }, default: 0, description: 'Close sales this many minutes before the moment the anchor names' },
+          { displayName: 'Timezone', name: 'timezone', type: 'string', default: 'UTC', description: 'IANA zone, e.g. America/New_York. Window times are local wall-clock in this zone and hold steady across daylight saving.' },
+        ],
       },
       {
-        displayName: 'Billing Cycle',
-        name: 'billingCycle',
-        type: 'options',
+        displayName: 'Access Windows',
+        name: 'passSlots',
+        type: 'fixedCollection',
+        typeOptions: { multipleValues: true },
+        placeholder: 'Add Window',
+        default: {},
+        displayOptions: { show: { resource: ['plan'], operation: ['create', 'update'], kind: ['pass'] } },
+        description: 'Sending these REPLACES the whole schedule and rebuilds unsold future windows. Windows customers already bought keep their original times.',
         options: [
-          { name: 'Monthly', value: 'monthly' },
-          { name: 'Yearly', value: 'yearly' },
-          { name: 'One-Time', value: 'one_time' },
+          {
+            name: 'slot',
+            displayName: 'Window',
+            values: [
+              { displayName: 'Weekday', name: 'weekday', type: 'number', typeOptions: { minValue: 0, maxValue: 6 }, default: 0, description: '0-6 with 0 = Sunday. Weekly recurrence only.' },
+              { displayName: 'Day of Month', name: 'day_of_month', type: 'number', typeOptions: { minValue: 1, maxValue: 31 }, default: 1, description: 'Monthly recurrence only. 29-31 skip months that lack the day.' },
+              { displayName: 'Starts At', name: 'start_time', type: 'string', default: '09:00', description: 'HH:MM local wall-clock in the schedule timezone' },
+              { displayName: 'Lasts (Minutes)', name: 'duration_minutes', type: 'number', typeOptions: { minValue: 5 }, default: 180, description: 'Each window carries its own length, so one plan can mix a 3-hour and a 14-hour window' },
+            ],
+          },
         ],
-        default: 'monthly',
-        required: true,
-        displayOptions: { show: { resource: ['plan'], operation: ['create'] } },
       },
+
+      // --- kind: pass_series ---
+      {
+        displayName: 'Pass Window Names or IDs',
+        name: 'seriesWindowIds',
+        type: 'string',
+        default: '',
+        displayOptions: { show: { resource: ['plan'], operation: ['create', 'update'], kind: ['pass_series'] } },
+        description: 'Comma-separated UUIDs of windows that ALREADY EXIST on your pass plans — a series never creates any. Use the Pass Window: List operation to find them. Needs at least two, unless a rule below supplies them.',
+      },
+      {
+        displayName: 'Series Settings',
+        name: 'passSeries',
+        type: 'collection',
+        placeholder: 'Add Series Field',
+        default: {},
+        displayOptions: { show: { resource: ['plan'], operation: ['create', 'update'], kind: ['pass_series'] } },
+        options: [
+          {
+            displayName: 'Cutoff Anchor',
+            name: 'sales_cutoff_anchor',
+            type: 'options',
+            options: [
+              { name: 'Before the First Pass Opens', value: 'before_start', description: 'Nobody buys a season already underway' },
+              { name: 'Before the Last Pass Ends', value: 'before_end', description: 'Keeps selling mid-season at full price for whatever is left. Nothing is prorated.' },
+            ],
+            default: 'before_start',
+          },
+          { displayName: 'Excluded Window IDs', name: 'blackout_window_ids', type: 'string', default: '', description: 'Comma-separated window UUIDs a rule matches but you want permanently excluded' },
+          { displayName: 'Holders Buy First For (Hours)', name: 'presale_hours', type: 'number', typeOptions: { minValue: 1, maxValue: 8760 }, default: 48, description: 'How long the next season is held for existing holders before general sale' },
+          { displayName: 'Next Series Plan ID', name: 'successor_plan_id', type: 'string', default: '', description: 'Another Pass Series on this project. When this season finishes, its holders are invited to buy that one first.' },
+          { displayName: 'Prevent Overlapping Passes', name: 'prevent_overlaps', type: 'boolean', default: true, description: 'Whether to refuse a window that clashes with one already on the slate, so holders are never handed two things at the same time' },
+          { displayName: 'Seat Limit', name: 'seat_cap', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'How many people may hold this series at once. Omit for unlimited.' },
+          { displayName: 'Stop Selling (Minutes)', name: 'sales_cutoff_minutes', type: 'number', typeOptions: { minValue: 0 }, default: 0, description: 'Measured against the WHOLE season, not one window' },
+        ],
+      },
+      {
+        displayName: 'Automatic Inclusion Rules',
+        name: 'seriesRules',
+        type: 'fixedCollection',
+        typeOptions: { multipleValues: true },
+        placeholder: 'Add Rule',
+        default: {},
+        displayOptions: { show: { resource: ['plan'], operation: ['create', 'update'], kind: ['pass_series'] } },
+        description: 'Rules keep working after the save: a matching window scheduled later is added to the slate AND granted to everyone already holding the series, at no charge. Handpicked window IDs never grow on their own.',
+        options: [
+          {
+            name: 'rule',
+            displayName: 'Rule',
+            values: [
+											{
+												displayName: 'Number of Passes to Take',
+												name: 'take',
+												type: 'number',
+												default: 5,
+												description: 'REQUIRED when the rule type is The Next Few Passes. A count rule takes that many and then stops	—	it never tops itself back up.',
+											},
+											{
+												displayName: 'Rule Type',
+												name: 'kind',
+												type: 'options',
+												options: [
+													{
+														name: 'Every Pass Starting in a Period',
+														value: 'date_range',
+													},
+													{
+														name: 'The Next Few Passes',
+														value: 'next_n',
+													},
+												],
+												default: 'date_range',
+											},
+											{
+												displayName: 'Source Pass Plan ID',
+												name: 'source_plan_id',
+												type: 'string',
+												default: '',
+												description: 'Must be a Time-Limited Pass plan on this project',
+											},
+											{
+												displayName: 'Watch From',
+												name: 'from_at',
+												type: 'dateTime',
+												default: '',
+											},
+											{
+												displayName: 'Watch Until',
+												name: 'to_at',
+												type: 'dateTime',
+												default: '',
+											},
+									],
+          },
+        ],
+      },
+
       {
         displayName: 'Update Fields',
         name: 'updateFields',
@@ -235,8 +490,8 @@ export class Subscriby implements INodeType {
         options: [
           { displayName: 'Name', name: 'name', type: 'string', default: '' },
           { displayName: 'Description', name: 'description', type: 'string', default: '', typeOptions: { rows: 3 } },
-          { displayName: 'Price', name: 'price', type: 'number', default: 0 },
-          { displayName: 'Trial Days', name: 'trial_days', type: 'number', default: 0 },
+          { displayName: 'Price', name: 'price', type: 'number', typeOptions: { numberPrecision: 2 }, default: 0 },
+          { displayName: 'Active', name: 'active', type: 'boolean', default: true },
         ],
       },
 
@@ -1069,6 +1324,8 @@ async function dispatch(
   switch (resource) {
     case 'project':
       return dispatchProject.call(this, operation, i);
+    case 'passWindow':
+      return dispatchPassWindow.call(this, operation, i);
     case 'plan':
       return dispatchPlan.call(this, operation, i);
     case 'subscription':
@@ -1165,6 +1422,141 @@ async function dispatchProject(
   throw new NodeOperationError(this.getNode(), `Unknown project operation: ${operation}`);
 }
 
+/**
+ * The dated access windows a project's pass plans generate.
+ *
+ * Read-only. A Pass Series points at windows that already exist rather than
+ * creating any, so this is where its window IDs come from — without it a series
+ * cannot be authored from n8n at all.
+ */
+async function dispatchPassWindow(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  const projectId = this.getNodeParameter('projectId', i) as string;
+
+  if (operation === 'list') {
+    const filters = compactBody(this.getNodeParameter('filters', i, {}) as IDataObject);
+
+    const rows = await subscribyApiRequestAllItems.call(
+      this,
+      'GET',
+      `/projects/${projectId}/pass-windows`,
+      filters,
+    );
+
+    return { data: rows };
+  }
+
+  throw new NodeOperationError(this.getNode(), `Unknown pass window operation: ${operation}`);
+}
+
+/**
+ * Split a comma-separated list of ids into an array, dropping blanks.
+ *
+ * n8n has no plain string-list input, so multi-id fields are typed by hand.
+ */
+function idList(raw: string): string[] {
+  return raw
+    .split(',')
+    .map((id) => id.trim())
+    .filter((id) => id.length > 0);
+}
+
+/**
+ * Assemble the kind-discriminated body a plan write expects.
+ *
+ * The Subscriby API takes `kind` plus exactly ONE nested object named after it,
+ * and refuses a block belonging to another kind rather than ignoring it. n8n
+ * properties are flat and gated by `displayOptions`, so only the chosen kind's
+ * fields are ever on screen — this turns them into the nested shape.
+ *
+ * The previous version of this function sent `currency` instead of
+ * `currency_id`, a `billing_cycle` enum the API does not accept, and never sent
+ * the required `resources`, so every plan:create call 422'd.
+ */
+function buildPlanBody(this: IExecuteFunctions, i: number, isCreate: boolean): IDataObject {
+  const kind = this.getNodeParameter('kind', i, 'subscription') as string;
+  const body: IDataObject = { kind };
+
+  if (isCreate) {
+    body.name = this.getNodeParameter('name', i) as string;
+    body.currency_id = this.getNodeParameter('currencyId', i) as string;
+    body.price = this.getNodeParameter('price', i) as number;
+
+    const resources = idList(this.getNodeParameter('resources', i, '') as string);
+
+    if (resources.length > 0) {
+      body.resources = resources;
+    }
+  } else {
+    Object.assign(body, compactBody(this.getNodeParameter('updateFields', i, {}) as IDataObject));
+  }
+
+  if (kind === 'subscription') {
+    const billing = compactBody(this.getNodeParameter('billing', i, {}) as IDataObject);
+
+    if (Object.keys(billing).length > 0) {
+      body.billing = billing;
+    }
+
+    return body;
+  }
+
+  if (kind === 'pass') {
+    const pass = compactBody(this.getNodeParameter('pass', i, {}) as IDataObject);
+
+    const slots = (this.getNodeParameter('passSlots.slot', i, []) as IDataObject[])
+      .map((slot) => compactBody(slot));
+
+    if (slots.length > 0) {
+      pass.slots = slots;
+    }
+
+    if (Object.keys(pass).length > 0) {
+      body.pass = pass;
+    }
+
+    return body;
+  }
+
+  const series = compactBody(this.getNodeParameter('passSeries', i, {}) as IDataObject);
+
+  /*
+   * Typed as a comma-separated string in the collection above, so it arrives
+   * here as one value rather than the array the API wants.
+   */
+  if (typeof series.blackout_window_ids === 'string') {
+    const excluded = idList(series.blackout_window_ids);
+
+    if (excluded.length > 0) {
+      series.blackout_window_ids = excluded;
+    } else {
+      delete series.blackout_window_ids;
+    }
+  }
+
+  const windowIds = idList(this.getNodeParameter('seriesWindowIds', i, '') as string);
+
+  if (windowIds.length > 0) {
+    series.window_ids = windowIds;
+  }
+
+  const rules = (this.getNodeParameter('seriesRules.rule', i, []) as IDataObject[])
+    .map((rule) => compactBody(rule));
+
+  if (rules.length > 0) {
+    series.rules = rules;
+  }
+
+  if (Object.keys(series).length > 0) {
+    body.pass_series = series;
+  }
+
+  return body;
+}
+
 async function dispatchPlan(
   this: IExecuteFunctions,
   operation: string,
@@ -1173,23 +1565,22 @@ async function dispatchPlan(
   const projectId = this.getNodeParameter('projectId', i) as string;
 
   if (operation === 'create') {
-    const body = compactBody({
-      name: this.getNodeParameter('name', i) as string,
-      price: this.getNodeParameter('price', i) as number,
-      currency: this.getNodeParameter('currency', i) as string,
-      billing_cycle: this.getNodeParameter('billingCycle', i) as string,
-    });
-    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/plans`, body);
+    return subscribyApiRequest.call(
+      this,
+      'POST',
+      `/projects/${projectId}/plans`,
+      buildPlanBody.call(this, i, true),
+    );
   }
 
   if (operation === 'update') {
     const planId = this.getNodeParameter('planId', i) as string;
-    const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
+
     return subscribyApiRequest.call(
       this,
       'PATCH',
       `/projects/${projectId}/plans/${planId}`,
-      compactBody(updateFields),
+      buildPlanBody.call(this, i, false),
     );
   }
 
