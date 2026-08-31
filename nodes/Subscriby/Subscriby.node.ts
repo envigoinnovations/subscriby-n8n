@@ -10,6 +10,7 @@ import {
   subscribyApiRequest,
   subscribyApiRequestAllItems,
   compactBody,
+  splitCodes,
   toNodeError,
 } from './GenericFunctions';
 
@@ -1004,9 +1005,12 @@ export class Subscriby implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['team'] } },
         options: [
-          { name: 'List', value: 'list', action: 'List teams', description: 'List all teams the caller belongs to' },
+          { name: 'Create', value: 'create', action: 'Create a team', description: 'Create a team. Growth tier only.' },
+          { name: 'Delete', value: 'delete', action: 'Delete a team', description: 'Permanently delete a team and everything scoped to it. Owner only.' },
           { name: 'Get', value: 'get', action: 'Get a team', description: 'Fetch a team by UUID' },
           { name: 'Get Current', value: 'getCurrent', action: 'Get the current team', description: 'Fetch the team that owns the API token' },
+          { name: 'List', value: 'list', action: 'List teams', description: 'List all teams the caller belongs to' },
+          { name: 'Update', value: 'update', action: 'Update a team', description: 'Rename a team. Owner only.' },
         ],
         default: 'list',
       },
@@ -1016,8 +1020,17 @@ export class Subscriby implements INodeType {
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['team'], operation: ['get'] } },
+        displayOptions: { show: { resource: ['team'], operation: ['get', 'update', 'delete'] } },
         description: 'UUID of the team',
+      },
+      {
+        displayName: 'Name',
+        name: 'teamName',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['team'], operation: ['create', 'update'] } },
+        description: 'Team name, up to 255 characters',
       },
 
       // === TEAM MEMBER ===
@@ -1028,10 +1041,42 @@ export class Subscriby implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['teamMember'] } },
         options: [
-          { name: 'List', value: 'list', action: 'List team members', description: 'List all members of a team' },
+          { name: 'Cancel Invitation', value: 'cancelInvitation', action: 'Cancel a team invitation', description: 'Withdraw an invitation nobody has accepted yet' },
           { name: 'Get', value: 'get', action: 'Get a team member', description: 'Fetch a single team member' },
+          { name: 'Invite', value: 'invite', action: 'Invite a team member', description: 'Invite someone by email to an existing role on the team' },
+          { name: 'List', value: 'list', action: 'List team members', description: 'List all members of a team' },
+          { name: 'Remove', value: 'remove', action: 'Remove a team member', description: 'Remove a collaborator from the team. The owner cannot be removed.' },
+          { name: 'Update Role', value: 'updateRole', action: 'Change a team member role', description: 'Move a collaborator onto a different role. The owner cannot be re-roled.' },
         ],
         default: 'list',
+      },
+      {
+        displayName: 'Email',
+        name: 'memberEmail',
+        type: 'string',
+        placeholder: 'name@email.com',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['teamMember'], operation: ['invite'] } },
+        description: 'Email address of the person being invited. They do not need an account yet.',
+      },
+      {
+        displayName: 'Role Code',
+        name: 'memberRole',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['teamMember'], operation: ['invite', 'updateRole'] } },
+        description: 'Code of an existing role on that team, for example support-agent. Not the role UUID.',
+      },
+      {
+        displayName: 'Invitation ID',
+        name: 'invitationId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['teamMember'], operation: ['cancelInvitation'] } },
+        description: 'UUID of the pending invitation to withdraw',
       },
       {
         displayName: 'Team ID',
@@ -1059,8 +1104,11 @@ export class Subscriby implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['role'] } },
         options: [
-          { name: 'List', value: 'list', action: 'List roles', description: 'List all roles defined for the current team' },
+          { name: 'Create', value: 'create', action: 'Create a role', description: 'Create a permission role in a team. Growth tier only.' },
+          { name: 'Delete', value: 'delete', action: 'Delete a role', description: 'Delete a role. Creator only, unless you own the team.' },
           { name: 'Get', value: 'get', action: 'Get a role', description: 'Fetch a role by UUID' },
+          { name: 'List', value: 'list', action: 'List roles', description: 'List all roles defined for the current team' },
+          { name: 'Update', value: 'update', action: 'Update a role', description: 'Rename a role and replace its permissions' },
         ],
         default: 'list',
       },
@@ -1070,8 +1118,70 @@ export class Subscriby implements INodeType {
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['role'], operation: ['get'] } },
+        displayOptions: { show: { resource: ['role'], operation: ['get', 'update', 'delete'] } },
         description: 'UUID of the role',
+      },
+      {
+        displayName: 'Team ID',
+        name: 'roleTeamId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['role'], operation: ['create'] } },
+        description: 'UUID of the team the role belongs to',
+      },
+      {
+        displayName: 'Code',
+        name: 'roleCode',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['role'], operation: ['create'] } },
+        description: 'Stable identifier, letters/numbers/dashes. Unique per team and immutable once created.',
+      },
+      {
+        displayName: 'Name',
+        name: 'roleName',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['role'], operation: ['create'] } },
+        description: 'Human-readable role name',
+      },
+      {
+        displayName: 'Update Fields',
+        name: 'roleUpdateFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['role'], operation: ['update'] } },
+        options: [
+          { displayName: 'Name', name: 'name', type: 'string', default: '', description: 'New role name' },
+          { displayName: 'Description', name: 'description', type: 'string', default: '', description: 'New role description' },
+          {
+            displayName: 'Permissions',
+            name: 'permissions',
+            type: 'string',
+            default: '',
+            description: 'Comma-separated permission codes in entity:action form. REPLACES the existing set — omit this field to leave permissions untouched.',
+          },
+        ],
+      },
+      {
+        displayName: 'Permissions',
+        name: 'rolePermissions',
+        type: 'string',
+        default: '',
+        displayOptions: { show: { resource: ['role'], operation: ['create'] } },
+        description: 'Comma-separated permission codes in entity:action form, for example project:view-any',
+      },
+      {
+        displayName: 'Description',
+        name: 'roleDescription',
+        type: 'string',
+        default: '',
+        displayOptions: { show: { resource: ['role'], operation: ['create'] } },
+        description: 'Optional note on what the role is for',
       },
 
       // === GROUP ===
@@ -1082,8 +1192,12 @@ export class Subscriby implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['group'] } },
         options: [
-          { name: 'List', value: 'list', action: 'List groups', description: 'List all groups for the current team' },
+          { name: 'Create', value: 'create', action: 'Create a group', description: 'Create a permission group in a team. Growth tier only.' },
+          { name: 'Delete', value: 'delete', action: 'Delete a group', description: 'Delete a group. Members stay in the team.' },
           { name: 'Get', value: 'get', action: 'Get a group', description: 'Fetch a group by UUID' },
+          { name: 'List', value: 'list', action: 'List groups', description: 'List all groups for the current team' },
+          { name: 'Sync Members', value: 'syncMembers', action: 'Sync group members', description: 'Replace the membership wholesale. Anyone left out is removed.' },
+          { name: 'Update', value: 'update', action: 'Update a group', description: 'Rename a group and replace its permissions' },
         ],
         default: 'list',
       },
@@ -1093,8 +1207,69 @@ export class Subscriby implements INodeType {
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['group'], operation: ['get'] } },
+        displayOptions: { show: { resource: ['group'], operation: ['get', 'update', 'delete', 'syncMembers'] } },
         description: 'UUID of the group',
+      },
+      {
+        displayName: 'Team ID',
+        name: 'groupTeamId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['group'], operation: ['create'] } },
+        description: 'UUID of the team the group belongs to',
+      },
+      {
+        displayName: 'Code',
+        name: 'groupCode',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['group'], operation: ['create'] } },
+        description: 'Stable identifier, letters/numbers/dashes. Unique per team and immutable once created.',
+      },
+      {
+        displayName: 'Name',
+        name: 'groupName',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['group'], operation: ['create'] } },
+        description: 'Human-readable group name',
+      },
+      {
+        displayName: 'Permissions',
+        name: 'groupPermissions',
+        type: 'string',
+        default: '',
+        displayOptions: { show: { resource: ['group'], operation: ['create'] } },
+        description: 'Comma-separated permission codes in entity:action form',
+      },
+      {
+        displayName: 'Update Fields',
+        name: 'groupUpdateFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['group'], operation: ['update'] } },
+        options: [
+          { displayName: 'Name', name: 'name', type: 'string', default: '', description: 'New group name' },
+          {
+            displayName: 'Permissions',
+            name: 'permissions',
+            type: 'string',
+            default: '',
+            description: 'Comma-separated permission codes. REPLACES the existing set — omit this field to leave permissions untouched.',
+          },
+        ],
+      },
+      {
+        displayName: 'Member User IDs',
+        name: 'groupMemberIds',
+        type: 'string',
+        default: '',
+        displayOptions: { show: { resource: ['group'], operation: ['syncMembers'] } },
+        description: 'Comma-separated user UUIDs the group should contain. This is a SYNC — anyone not listed is removed, and an empty value clears the group.',
       },
 
       // === ACTIVITY ===
@@ -2088,6 +2263,23 @@ async function dispatchTeam(
     return subscribyApiRequest.call(this, 'GET', `/teams/${teamId}`);
   }
 
+  if (operation === 'create') {
+    const name = this.getNodeParameter('teamName', i) as string;
+    return subscribyApiRequest.call(this, 'POST', '/teams', { name });
+  }
+
+  if (operation === 'update') {
+    const teamId = this.getNodeParameter('teamId', i) as string;
+    const name = this.getNodeParameter('teamName', i) as string;
+    return subscribyApiRequest.call(this, 'PATCH', `/teams/${teamId}`, { name });
+  }
+
+  if (operation === 'delete') {
+    const teamId = this.getNodeParameter('teamId', i) as string;
+    await subscribyApiRequest.call(this, 'DELETE', `/teams/${teamId}`);
+    return { data: { id: teamId, deleted: true } };
+  }
+
   throw new NodeOperationError(this.getNode(), `Unknown team operation: ${operation}`);
 }
 
@@ -2105,6 +2297,30 @@ async function dispatchTeamMember(
   if (operation === 'get') {
     const userId = this.getNodeParameter('userId', i) as string;
     return subscribyApiRequest.call(this, 'GET', `/teams/${teamId}/members/${userId}`);
+  }
+
+  if (operation === 'invite') {
+    const email = this.getNodeParameter('memberEmail', i) as string;
+    const role = this.getNodeParameter('memberRole', i) as string;
+    return subscribyApiRequest.call(this, 'POST', `/teams/${teamId}/members`, { email, role });
+  }
+
+  if (operation === 'updateRole') {
+    const userId = this.getNodeParameter('userId', i) as string;
+    const role = this.getNodeParameter('memberRole', i) as string;
+    return subscribyApiRequest.call(this, 'PATCH', `/teams/${teamId}/members/${userId}/role`, { role });
+  }
+
+  if (operation === 'remove') {
+    const userId = this.getNodeParameter('userId', i) as string;
+    await subscribyApiRequest.call(this, 'DELETE', `/teams/${teamId}/members/${userId}`);
+    return { data: { team_id: teamId, user_id: userId, removed: true } };
+  }
+
+  if (operation === 'cancelInvitation') {
+    const invitationId = this.getNodeParameter('invitationId', i) as string;
+    await subscribyApiRequest.call(this, 'DELETE', `/teams/${teamId}/invitations/${invitationId}`);
+    return { data: { team_id: teamId, invitation_id: invitationId, cancelled: true } };
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown team member operation: ${operation}`);
@@ -2125,6 +2341,44 @@ async function dispatchRole(
     return subscribyApiRequest.call(this, 'GET', `/roles/${roleId}`);
   }
 
+  if (operation === 'create') {
+    const body = compactBody({
+      team_id: this.getNodeParameter('roleTeamId', i) as string,
+      code: this.getNodeParameter('roleCode', i) as string,
+      name: this.getNodeParameter('roleName', i) as string,
+      description: this.getNodeParameter('roleDescription', i, '') as string,
+      permissions: splitCodes(this.getNodeParameter('rolePermissions', i, '') as string),
+    });
+
+    return subscribyApiRequest.call(this, 'POST', '/roles', body);
+  }
+
+  if (operation === 'update') {
+    const roleId = this.getNodeParameter('roleId', i) as string;
+    const fields = this.getNodeParameter('roleUpdateFields', i, {}) as IDataObject;
+
+    const body = compactBody({
+      name: fields.name,
+      description: fields.description,
+      /*
+       * Only sent when the field was filled in. An omitted key means "leave the
+       * set alone" server-side, so passing an empty array would strip every
+       * permission from the role instead.
+       */
+      permissions: typeof fields.permissions === 'string' && fields.permissions !== ''
+        ? splitCodes(fields.permissions)
+        : undefined,
+    });
+
+    return subscribyApiRequest.call(this, 'PATCH', `/roles/${roleId}`, body);
+  }
+
+  if (operation === 'delete') {
+    const roleId = this.getNodeParameter('roleId', i) as string;
+    await subscribyApiRequest.call(this, 'DELETE', `/roles/${roleId}`);
+    return { data: { id: roleId, deleted: true } };
+  }
+
   throw new NodeOperationError(this.getNode(), `Unknown role operation: ${operation}`);
 }
 
@@ -2141,6 +2395,50 @@ async function dispatchGroup(
   if (operation === 'get') {
     const groupId = this.getNodeParameter('groupId', i) as string;
     return subscribyApiRequest.call(this, 'GET', `/groups/${groupId}`);
+  }
+
+  if (operation === 'create') {
+    const body = compactBody({
+      team_id: this.getNodeParameter('groupTeamId', i) as string,
+      code: this.getNodeParameter('groupCode', i) as string,
+      name: this.getNodeParameter('groupName', i) as string,
+      permissions: splitCodes(this.getNodeParameter('groupPermissions', i, '') as string),
+    });
+
+    return subscribyApiRequest.call(this, 'POST', '/groups', body);
+  }
+
+  if (operation === 'update') {
+    const groupId = this.getNodeParameter('groupId', i) as string;
+    const fields = this.getNodeParameter('groupUpdateFields', i, {}) as IDataObject;
+
+    const body = compactBody({
+      name: fields.name,
+      permissions: typeof fields.permissions === 'string' && fields.permissions !== ''
+        ? splitCodes(fields.permissions)
+        : undefined,
+    });
+
+    return subscribyApiRequest.call(this, 'PATCH', `/groups/${groupId}`, body);
+  }
+
+  if (operation === 'delete') {
+    const groupId = this.getNodeParameter('groupId', i) as string;
+    await subscribyApiRequest.call(this, 'DELETE', `/groups/${groupId}`);
+    return { data: { id: groupId, deleted: true } };
+  }
+
+  if (operation === 'syncMembers') {
+    const groupId = this.getNodeParameter('groupId', i) as string;
+
+    /*
+     * Sent even when empty, unlike the permission fields above. Clearing a
+     * group is a legitimate request and the endpoint distinguishes "no members"
+     * from "field omitted".
+     */
+    const userIds = splitCodes(this.getNodeParameter('groupMemberIds', i, '') as string);
+
+    return subscribyApiRequest.call(this, 'PUT', `/groups/${groupId}/members`, { user_ids: userIds });
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown group operation: ${operation}`);

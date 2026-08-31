@@ -207,3 +207,23 @@ export function compactBody(body: IDataObject): IDataObject {
 
   return out;
 }
+
+/**
+ * Split a comma-separated field into a clean array of codes or IDs.
+ *
+ * n8n has no first-class list input outside a fixedCollection, so permission
+ * sets and member lists arrive as one comma-separated string. Whitespace around
+ * separators is normal when a value has been pasted or built by an expression,
+ * and an empty entry from a trailing comma would reach the API as `""` and fail
+ * validation for a mistake the user cannot see.
+ *
+ * Returns an empty array for an empty input rather than `undefined`; callers
+ * decide whether an empty list means "clear it" or "leave it alone", because
+ * those differ per endpoint.
+ */
+export function splitCodes(value: string): string[] {
+  return value
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter((entry) => entry.length > 0);
+}
