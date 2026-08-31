@@ -4,7 +4,7 @@
 
 Provides two nodes:
 
-- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, plans, projects, project resources, bot connectivity, billing, groups, roles, teams, team members, and member support conversations (102 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
+- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, plans, projects, project resources, bot connectivity, billing, groups, roles, teams, team members, and member support conversations (104 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
 - **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 20 resources across creator-facing surfaces (projects, plans, subscriptions, subscribers, members, support conversations, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, bot status, distribution links).
 
 ## Installation
@@ -35,7 +35,7 @@ Restart the n8n process after install.
 2. In n8n, **Credentials → New → Subscriby API** and paste the `sbt_...` token. Leave the base URL at the default unless you are self-hosting.
 3. Add a **Subscriby Trigger** node, pick one or more events, optionally scope to a single project, and activate the workflow. On activation n8n registers the endpoint with Subscriby. Deactivating the workflow deletes the endpoint.
 
-## Supported events (102)
+## Supported events (104)
 
 The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/event-reference). This table is generated from that file by `npm run sync:readme` — do not edit it by hand.
 
@@ -50,14 +50,14 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Coupon | 7 | `coupon.activated`, `coupon.created`, `coupon.deactivated`, `coupon.deleted`, `coupon.exhausted`, `coupon.redeemed`, `coupon.updated` |
 | Plan | 6 | `plan.activated`, `plan.created`, `plan.deactivated`, `plan.deleted`, `plan.sync_completed`, `plan.updated` |
 | Support | 6 | `support.conversation.assigned`, `support.conversation.opened`, `support.conversation.reopened`, `support.conversation.resolved`, `support.message.received`, `support.message.sent` |
+| Group | 4 | `group.created`, `group.deleted`, `group.members_synced`, `group.updated` |
 | Payment | 4 | `payment.failed`, `payment.pending`, `payment.refunded`, `payment.succeeded` |
 | Project Resource | 4 | `project.resource.created`, `project.resource.deleted`, `project.resource.linked`, `project.resource.unlinked` |
 | Team Member | 4 | `team.member.invited`, `team.member.joined`, `team.member.removed`, `team.member.role_changed` |
 | Access Code | 3 | `access_code.expired`, `access_code.generated`, `access_code.redeemed` |
-| Group | 3 | `group.created`, `group.deleted`, `group.updated` |
 | Role | 3 | `role.created`, `role.deleted`, `role.updated` |
-| Team | 2 | `team.created`, `team.deleted` |
-| **Total** | **102** | |
+| Team | 3 | `team.created`, `team.deleted`, `team.updated` |
+| **Total** | **104** | |
 
 ## Supported actions
 
