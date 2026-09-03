@@ -53,6 +53,7 @@ export class Subscriby implements INodeType {
           { name: 'Activity', value: 'activity' },
           { name: 'Analytics', value: 'analytics' },
           { name: 'Bot', value: 'bot' },
+          { name: 'Broadcast', value: 'broadcast' },
           { name: 'Distribution', value: 'distribution' },
           { name: 'Group', value: 'group' },
           { name: 'Member', value: 'member' },
@@ -189,6 +190,88 @@ export class Subscriby implements INodeType {
             default: 'scheduled',
           },
         ],
+      },
+
+
+      // === BROADCAST ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['broadcast'] } },
+        options: [
+          { name: 'List Audiences', value: 'listAudiences', action: 'List broadcast audiences', description: 'List every audience segment with its current recipient count' },
+          { name: 'Preview', value: 'preview', action: 'Preview a broadcast audience', description: 'Size an audience without sending anything' },
+          { name: 'Send', value: 'send', action: 'Send a broadcast', description: 'Queue a Telegram message to a segment of the project members' },
+        ],
+        default: 'preview',
+      },
+      {
+        displayName: 'Project ID',
+        name: 'projectId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['broadcast'] } },
+      },
+      {
+        displayName: 'Message',
+        name: 'broadcastMessage',
+        type: 'string',
+        typeOptions: { rows: 4 },
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['broadcast'], operation: ['send'] } },
+        description: 'Up to 4096 characters. Telegram HTML only (b, i, u, s, a, code, pre, blockquote, tg-spoiler); anything else is stripped before sending.',
+      },
+      {
+        displayName: 'Audience',
+        name: 'broadcastAudience',
+        type: 'options',
+        default: 'all',
+        displayOptions: { show: { resource: ['broadcast'], operation: ['send', 'preview'] } },
+        options: [
+          { name: 'All Active Pass Holders', value: 'all_pass_holders' },
+          { name: 'All Active Pass Holders Not in Queue', value: 'all_pass_holders_not_in_queue' },
+          { name: 'All Users', value: 'all' },
+          { name: 'Cancelled, Still Inside Their Period', value: 'cancelled_still_active' },
+          { name: 'Churned Users', value: 'churned' },
+          { name: 'Customers Only', value: 'customer' },
+          { name: 'Expiring Soon', value: 'expiring_soon' },
+          { name: 'Leads', value: 'lead' },
+          { name: 'Pass Holders (One Window)', value: 'pass_holders' },
+          { name: 'Pass Holders Not in Queue (One Window)', value: 'pass_holders_not_in_queue' },
+          { name: 'Paused Subscriptions', value: 'paused' },
+          { name: 'Trialing Users', value: 'trialing' },
+          { name: 'Trialing Without a Card', value: 'trialing_cardless' },
+        ],
+        description: 'Which members to address. The two single-window segments also need a Pass Window ID. Expiring Soon reads the Running Out Within field.',
+      },
+      {
+        displayName: 'Pass Window ID',
+        name: 'broadcastPassWindowId',
+        type: 'string',
+        default: '',
+        displayOptions: { show: { resource: ['broadcast'], operation: ['send', 'preview'] } },
+        description: 'Required only for the two single-window pass segments. Ignored by every other audience.',
+      },
+      {
+        displayName: 'Plan ID',
+        name: 'broadcastPlanId',
+        type: 'string',
+        default: '',
+        displayOptions: { show: { resource: ['broadcast'], operation: ['send', 'preview'] } },
+        description: 'Optional. Narrows the audience to one plan rather than replacing it — Customers plus a plan reaches people paying for it right now, Churned plus a plan reaches people who held it and left. Rejected for Leads and for the pass segments.',
+      },
+      {
+        displayName: 'Running Out Within (Days)',
+        name: 'broadcastExpiringWithinDays',
+        type: 'number',
+        default: 7,
+        typeOptions: { minValue: 1, maxValue: 90 },
+        displayOptions: { show: { resource: ['broadcast'], operation: ['send', 'preview'], broadcastAudience: ['expiring_soon'] } },
+        description: 'How far ahead the Expiring Soon audience looks. Members are counted only if their access genuinely lapses: a subscription that renews by itself is not expiring, so someone appears only once they have turned renewal off.',
       },
 
       // === PLAN ===
@@ -507,6 +590,9 @@ export class Subscriby implements INodeType {
           { name: 'Cancel', value: 'cancel', action: 'Cancel a subscription', description: 'Cancel a subscription immediately or at period end' },
           { name: 'Get', value: 'get', action: 'Get a subscription', description: 'Fetch a subscription by UUID' },
           { name: 'List', value: 'list', action: 'List subscriptions', description: 'List subscriptions filtered by status or plan' },
+          { name: 'Pause Access', value: 'pause', action: 'Pause subscription access', description: 'Suspend the member resource access. Billing is unaffected and continues on schedule.' },
+          { name: 'Reactivate', value: 'reactivate', action: 'Reactivate a subscription', description: 'Call off a scheduled cancellation. Stripe only; other providers end the agreement outright.' },
+          { name: 'Unpause Access', value: 'unpause', action: 'Unpause subscription access', description: 'Restore suspended access and issue fresh invite links' },
         ],
         default: 'cancel',
       },
@@ -516,7 +602,12 @@ export class Subscriby implements INodeType {
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['subscription'], operation: ['cancel', 'get'] } },
+        displayOptions: {
+          show: {
+            resource: ['subscription'],
+            operation: ['cancel', 'get', 'pause', 'unpause', 'reactivate'],
+          },
+        },
       },
       {
         displayName: 'Filters',
@@ -1503,6 +1594,8 @@ async function dispatch(
       return dispatchPassWindow.call(this, operation, i);
     case 'plan':
       return dispatchPlan.call(this, operation, i);
+    case 'broadcast':
+      return dispatchBroadcast.call(this, operation, i);
     case 'subscription':
       return dispatchSubscription.call(this, operation, i);
     case 'member':
@@ -1802,6 +1895,16 @@ async function dispatchSubscription(
   operation: string,
   i: number,
 ): Promise<IDataObject> {
+  if (operation === 'pause' || operation === 'unpause' || operation === 'reactivate') {
+    const subscriptionId = this.getNodeParameter('subscriptionId', i) as string;
+
+    return subscribyApiRequest.call(
+      this,
+      'POST',
+      `/subscriptions/${subscriptionId}/${operation}`,
+    );
+  }
+
   if (operation === 'list') {
     const filters = this.getNodeParameter('subscriptionListFilters', i, {}) as IDataObject;
     const qs: IDataObject = {};
@@ -2466,6 +2569,67 @@ async function dispatchActivity(
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown activity operation: ${operation}`);
+}
+
+async function dispatchBroadcast(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  const projectId = this.getNodeParameter('projectId', i) as string;
+
+  if (operation === 'listAudiences') {
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/broadcasts/audiences`);
+  }
+
+  const audience = this.getNodeParameter('broadcastAudience', i, 'all') as string;
+  const passWindowId = this.getNodeParameter('broadcastPassWindowId', i, '') as string;
+  const planId = this.getNodeParameter('broadcastPlanId', i, '') as string;
+
+  /*
+   * Only sent for the one segment that reads it. The field is hidden for every
+   * other audience, so its default would otherwise travel on every request and
+   * appear in the echoed response as a filter the user never set.
+   */
+  const expiringWithinDays =
+    audience === 'expiring_soon'
+      ? (this.getNodeParameter('broadcastExpiringWithinDays', i, 7) as number)
+      : null;
+
+  if (operation === 'preview') {
+    const query: IDataObject = { audience };
+
+    if (passWindowId) {
+      query.pass_window_id = passWindowId;
+    }
+
+    if (planId) {
+      query.plan_id = planId;
+    }
+
+    if (expiringWithinDays !== null) {
+      query.expiring_within_days = expiringWithinDays;
+    }
+
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/broadcasts/preview`, undefined, query);
+  }
+
+  if (operation === 'send') {
+    /*
+     * The send is queued, so the response describes what was addressed rather
+     * than what was delivered. Watch the Broadcast Completed trigger for the
+     * sent and failed tallies.
+     */
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/broadcasts`, {
+      message: this.getNodeParameter('broadcastMessage', i) as string,
+      audience,
+      pass_window_id: passWindowId || null,
+      plan_id: planId || null,
+      expiring_within_days: expiringWithinDays,
+    });
+  }
+
+  throw new NodeOperationError(this.getNode(), `Unknown broadcast operation: ${operation}`);
 }
 
 async function dispatchBot(

@@ -1,70 +1,70 @@
 {
-	"name": "n8n-nodes-subscriby",
-	"version": "2.1.0",
-	"description": "n8n community node for Subscriby — monetise Telegram communities via subscriptions, access codes, and webhook events.",
-	"keywords": [
-		"n8n-community-node",
-		"n8n-community-node-package",
-		"subscriby",
-		"telegram",
-		"subscription",
-		"membership"
-	],
-	"license": "MIT",
-	"homepage": "https://docs.subscriby.net/integrations/n8n",
-	"author": {
-		"name": "Envigo Innovations",
-		"email": "support@subscriby.net",
-		"url": "https://www.subscriby.net"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/envigoinnovations/subscriby-n8n.git"
-	},
-	"bugs": {
-		"url": "https://github.com/envigoinnovations/subscriby-n8n/issues"
-	},
-	"publishConfig": {
-		"access": "public"
-	},
-	"scripts": {
-		"clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
-		"build": "npm run clean && tsc && gulp build:icons",
-		"dev": "tsc --watch",
-		"format": "prettier nodes credentials --write",
-		"lint": "n8n-node lint",
-		"lintfix": "n8n-node lint --fix",
-		"prepublishOnly": "npm run build",
-		"release": "n8n-node release",
-		"sync:readme": "node scripts/sync-readme-events.js"
-	},
-	"files": [
-		"dist"
-	],
-	"n8n": {
-		"n8nNodesApiVersion": 1,
-		"strict": true,
-		"credentials": [
-			"dist/credentials/SubscribyApi.credentials.js"
-		],
-		"nodes": [
-			"dist/nodes/Subscriby/Subscriby.node.js",
-			"dist/nodes/SubscribyTrigger/SubscribyTrigger.node.js"
-		]
-	},
-	"devDependencies": {
-		"@eslint/eslintrc": "^3.0.0",
-		"@n8n/node-cli": "0.44.0",
-		"@types/node": "^22.9.0",
-		"@typescript-eslint/parser": "^8.18.0",
-		"eslint": "^9.0.0",
-		"eslint-plugin-n8n-nodes-base": "^1.16.3",
-		"gulp": "^5.0.0",
-		"n8n-workflow": "^1.75.0",
-		"prettier": "^3.4.2",
-		"typescript": "^5.7.2"
-	},
-	"peerDependencies": {
-		"n8n-workflow": "*"
-	}
+  "name": "n8n-nodes-subscriby",
+  "version": "2.3.0",
+  "description": "n8n community node for Subscriby — monetise Telegram communities via subscriptions, access codes, and webhook events.",
+  "keywords": [
+    "n8n-community-node",
+    "n8n-community-node-package",
+    "subscriby",
+    "telegram",
+    "subscription",
+    "membership"
+  ],
+  "license": "MIT",
+  "homepage": "https://docs.subscriby.net/integrations/n8n",
+  "author": {
+    "name": "Envigo Innovations",
+    "email": "support@subscriby.net",
+    "url": "https://www.subscriby.net"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/envigoinnovations/subscriby-n8n.git"
+  },
+  "bugs": {
+    "url": "https://github.com/envigoinnovations/subscriby-n8n/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "build": "npm run clean && tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "format": "prettier nodes credentials --write",
+    "lint": "n8n-node lint",
+    "lintfix": "n8n-node lint --fix",
+    "prepublishOnly": "npm run build",
+    "release": "n8n-node release",
+    "sync:readme": "node scripts/sync-readme-events.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "strict": true,
+    "credentials": [
+      "dist/credentials/SubscribyApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Subscriby/Subscriby.node.js",
+      "dist/nodes/SubscribyTrigger/SubscribyTrigger.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.0.0",
+    "@n8n/node-cli": "0.44.0",
+    "@types/node": "^22.9.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "eslint": "^9.0.0",
+    "eslint-plugin-n8n-nodes-base": "^1.16.3",
+    "gulp": "^5.0.0",
+    "n8n-workflow": "^1.75.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
 }
