@@ -5,7 +5,7 @@
 Provides two nodes:
 
 - **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, plans, projects, project resources, bot connectivity, billing, groups, roles, teams, team members, member support conversations, and message broadcasts (106 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
-- **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 20 resources across creator-facing surfaces (projects, plans, subscriptions, subscribers, members, support conversations, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, bot status, distribution links).
+- **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 22 resources across creator-facing surfaces (projects, plans, pass windows, subscriptions, subscribers, members, broadcasts, support conversations, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, bot status, distribution links).
 
 ## Installation
 
