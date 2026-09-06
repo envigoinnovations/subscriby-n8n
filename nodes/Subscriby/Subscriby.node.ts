@@ -1362,7 +1362,7 @@ export class Subscriby implements INodeType {
         displayOptions: { show: { resource: ['webhookEndpoint'], operation: ['create'] } },
         options: [
           { displayName: 'Project ID', name: 'project_id', type: 'string', default: '', description: 'Restrict deliveries to a single project' },
-          { displayName: 'Allowed IPs', name: 'allowed_ips', type: 'string', default: '', description: 'Comma-separated list of IP addresses permitted to receive deliveries' },
+          { displayName: 'Allowed IPs', name: 'allowed_ips', type: 'string', default: '', description: 'Comma-separated list of IP addresses or CIDR ranges the endpoint host may resolve to; a delivery whose host resolves outside the list is dead-lettered without being posted' },
           { displayName: 'Is Active', name: 'is_active', type: 'boolean', default: true },
         ],
       },
