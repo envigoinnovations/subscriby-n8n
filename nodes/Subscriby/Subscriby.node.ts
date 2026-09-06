@@ -54,6 +54,8 @@ export class Subscriby implements INodeType {
           { name: 'Analytics', value: 'analytics' },
           { name: 'Bot', value: 'bot' },
           { name: 'Broadcast', value: 'broadcast' },
+          { name: 'Canned Reply', value: 'cannedReply' },
+          { name: 'Coupon', value: 'coupon' },
           { name: 'Distribution', value: 'distribution' },
           { name: 'Group', value: 'group' },
           { name: 'Member', value: 'member' },
@@ -66,6 +68,7 @@ export class Subscriby implements INodeType {
           { name: 'Subscriber', value: 'subscriber' },
           { name: 'Subscription', value: 'subscription' },
           { name: 'Support Conversation', value: 'supportConversation' },
+          { name: 'Support Inbox', value: 'supportSettings' },
           { name: 'Team', value: 'team' },
           { name: 'Team Member', value: 'teamMember' },
           { name: 'Token', value: 'token' },
@@ -153,7 +156,11 @@ export class Subscriby implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['passWindow'] } },
         options: [
+          { name: 'Cancel', value: 'cancel', action: 'Cancel a pass window', description: 'Cancel a window before it opens; holders are moved to the next window or marked for refund' },
+          { name: 'Create', value: 'create', action: 'Create a pass window', description: "Add one dated window to a pass plan's schedule" },
+          { name: 'Get', value: 'get', action: 'Get a pass window', description: 'Fetch one window by UUID, with its holder count and whether it is still on sale' },
           { name: 'List', value: 'list', action: 'List pass windows', description: "List the dated access windows a project's pass plans generate, with their IDs" },
+          { name: 'Remind Queue', value: 'remindQueue', action: 'Remind the pass window queue', description: 'Nudge every holder of the window who has not joined yet' },
         ],
         default: 'list',
       },
@@ -164,6 +171,43 @@ export class Subscriby implements INodeType {
         default: '',
         required: true,
         displayOptions: { show: { resource: ['passWindow'] } },
+      },
+      {
+        displayName: 'Window ID',
+        name: 'windowId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['passWindow'], operation: ['get', 'cancel', 'remindQueue'] } },
+        description: 'UUID of the pass window',
+      },
+      {
+        displayName: 'Pass Plan ID',
+        name: 'planId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['passWindow'], operation: ['create'] } },
+        description: 'UUID of the time-limited pass plan the window belongs to',
+      },
+      {
+        displayName: 'Starts At',
+        name: 'startsAt',
+        type: 'dateTime',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['passWindow'], operation: ['create'] } },
+        description: "When the window opens. Must be in the future. A value without a UTC offset is read in the plan's pass timezone.",
+      },
+      {
+        displayName: 'Duration (Minutes)',
+        name: 'durationMinutes',
+        type: 'number',
+        typeOptions: { minValue: 1 },
+        default: 60,
+        required: true,
+        displayOptions: { show: { resource: ['passWindow'], operation: ['create'] } },
+        description: 'How long the window stays open, in minutes',
       },
       {
         displayName: 'Filters',
@@ -288,6 +332,7 @@ export class Subscriby implements INodeType {
           { name: 'Get', value: 'get', action: 'Get a plan', description: 'Fetch a plan by UUID' },
           { name: 'List', value: 'list', action: 'List plans', description: 'List all plans under a project' },
           { name: 'Publish', value: 'publish', action: 'Publish a plan', description: 'Make a plan publicly purchasable' },
+          { name: 'Start Next Season', value: 'startNextSeason', action: 'Start the next season of a pass series', description: 'Create the successor of a pass series plan, carrying its rules onto the next run of windows' },
           { name: 'Unpublish', value: 'unpublish', action: 'Unpublish a plan', description: 'Hide a plan from purchase' },
           { name: 'Update', value: 'update', action: 'Update a plan', description: 'Update plan attributes' },
         ],
@@ -307,7 +352,7 @@ export class Subscriby implements INodeType {
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['plan'], operation: ['update', 'publish', 'unpublish', 'get', 'delete'] } },
+        displayOptions: { show: { resource: ['plan'], operation: ['update', 'publish', 'unpublish', 'get', 'delete', 'startNextSeason'] } },
       },
       {
         displayName: 'Plan Name',
@@ -592,6 +637,7 @@ export class Subscriby implements INodeType {
           { name: 'List', value: 'list', action: 'List subscriptions', description: 'List subscriptions filtered by status or plan' },
           { name: 'Pause Access', value: 'pause', action: 'Pause subscription access', description: 'Suspend the member resource access. Billing is unaffected and continues on schedule.' },
           { name: 'Reactivate', value: 'reactivate', action: 'Reactivate a subscription', description: 'Call off a scheduled cancellation. Stripe only; other providers end the agreement outright.' },
+          { name: 'Remind Pass Holder', value: 'remind', action: 'Remind a pass holder', description: 'Nudge a pass holder who has not joined their window yet. Returns whether anything was sent.' },
           { name: 'Unpause Access', value: 'unpause', action: 'Unpause subscription access', description: 'Restore suspended access and issue fresh invite links' },
         ],
         default: 'cancel',
@@ -605,7 +651,7 @@ export class Subscriby implements INodeType {
         displayOptions: {
           show: {
             resource: ['subscription'],
-            operation: ['cancel', 'get', 'pause', 'unpause', 'reactivate'],
+            operation: ['cancel', 'get', 'pause', 'unpause', 'reactivate', 'remind'],
           },
         },
       },
@@ -695,11 +741,14 @@ export class Subscriby implements INodeType {
         displayOptions: { show: { resource: ['supportConversation'] } },
         options: [
           { name: 'Assign', value: 'assign', action: 'Assign a support conversation', description: 'Hand the conversation to a team member, or clear the assignment' },
+          { name: 'Block Contact', value: 'block', action: 'Block a support contact', description: 'Stop the member from reaching the inbox; their messages are dropped until unblocked' },
           { name: 'Get', value: 'get', action: 'Get a support conversation', description: 'Fetch one conversation by UUID' },
           { name: 'List', value: 'list', action: 'List support conversations', description: 'List conversations, newest activity first' },
           { name: 'List Messages', value: 'listMessages', action: 'List support messages', description: 'Fetch the messages in a conversation, oldest first' },
+          { name: 'Reopen', value: 'reopen', action: 'Reopen a support conversation', description: 'Put a resolved conversation back in the open queue' },
           { name: 'Reply', value: 'reply', action: 'Reply to a support conversation', description: 'Send a reply the member receives on Telegram' },
           { name: 'Resolve', value: 'resolve', action: 'Resolve a support conversation', description: 'Clear the conversation from the open queue' },
+          { name: 'Unblock Contact', value: 'unblock', action: 'Unblock a support contact', description: 'Let a blocked member reach the inbox again' },
         ],
         default: 'list',
       },
@@ -709,7 +758,7 @@ export class Subscriby implements INodeType {
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['supportConversation'], operation: ['get', 'listMessages', 'reply', 'resolve', 'assign'] } },
+        displayOptions: { show: { resource: ['supportConversation'], operation: ['get', 'listMessages', 'reply', 'resolve', 'assign', 'reopen', 'block', 'unblock'] } },
       },
       {
         displayName: 'Reply',
@@ -763,6 +812,132 @@ export class Subscriby implements INodeType {
             { name: 'Resolved', value: 'resolved' },
             { name: 'Snoozed', value: 'snoozed' },
           ], description: 'Filter by conversation status' },
+        ],
+      },
+
+      // === CANNED REPLY ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['cannedReply'] } },
+        options: [
+          { name: 'Create', value: 'create', action: 'Create a canned reply', description: "Save a reply snippet to the project's support picker" },
+          { name: 'Delete', value: 'delete', action: 'Delete a canned reply', description: 'Remove a saved reply. Replies already sent with it are untouched.' },
+          { name: 'Get', value: 'get', action: 'Get a canned reply', description: 'Fetch one saved reply by UUID' },
+          { name: 'List', value: 'list', action: 'List canned replies', description: "List the saved replies in a project's support picker" },
+          { name: 'Update', value: 'update', action: 'Update a canned reply', description: 'Change a saved reply. Fields you leave out keep their stored values.' },
+        ],
+        default: 'list',
+      },
+      {
+        displayName: 'Project ID',
+        name: 'projectId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['cannedReply'] } },
+      },
+      {
+        displayName: 'Canned Reply ID',
+        name: 'cannedReplyId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['cannedReply'], operation: ['get', 'update', 'delete'] } },
+        description: 'UUID of the saved reply',
+      },
+      {
+        displayName: 'Title',
+        name: 'title',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['cannedReply'], operation: ['create'] } },
+        description: 'The label shown in the picker, 2-80 characters',
+      },
+      {
+        displayName: 'Body',
+        name: 'body',
+        type: 'string',
+        typeOptions: { rows: 4 },
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['cannedReply'], operation: ['create'] } },
+        description: 'The text inserted when the reply is picked, 2-4000 characters',
+      },
+      {
+        displayName: 'Additional Fields',
+        name: 'cannedReplyFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['cannedReply'], operation: ['create'] } },
+        options: [
+          { displayName: 'Shortcut', name: 'shortcut', type: 'string', default: '', description: 'A keyword agents type to pick the reply. Letters, numbers, dashes and underscores, up to 30 characters, unique within the project.' },
+          { displayName: 'Sort Order', name: 'sort_order', type: 'number', typeOptions: { minValue: 0, maxValue: 999 }, default: 0, description: 'Position in the picker; lower comes first' },
+        ],
+      },
+      {
+        displayName: 'Update Fields',
+        name: 'cannedReplyUpdateFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['cannedReply'], operation: ['update'] } },
+        options: [
+          { displayName: 'Body', name: 'body', type: 'string', typeOptions: { rows: 4 }, default: '', description: 'The text inserted when the reply is picked, 2-4000 characters' },
+          { displayName: 'Shortcut', name: 'shortcut', type: 'string', default: '', description: 'A keyword agents type to pick the reply. Letters, numbers, dashes and underscores, up to 30 characters, unique within the project. Empty clears it.' },
+          { displayName: 'Sort Order', name: 'sort_order', type: 'number', typeOptions: { minValue: 0, maxValue: 999 }, default: 0, description: 'Position in the picker; lower comes first' },
+          { displayName: 'Title', name: 'title', type: 'string', default: '', description: 'The label shown in the picker, 2-80 characters' },
+        ],
+      },
+
+      // === SUPPORT SETTINGS ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['supportSettings'] } },
+        options: [
+          { name: 'Get Settings', value: 'get', action: 'Get support inbox settings', description: "Read a project's support inbox settings" },
+          { name: 'Update Settings', value: 'update', action: 'Update support inbox settings', description: "Change a project's support inbox settings. Fields you leave out keep their stored values." },
+        ],
+        default: 'get',
+      },
+      {
+        displayName: 'Project ID',
+        name: 'projectId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['supportSettings'] } },
+      },
+      {
+        displayName: 'Update Fields',
+        name: 'supportSettingsFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['supportSettings'], operation: ['update'] } },
+        options: [
+          { displayName: 'Agent Name', name: 'agent_name', type: 'string', default: '', description: 'The name members see on replies, up to 60 characters. Empty falls back to the project name.' },
+          { displayName: 'Auto Reply', name: 'auto_reply', type: 'string', typeOptions: { rows: 3 }, default: '', description: 'Sent automatically when a member opens a thread, up to 1000 characters. Empty sends nothing.' },
+          { displayName: 'Enabled', name: 'enabled', type: 'boolean', default: true, description: 'Whether members can open support threads with the bot' },
+          { displayName: 'Notify by Email', name: 'notify_email', type: 'boolean', default: true, description: 'Whether the creator is emailed about new threads' },
+          {
+            displayName: 'Relay Mode',
+            name: 'relay_mode',
+            type: 'options',
+            options: [
+              { name: 'Inbox Only', value: 'none', description: 'New threads stay in the dashboard inbox' },
+              { name: 'Owner DM', value: 'owner_dm', description: 'New threads are also forwarded to the creator on Telegram' },
+            ],
+            default: 'none',
+            description: 'Where new threads go besides the dashboard inbox',
+          },
         ],
       },
 
@@ -868,6 +1043,145 @@ export class Subscriby implements INodeType {
         ],
       },
 
+      // === COUPON ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['coupon'] } },
+        options: [
+          { name: 'Activate', value: 'activate', action: 'Activate a coupon', description: 'Switch a code back on so subscribers can redeem it' },
+          { name: 'Create', value: 'create', action: 'Create a coupon', description: 'Issue a discount code any number of subscribers can redeem for money off their first payment' },
+          { name: 'Deactivate', value: 'deactivate', action: 'Deactivate a coupon', description: 'Retire a code safely: new redemptions stop, recorded ones are kept' },
+          { name: 'Delete', value: 'delete', action: 'Delete a coupon', description: 'Remove a code and its redemption history. Refused while a checkout still holds it.' },
+          { name: 'Get', value: 'get', action: 'Get a coupon', description: 'Fetch a coupon by UUID' },
+          { name: 'List', value: 'list', action: 'List coupons', description: "List a project's coupons, optionally narrowed by switch state or exact code" },
+          { name: 'Update', value: 'update', action: 'Update a coupon', description: 'Change a coupon. Fields you leave out keep their stored values.' },
+        ],
+        default: 'list',
+      },
+      {
+        displayName: 'Project ID',
+        name: 'projectId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['coupon'] } },
+      },
+      {
+        displayName: 'Coupon ID',
+        name: 'couponId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['coupon'], operation: ['get', 'update', 'delete', 'activate', 'deactivate'] } },
+        description: 'UUID of the coupon',
+      },
+      {
+        displayName: 'Code',
+        name: 'code',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['coupon'], operation: ['create'] } },
+        description: 'What subscribers type at checkout. Letters, numbers and dashes, 3-64 characters. Stored uppercase.',
+      },
+      {
+        displayName: 'Name',
+        name: 'name',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['coupon'], operation: ['create'] } },
+        description: 'Internal label to tell your codes apart, 3-255 characters',
+      },
+      {
+        displayName: 'Discount Type',
+        name: 'discountType',
+        type: 'options',
+        options: [
+          { name: 'Fixed Amount', value: 'fixed', description: 'An amount off in one currency; only applies to plans priced in it' },
+          { name: 'Percentage', value: 'percentage', description: 'A percentage off; works on plans in any currency' },
+        ],
+        default: 'percentage',
+        required: true,
+        displayOptions: { show: { resource: ['coupon'], operation: ['create'] } },
+      },
+      {
+        displayName: 'Discount Value',
+        name: 'discountValue',
+        type: 'number',
+        typeOptions: { numberPrecision: 2 },
+        default: 10,
+        required: true,
+        displayOptions: { show: { resource: ['coupon'], operation: ['create'] } },
+        description: 'For a percentage, 1-99. For a fixed amount, a value above zero in the chosen currency.',
+      },
+      {
+        displayName: 'Additional Fields',
+        name: 'couponFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['coupon'], operation: ['create'] } },
+        options: [
+          { displayName: 'Active', name: 'active', type: 'boolean', default: true, description: 'Whether the code is usable right away' },
+          { displayName: 'Currency ID', name: 'currency_id', type: 'string', default: '', description: 'Currency UUID. Required for a fixed amount, ignored for a percentage.' },
+          { displayName: 'Expires At', name: 'expires_at', type: 'dateTime', default: '', description: 'When the code stops working. Empty for no end date.' },
+          { displayName: 'Max Redemptions', name: 'max_redemptions', type: 'number', typeOptions: { minValue: 1 }, default: 100, description: 'Total uses allowed across everyone. Leave the field out for unlimited.' },
+          { displayName: 'Max Redemptions Per User', name: 'max_redemptions_per_user', type: 'number', typeOptions: { minValue: 1 }, default: 1, description: 'How many times one subscriber may use the code' },
+          { displayName: 'Minimum Amount', name: 'minimum_amount', type: 'number', typeOptions: { numberPrecision: 2 }, default: 0, description: "Only apply the code when the plan costs at least this much, in the plan's own currency" },
+          { displayName: 'Plan IDs', name: 'plan_ids', type: 'string', default: '', description: 'Comma-separated plan UUIDs to restrict the code to. Empty covers every plan in the project, including ones added later.' },
+          { displayName: 'Starts At', name: 'starts_at', type: 'dateTime', default: '', description: 'When the code becomes usable. Empty starts immediately.' },
+        ],
+      },
+      {
+        displayName: 'Update Fields',
+        name: 'couponUpdateFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['coupon'], operation: ['update'] } },
+        options: [
+          { displayName: 'Active', name: 'active', type: 'boolean', default: true, description: 'Whether the code is usable' },
+          { displayName: 'Code', name: 'code', type: 'string', default: '', description: 'Letters, numbers and dashes, 3-64 characters. Stored uppercase.' },
+          { displayName: 'Currency ID', name: 'currency_id', type: 'string', default: '', description: 'Currency UUID. Required for a fixed amount, ignored for a percentage.' },
+          {
+            displayName: 'Discount Type',
+            name: 'discount_type',
+            type: 'options',
+            options: [
+              { name: 'Fixed Amount', value: 'fixed' },
+              { name: 'Percentage', value: 'percentage' },
+            ],
+            default: 'percentage',
+          },
+          { displayName: 'Discount Value', name: 'discount_value', type: 'number', typeOptions: { numberPrecision: 2 }, default: 10, description: 'For a percentage, 1-99. For a fixed amount, a value above zero.' },
+          { displayName: 'Expires At', name: 'expires_at', type: 'dateTime', default: '', description: 'Empty removes the end date' },
+          { displayName: 'Max Redemptions', name: 'max_redemptions', type: 'number', typeOptions: { minValue: 1 }, default: 100, description: 'Raising it on an exhausted code makes it redeemable again' },
+          { displayName: 'Max Redemptions Per User', name: 'max_redemptions_per_user', type: 'number', typeOptions: { minValue: 1 }, default: 1 },
+          { displayName: 'Minimum Amount', name: 'minimum_amount', type: 'number', typeOptions: { numberPrecision: 2 }, default: 0 },
+          { displayName: 'Name', name: 'name', type: 'string', default: '', description: 'Internal label, 3-255 characters' },
+          { displayName: 'Plan IDs', name: 'plan_ids', type: 'string', default: '', description: 'Comma-separated plan UUIDs. Empty covers every plan in the project.' },
+          { displayName: 'Starts At', name: 'starts_at', type: 'dateTime', default: '' },
+        ],
+      },
+      {
+        displayName: 'Filters',
+        name: 'couponListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['coupon'], operation: ['list'] } },
+        options: [
+          { displayName: 'Active', name: 'active', type: 'boolean', default: true, description: 'Whether to return only codes that are switched on (or, when off, only codes that are switched off)' },
+          { displayName: 'Code', name: 'code', type: 'string', default: '', description: 'Exact code to look up' },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+        ],
+      },
+
       // === RESOURCE ===
       {
         displayName: 'Operation',
@@ -876,11 +1190,14 @@ export class Subscriby implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['resource'] } },
         options: [
+          { name: 'Activate', value: 'activate', action: 'Activate a resource', description: 'Switch a resource back on so it is delivered to members' },
           { name: 'Create', value: 'create', action: 'Create a resource', description: 'Attach an external deliverable to a project' },
+          { name: 'Deactivate', value: 'deactivate', action: 'Deactivate a resource', description: 'Switch a resource off without deleting it; new members stop receiving it' },
           { name: 'Delete', value: 'delete', action: 'Delete a resource', description: 'Permanently delete a resource' },
           { name: 'Get', value: 'get', action: 'Get a resource', description: 'Fetch a resource by UUID' },
           { name: 'List', value: 'list', action: 'List resources', description: 'List all resources attached to a project' },
           { name: 'Unlink', value: 'unlink', action: 'Unlink a resource', description: 'Detach a resource from delivery without deleting it' },
+          { name: 'Update', value: 'update', action: 'Update a resource', description: 'Change the title, description or switch. Fields you leave out keep their stored values.' },
         ],
         default: 'create',
       },
@@ -898,7 +1215,7 @@ export class Subscriby implements INodeType {
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['resource'], operation: ['get', 'unlink', 'delete'] } },
+        displayOptions: { show: { resource: ['resource'], operation: ['get', 'unlink', 'delete', 'update', 'activate', 'deactivate'] } },
         description: 'UUID of the resource',
       },
       {
@@ -932,6 +1249,20 @@ export class Subscriby implements INodeType {
         description: 'Chat ID, channel username, or URL — depending on the resource type',
       },
 
+      {
+        displayName: 'Update Fields',
+        name: 'resourceUpdateFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['resource'], operation: ['update'] } },
+        options: [
+          { displayName: 'Active', name: 'active', type: 'boolean', default: true, description: 'Whether the resource is delivered to members' },
+          { displayName: 'Description', name: 'description', type: 'string', typeOptions: { rows: 3 }, default: '', description: 'Up to 1000 characters of well-formed HTML. Leave the field out to keep the stored description.' },
+          { displayName: 'Title', name: 'title', type: 'string', default: '', description: '5-255 characters' },
+        ],
+      },
+
       // === PAYMENT METHOD ===
       {
         displayName: 'Operation',
@@ -940,8 +1271,12 @@ export class Subscriby implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['paymentMethod'] } },
         options: [
-          { name: 'List', value: 'list', action: 'List payment methods', description: 'List all payment methods for a project' },
+          { name: 'Activate', value: 'activate', action: 'Activate a payment method', description: 'Offer the gateway at checkout again. A Stripe method whose Connect onboarding never finished is refused.' },
+          { name: 'Deactivate', value: 'deactivate', action: 'Deactivate a payment method', description: 'Stop offering the gateway at checkout; existing subscriptions keep billing' },
+          { name: 'Delete', value: 'delete', action: 'Delete a payment method', description: 'Remove the gateway from the project' },
           { name: 'Get', value: 'get', action: 'Get a payment method', description: 'Fetch a payment method by UUID' },
+          { name: 'List', value: 'list', action: 'List payment methods', description: 'List all payment methods for a project' },
+          { name: 'Sync Plans', value: 'sync', action: 'Sync plans to a payment method', description: "Queue a re-sync of the project's plans to the gateway. Answers 202 once the job is queued." },
         ],
         default: 'list',
       },
@@ -959,7 +1294,7 @@ export class Subscriby implements INodeType {
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['paymentMethod'], operation: ['get'] } },
+        displayOptions: { show: { resource: ['paymentMethod'], operation: ['get', 'activate', 'deactivate', 'sync', 'delete'] } },
         description: 'UUID of the payment method',
       },
 
@@ -973,7 +1308,10 @@ export class Subscriby implements INodeType {
         options: [
           { name: 'Create', value: 'create', action: 'Create a webhook endpoint', description: 'Register a new webhook endpoint' },
           { name: 'Delete', value: 'delete', action: 'Delete a webhook endpoint', description: 'Remove a webhook endpoint' },
+          { name: 'Get', value: 'get', action: 'Get a webhook endpoint', description: 'Fetch one webhook endpoint by UUID' },
           { name: 'List', value: 'list', action: 'List webhook endpoints', description: 'List all webhook endpoints for the current team' },
+          { name: 'Pause', value: 'pause', action: 'Pause a webhook endpoint', description: 'Stop deliveries to the endpoint without deleting it' },
+          { name: 'Resume', value: 'resume', action: 'Resume a webhook endpoint', description: 'Restart deliveries to a paused endpoint' },
           { name: 'Rotate Secret', value: 'rotateSecret', action: 'Rotate the signing secret', description: 'Rotate the HMAC signing secret for a webhook endpoint' },
           { name: 'Test', value: 'test', action: 'Send a test delivery', description: 'Trigger a test delivery from Subscriby to the endpoint' },
         ],
@@ -985,7 +1323,7 @@ export class Subscriby implements INodeType {
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['webhookEndpoint'], operation: ['delete', 'rotateSecret', 'test'] } },
+        displayOptions: { show: { resource: ['webhookEndpoint'], operation: ['delete', 'rotateSecret', 'test', 'get', 'pause', 'resume'] } },
         description: 'UUID of the webhook endpoint',
       },
       {
@@ -1037,29 +1375,53 @@ export class Subscriby implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['webhookDelivery'] } },
         options: [
-          { name: 'List', value: 'list', action: 'List webhook deliveries', description: 'List recent webhook event deliveries by event type' },
+          { name: 'Get', value: 'get', action: 'Get a webhook delivery', description: 'Fetch one delivery by UUID, with the payload the endpoint received and the last response' },
+          { name: 'List', value: 'list', action: 'List webhook deliveries', description: "List the team's delivery log, newest first, optionally narrowed by status" },
+          { name: 'Retry', value: 'retry', action: 'Retry a webhook delivery', description: 'Queue a failed or dead-lettered delivery again. Pending and delivered rows are refused.' },
+          { name: 'Retry Dead', value: 'retryDead', action: 'Retry dead lettered deliveries', description: 'Queue every dead-lettered delivery since a point in time again' },
         ],
         default: 'list',
       },
       {
-        displayName: 'Event Type',
-        name: 'type',
+        displayName: 'Delivery ID',
+        name: 'deliveryId',
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['webhookDelivery'], operation: ['list'] } },
-        description: 'Event type to filter by (e.g. subscription.created)',
+        displayOptions: { show: { resource: ['webhookDelivery'], operation: ['get', 'retry'] } },
+        description: 'UUID of the delivery',
       },
       {
-        displayName: 'Additional Fields',
+        displayName: 'Since',
+        name: 'since',
+        type: 'dateTime',
+        default: '',
+        displayOptions: { show: { resource: ['webhookDelivery'], operation: ['retryDead'] } },
+        description: 'Only dead-lettered deliveries that failed at or after this time. Empty means the last 24 hours.',
+      },
+      {
+        displayName: 'Filters',
         name: 'webhookDeliveryFilters',
         type: 'collection',
         placeholder: 'Add Filter',
         default: {},
         displayOptions: { show: { resource: ['webhookDelivery'], operation: ['list'] } },
         options: [
-          { displayName: 'Project ID', name: 'project_id', type: 'string', default: '' },
           { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+          {
+            displayName: 'Status',
+            name: 'status',
+            type: 'options',
+            options: [
+              { name: 'All', value: 'all' },
+              { name: 'Dead', value: 'dead', description: 'Gave up after the retry ladder' },
+              { name: 'Delivered', value: 'delivered' },
+              { name: 'Failed', value: 'failed', description: 'Waiting for the next retry' },
+              { name: 'Pending', value: 'pending' },
+            ],
+            default: 'all',
+          },
         ],
       },
 
@@ -1416,6 +1778,7 @@ export class Subscriby implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['bot'] } },
         options: [
+          { name: 'Disconnect', value: 'disconnect', action: 'Disconnect the bot', description: 'Detach the Telegram bot from the project. Members keep their access; the bot stops answering for this project.' },
           { name: 'Get Status', value: 'getStatus', action: 'Get bot status', description: 'Fetch the current bot connection status for a project' },
         ],
         default: 'getStatus',
@@ -1602,6 +1965,12 @@ async function dispatch(
       return dispatchMember.call(this, operation, i);
     case 'supportConversation':
       return dispatchSupportConversation.call(this, operation, i);
+    case 'cannedReply':
+      return dispatchCannedReply.call(this, operation, i);
+    case 'supportSettings':
+      return dispatchSupportSettings.call(this, operation, i);
+    case 'coupon':
+      return dispatchCoupon.call(this, operation, i);
     case 'subscriber':
       return dispatchSubscriber.call(this, operation, i);
     case 'accessCode':
@@ -1715,6 +2084,27 @@ async function dispatchPassWindow(
     );
 
     return { data: rows };
+  }
+
+  if (operation === 'create') {
+    const planId = this.getNodeParameter('planId', i) as string;
+    const body: IDataObject = {
+      starts_at: this.getNodeParameter('startsAt', i) as string,
+      duration_minutes: this.getNodeParameter('durationMinutes', i) as number,
+    };
+
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/plans/${planId}/pass-windows`, body);
+  }
+
+  const windowId = this.getNodeParameter('windowId', i) as string;
+
+  if (operation === 'get') {
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/pass-windows/${windowId}`);
+  }
+
+  if (operation === 'cancel' || operation === 'remindQueue') {
+    const verb = operation === 'cancel' ? 'cancel' : 'remind';
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/pass-windows/${windowId}/${verb}`);
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown pass window operation: ${operation}`);
@@ -1887,6 +2277,11 @@ async function dispatchPlan(
     );
   }
 
+  if (operation === 'startNextSeason') {
+    const planId = this.getNodeParameter('planId', i) as string;
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/plans/${planId}/successor`);
+  }
+
   throw new NodeOperationError(this.getNode(), `Unknown plan operation: ${operation}`);
 }
 
@@ -1895,7 +2290,7 @@ async function dispatchSubscription(
   operation: string,
   i: number,
 ): Promise<IDataObject> {
-  if (operation === 'pause' || operation === 'unpause' || operation === 'reactivate') {
+  if (operation === 'pause' || operation === 'unpause' || operation === 'reactivate' || operation === 'remind') {
     const subscriptionId = this.getNodeParameter('subscriptionId', i) as string;
 
     return subscribyApiRequest.call(
@@ -2009,8 +2404,8 @@ async function dispatchSupportConversation(
     return subscribyApiRequest.call(this, 'POST', `/support/conversations/${conversationId}/messages`, payload);
   }
 
-  if (operation === 'resolve') {
-    return subscribyApiRequest.call(this, 'POST', `/support/conversations/${conversationId}/resolve`);
+  if (operation === 'resolve' || operation === 'reopen' || operation === 'block' || operation === 'unblock') {
+    return subscribyApiRequest.call(this, 'POST', `/support/conversations/${conversationId}/${operation}`);
   }
 
   if (operation === 'assign') {
@@ -2212,6 +2607,21 @@ async function dispatchResource(
     );
   }
 
+  if (operation === 'update') {
+    const resourceId = this.getNodeParameter('resourceId', i) as string;
+    const fields = this.getNodeParameter('resourceUpdateFields', i, {}) as IDataObject;
+    return subscribyApiRequest.call(this, 'PATCH', `/projects/${projectId}/resources/${resourceId}`, fields);
+  }
+
+  if (operation === 'activate' || operation === 'deactivate') {
+    const resourceId = this.getNodeParameter('resourceId', i) as string;
+    return subscribyApiRequest.call(
+      this,
+      'POST',
+      `/projects/${projectId}/resources/${resourceId}/${operation}`,
+    );
+  }
+
   throw new NodeOperationError(this.getNode(), `Unknown resource operation: ${operation}`);
 }
 
@@ -2232,6 +2642,24 @@ async function dispatchPaymentMethod(
     return subscribyApiRequest.call(
       this,
       'GET',
+      `/projects/${projectId}/payment-methods/${methodId}`,
+    );
+  }
+
+  if (operation === 'activate' || operation === 'deactivate' || operation === 'sync') {
+    const methodId = this.getNodeParameter('methodId', i) as string;
+    return subscribyApiRequest.call(
+      this,
+      'POST',
+      `/projects/${projectId}/payment-methods/${methodId}/${operation}`,
+    );
+  }
+
+  if (operation === 'delete') {
+    const methodId = this.getNodeParameter('methodId', i) as string;
+    return subscribyApiRequest.call(
+      this,
+      'DELETE',
       `/projects/${projectId}/payment-methods/${methodId}`,
     );
   }
@@ -2299,6 +2727,14 @@ async function dispatchWebhookEndpoint(
     return subscribyApiRequest.call(this, 'POST', `/webhook-endpoints/${endpointId}/test`);
   }
 
+  if (operation === 'get') {
+    return subscribyApiRequest.call(this, 'GET', `/webhook-endpoints/${endpointId}`);
+  }
+
+  if (operation === 'pause' || operation === 'resume') {
+    return subscribyApiRequest.call(this, 'POST', `/webhook-endpoints/${endpointId}/${operation}`);
+  }
+
   throw new NodeOperationError(this.getNode(), `Unknown webhook endpoint operation: ${operation}`);
 }
 
@@ -2308,21 +2744,178 @@ async function dispatchWebhookDelivery(
   i: number,
 ): Promise<IDataObject> {
   if (operation === 'list') {
-    const type = this.getNodeParameter('type', i) as string;
     const filters = this.getNodeParameter('webhookDeliveryFilters', i, {}) as IDataObject;
 
-    const qs: IDataObject = { type };
-    if (filters.project_id) {
-      qs.project_id = filters.project_id;
+    const qs: IDataObject = {};
+    if (filters.status && filters.status !== 'all') {
+      qs.status = filters.status;
     }
-    if (filters.limit !== undefined && filters.limit !== '') {
-      qs.limit = filters.limit;
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', '/webhook-deliveries', qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+
+    return subscribyApiRequest.call(this, 'GET', '/webhook-deliveries', undefined, qs);
+  }
+
+  if (operation === 'retryDead') {
+    const since = this.getNodeParameter('since', i, '') as string;
+    const body: IDataObject = {};
+    if (since) {
+      body.since = since;
     }
 
-    return subscribyApiRequest.call(this, 'GET', '/webhook-events', undefined, qs);
+    return subscribyApiRequest.call(this, 'POST', '/webhook-deliveries/retry-dead', body);
+  }
+
+  const deliveryId = this.getNodeParameter('deliveryId', i) as string;
+
+  if (operation === 'get') {
+    return subscribyApiRequest.call(this, 'GET', `/webhook-deliveries/${deliveryId}`);
+  }
+
+  if (operation === 'retry') {
+    return subscribyApiRequest.call(this, 'POST', `/webhook-deliveries/${deliveryId}/retry`);
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown webhook delivery operation: ${operation}`);
+}
+
+/**
+ * Turn the flat coupon fields n8n collects into the body the API expects.
+ *
+ * `plan_ids` is typed by hand as a comma-separated string because n8n has no
+ * plain string-list input; an empty string becomes an empty list, which the
+ * API reads as "every plan in the project" exactly as the dashboard does.
+ */
+function couponBody(fields: IDataObject): IDataObject {
+  const body: IDataObject = { ...fields };
+
+  if (typeof body.plan_ids === 'string') {
+    body.plan_ids = idList(body.plan_ids);
+  }
+
+  return body;
+}
+
+async function dispatchCoupon(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  const projectId = this.getNodeParameter('projectId', i) as string;
+
+  if (operation === 'list') {
+    const filters = this.getNodeParameter('couponListFilters', i, {}) as IDataObject;
+    const qs: IDataObject = {};
+    if (filters.active !== undefined) {
+      qs.active = filters.active ? 'true' : 'false';
+    }
+    if (filters.code) {
+      qs.code = filters.code;
+    }
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/coupons`, qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/coupons`, undefined, qs);
+  }
+
+  if (operation === 'create') {
+    const extras = this.getNodeParameter('couponFields', i, {}) as IDataObject;
+    const body = couponBody({
+      code: this.getNodeParameter('code', i) as string,
+      name: this.getNodeParameter('name', i) as string,
+      discount_type: this.getNodeParameter('discountType', i) as string,
+      discount_value: this.getNodeParameter('discountValue', i) as number,
+      ...extras,
+    });
+
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/coupons`, body);
+  }
+
+  const couponId = this.getNodeParameter('couponId', i) as string;
+
+  if (operation === 'get') {
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/coupons/${couponId}`);
+  }
+
+  if (operation === 'update') {
+    const fields = this.getNodeParameter('couponUpdateFields', i, {}) as IDataObject;
+    return subscribyApiRequest.call(this, 'PATCH', `/projects/${projectId}/coupons/${couponId}`, couponBody(fields));
+  }
+
+  if (operation === 'delete') {
+    return subscribyApiRequest.call(this, 'DELETE', `/projects/${projectId}/coupons/${couponId}`);
+  }
+
+  if (operation === 'activate' || operation === 'deactivate') {
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/coupons/${couponId}/${operation}`);
+  }
+
+  throw new NodeOperationError(this.getNode(), `Unknown coupon operation: ${operation}`);
+}
+
+async function dispatchCannedReply(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  const projectId = this.getNodeParameter('projectId', i) as string;
+
+  if (operation === 'list') {
+    const rows = await subscribyApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/support/canned-replies`);
+    return { data: rows };
+  }
+
+  if (operation === 'create') {
+    const extras = this.getNodeParameter('cannedReplyFields', i, {}) as IDataObject;
+    const body: IDataObject = {
+      title: this.getNodeParameter('title', i) as string,
+      body: this.getNodeParameter('body', i) as string,
+      ...extras,
+    };
+
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/support/canned-replies`, body);
+  }
+
+  const replyId = this.getNodeParameter('cannedReplyId', i) as string;
+
+  if (operation === 'get') {
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/support/canned-replies/${replyId}`);
+  }
+
+  if (operation === 'update') {
+    const fields = this.getNodeParameter('cannedReplyUpdateFields', i, {}) as IDataObject;
+    return subscribyApiRequest.call(this, 'PATCH', `/projects/${projectId}/support/canned-replies/${replyId}`, fields);
+  }
+
+  if (operation === 'delete') {
+    return subscribyApiRequest.call(this, 'DELETE', `/projects/${projectId}/support/canned-replies/${replyId}`);
+  }
+
+  throw new NodeOperationError(this.getNode(), `Unknown canned reply operation: ${operation}`);
+}
+
+async function dispatchSupportSettings(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  const projectId = this.getNodeParameter('projectId', i) as string;
+
+  if (operation === 'get') {
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/support/settings`);
+  }
+
+  if (operation === 'update') {
+    const fields = this.getNodeParameter('supportSettingsFields', i, {}) as IDataObject;
+    return subscribyApiRequest.call(this, 'PATCH', `/projects/${projectId}/support/settings`, fields);
+  }
+
+  throw new NodeOperationError(this.getNode(), `Unknown support settings operation: ${operation}`);
 }
 
 async function dispatchToken(
@@ -2641,6 +3234,10 @@ async function dispatchBot(
 
   if (operation === 'getStatus') {
     return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/bot`);
+  }
+
+  if (operation === 'disconnect') {
+    return subscribyApiRequest.call(this, 'DELETE', `/projects/${projectId}/bot`);
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown bot operation: ${operation}`);

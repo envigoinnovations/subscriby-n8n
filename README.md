@@ -4,8 +4,8 @@
 
 Provides two nodes:
 
-- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, plans, projects, project resources, bot connectivity, billing, groups, roles, teams, team members, member support conversations, and message broadcasts (106 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
-- **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 22 resources across creator-facing surfaces (projects, plans, pass windows, subscriptions, subscribers, members, broadcasts, support conversations, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, bot status, distribution links).
+- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, plans, projects, project resources, payment methods, bot connectivity, billing, groups, roles, teams, team members, member support conversations, saved replies and inbox settings, and message broadcasts (115 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
+- **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 25 resources across creator-facing surfaces (projects, plans, pass windows, subscriptions, subscribers, members, broadcasts, support conversations, canned replies, support inbox settings, coupons, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, bot status, distribution links).
 
 ## Installation
 
@@ -35,13 +35,14 @@ Restart the n8n process after install.
 2. In n8n, **Credentials → New → Subscriby API** and paste the `sbt_...` token. Leave the base URL at the default unless you are self-hosting.
 3. Add a **Subscriby Trigger** node, pick one or more events, optionally scope to a single project, and activate the workflow. On activation n8n registers the endpoint with Subscriby. Deactivating the workflow deletes the endpoint.
 
-## Supported events (106)
+## Supported events (115)
 
 The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/event-reference). This table is generated from that file by `npm run sync:readme` — do not edit it by hand.
 
 | Family | Count | Events |
 | ------ | ----- | ------ |
 | Subscription | 16 | `subscription.activated`, `subscription.cancelled`, `subscription.created`, `subscription.downgraded`, `subscription.expired`, `subscription.past_due`, `subscription.paused`, `subscription.reactivated`, `subscription.refunded`, `subscription.renewed`, `subscription.trial_converting`, `subscription.trial_expired`, `subscription.trial_started`, `subscription.unpaid`, `subscription.unpaused`, `subscription.upgraded` |
+| Support | 12 | `support.canned_reply.created`, `support.canned_reply.deleted`, `support.canned_reply.updated`, `support.conversation.assigned`, `support.conversation.blocked`, `support.conversation.opened`, `support.conversation.reopened`, `support.conversation.resolved`, `support.conversation.unblocked`, `support.message.received`, `support.message.sent`, `support.settings.updated` |
 | Billing | 10 | `billing.account_locked`, `billing.grace_period_warning`, `billing.invoice_created`, `billing.invoice_overdue`, `billing.invoice_paid`, `billing.payment_failed`, `billing.tier_cancelled`, `billing.tier_downgraded`, `billing.tier_upgraded`, `billing.trial_ending` |
 | Member | 10 | `member.banned`, `member.churned`, `member.converted`, `member.joined`, `member.kicked`, `member.removed`, `member.resource_added`, `member.resource_removed`, `member.trial_joined`, `member.unbanned` |
 | Pass | 8 | `pass.holder_missed`, `pass.holder_moved`, `pass.holder_queued`, `pass.holder_stranded`, `pass.window_cancelled`, `pass.window_closed`, `pass.window_opened`, `pass.window_scheduled` |
@@ -49,42 +50,46 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Project | 8 | `project.archived`, `project.bot.connected`, `project.bot.disconnected`, `project.bot.status_changed`, `project.created`, `project.deleted`, `project.restored`, `project.updated` |
 | Coupon | 7 | `coupon.activated`, `coupon.created`, `coupon.deactivated`, `coupon.deleted`, `coupon.exhausted`, `coupon.redeemed`, `coupon.updated` |
 | Plan | 6 | `plan.activated`, `plan.created`, `plan.deactivated`, `plan.deleted`, `plan.sync_completed`, `plan.updated` |
-| Support | 6 | `support.conversation.assigned`, `support.conversation.opened`, `support.conversation.reopened`, `support.conversation.resolved`, `support.message.received`, `support.message.sent` |
+| Project Resource | 5 | `project.resource.created`, `project.resource.deleted`, `project.resource.linked`, `project.resource.unlinked`, `project.resource.updated` |
 | Group | 4 | `group.created`, `group.deleted`, `group.members_synced`, `group.updated` |
 | Payment | 4 | `payment.failed`, `payment.pending`, `payment.refunded`, `payment.succeeded` |
-| Project Resource | 4 | `project.resource.created`, `project.resource.deleted`, `project.resource.linked`, `project.resource.unlinked` |
 | Team Member | 4 | `team.member.invited`, `team.member.joined`, `team.member.removed`, `team.member.role_changed` |
-| Broadcast | 2 | `broadcast.completed`, `broadcast.queued` |
 | Access Code | 3 | `access_code.expired`, `access_code.generated`, `access_code.redeemed` |
 | Role | 3 | `role.created`, `role.deleted`, `role.updated` |
 | Team | 3 | `team.created`, `team.deleted`, `team.updated` |
-| **Total** | **106** | |
+| Broadcast | 2 | `broadcast.completed`, `broadcast.queued` |
+| Project Payment Method | 2 | `project.payment_method.deleted`, `project.payment_method.updated` |
+| **Total** | **115** | |
 
 ## Supported actions
 
-| Resource         | Operations                                                                                                          |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------- |
-| Project          | Create, Update, Archive, Restore, Delete, List, Get, Find by Handle                                                 |
-| Plan             | Create, Update, Publish, Unpublish, Get, List, Delete, Find by Name                                                 |
-| Subscription     | Cancel, Get, List, Pause Access, Unpause Access, Reactivate                                                         |
-| Subscriber       | Find by Telegram ID                                                                                                 |
-| Member           | Ban, Unban, Kick, Get, List                                                                                         |
-| Broadcast        | Send, Preview, List Audiences                                                                                       |
-| Support Conversation | List, Get, List Messages, Reply, Resolve, Assign                                                                |
-| Access Code      | Bulk Generate, List, Delete, Preview                                                                                |
-| Resource         | Create, List, Get, Unlink, Delete                                                                                   |
-| Payment Method   | List, Get                                                                                                           |
-| Distribution     | Get Bot Link, Get Portal URL, Get Deep Link                                                                         |
-| Bot              | Get Status                                                                                                          |
-| Analytics        | Get Dashboard, Get Earnings, Get Subscribers, Get Transaction Breakdown, Get Plan Performance, List Transactions    |
-| Activity         | List                                                                                                                |
-| Team             | List, Get, Get Current                                                                                              |
-| Team Member      | List, Get                                                                                                           |
-| Role             | List, Get                                                                                                           |
-| Group            | List, Get                                                                                                           |
-| Token            | List, Get, Revoke                                                                                                   |
-| Webhook Endpoint | List, Create, Delete, Rotate Secret, Test                                                                           |
-| Webhook Delivery | List                                                                                                                |
+| Resource             | Operations                                                                                                       |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Project              | Create, Update, Archive, Restore, Delete, List, Get, Find by Handle                                              |
+| Plan                 | Create, Update, Publish, Unpublish, Start Next Season, Get, List, Delete, Find by Name                           |
+| Pass Window          | List, Get, Create, Cancel, Remind Queue                                                                          |
+| Subscription         | Cancel, Get, List, Pause Access, Unpause Access, Reactivate, Remind Pass Holder                                  |
+| Subscriber           | Find by Telegram ID                                                                                              |
+| Member               | Ban, Unban, Kick, Get, List                                                                                      |
+| Broadcast            | Send, Preview, List Audiences                                                                                    |
+| Support Conversation | List, Get, List Messages, Reply, Resolve, Reopen, Assign, Block Contact, Unblock Contact                         |
+| Canned Reply         | List, Get, Create, Update, Delete                                                                                |
+| Support Settings     | Get, Update                                                                                                      |
+| Access Code          | Bulk Generate, List, Delete, Preview                                                                             |
+| Coupon               | Create, Update, Activate, Deactivate, Delete, List, Get                                                          |
+| Resource             | Create, Update, Activate, Deactivate, List, Get, Unlink, Delete                                                  |
+| Payment Method       | List, Get, Activate, Deactivate, Sync Plans, Delete                                                              |
+| Distribution         | Get Bot Link, Get Portal URL, Get Deep Link                                                                      |
+| Bot                  | Get Status, Disconnect                                                                                           |
+| Analytics            | Get Dashboard, Get Earnings, Get Subscribers, Get Transaction Breakdown, Get Plan Performance, List Transactions |
+| Activity             | List                                                                                                             |
+| Team                 | Create, Update, Delete, List, Get, Get Current                                                                   |
+| Team Member          | Invite, Change Role, Remove, Cancel Invitation, List, Get                                                        |
+| Role                 | Create, Update, Delete, List, Get                                                                                |
+| Group                | Create, Update, Sync Members, Delete, List, Get                                                                  |
+| Token                | List, Get, Revoke                                                                                                |
+| Webhook Endpoint     | List, Get, Create, Pause, Resume, Delete, Rotate Secret, Test                                                    |
+| Webhook Delivery     | List, Get, Retry, Retry Dead                                                                                     |
 
 Every mutation automatically sends a fresh `Idempotency-Key` header so node re-runs never double-fire.
 
