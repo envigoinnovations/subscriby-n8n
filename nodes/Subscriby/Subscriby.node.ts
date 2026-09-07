@@ -934,6 +934,7 @@ export class Subscriby implements INodeType {
             options: [
               { name: 'Inbox Only', value: 'none', description: 'New threads stay in the dashboard inbox' },
               { name: 'Owner DM', value: 'owner_dm', description: 'New threads are also forwarded to the creator on Telegram' },
+              { name: 'Forum Group', value: 'forum_group', description: 'New threads are forwarded to a Telegram group with Topics enabled where the project bot is an administrator' },
             ],
             default: 'none',
             description: 'Where new threads go besides the dashboard inbox',

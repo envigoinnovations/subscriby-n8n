@@ -83,6 +83,7 @@ export const EVENT_CATALOG = [
   { family: 'Project Resource', name: 'Project Resource — Created', value: 'project.resource.created' },
   { family: 'Project Resource', name: 'Project Resource — Deleted', value: 'project.resource.deleted' },
   { family: 'Project Resource', name: 'Project Resource — Linked', value: 'project.resource.linked' },
+  { family: 'Project Resource', name: 'Project Resource — Status Changed', value: 'project.resource.status_changed' },
   { family: 'Project Resource', name: 'Project Resource — Unlinked', value: 'project.resource.unlinked' },
   { family: 'Project Resource', name: 'Project Resource — Updated', value: 'project.resource.updated' },
   { family: 'Project Payment Method', name: 'Project Payment Method — Deleted', value: 'project.payment_method.deleted' },
