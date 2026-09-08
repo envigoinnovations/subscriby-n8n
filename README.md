@@ -66,7 +66,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Resource             | Operations                                                                                                       |
 | -------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | Project              | Create, Update, Archive, Restore, Delete, List, Get, Find by Handle                                              |
-| Plan                 | Create, Update, Publish, Unpublish, Start Next Season, Get, List, Delete, Find by Name                           |
+| Plan                 | Create, Update, Publish, Unpublish, Start Next Season, Arrange Storefront Order, Get, List, Delete, Find by Name |
 | Pass Window          | List, Get, Create, Cancel, Remind Queue                                                                          |
 | Subscription         | Cancel, Get, List, Pause Access, Unpause Access, Reactivate, Remind Pass Holder                                  |
 | Subscriber           | Find by Telegram ID                                                                                              |

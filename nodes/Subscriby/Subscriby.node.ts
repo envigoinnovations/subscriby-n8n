@@ -326,6 +326,7 @@ export class Subscriby implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['plan'] } },
         options: [
+          { name: 'Arrange Storefront Order', value: 'reorder', action: 'Arrange the storefront order of plans', description: 'Pin the order the portal and the bot list the plans in; an empty list restores the built-in order' },
           { name: 'Create', value: 'create', action: 'Create a plan', description: 'Create a subscription plan under a project' },
           { name: 'Delete', value: 'delete', action: 'Delete a plan', description: 'Permanently delete a plan' },
           { name: 'Find by Name', value: 'findByName', action: 'Find a plan by name', description: 'Return the first plan whose name matches' },
@@ -412,6 +413,23 @@ export class Subscriby implements INodeType {
         default: '',
         displayOptions: { show: { resource: ['plan'], operation: ['create'] } },
         description: 'Comma-separated project resource UUIDs. Required on Recurring Subscription and Time-Limited Pass — a plan with no linked resource cannot be redeemed. Optional on Pass Series, where it means a lounge the holder keeps for the whole span.',
+      },
+      {
+        displayName: 'Sales Cap',
+        name: 'salesCap',
+        type: 'number',
+        typeOptions: { minValue: 0, maxValue: 100000 },
+        default: 0,
+        displayOptions: { show: { resource: ['plan'], operation: ['create'] } },
+        description: 'Paid purchases allowed before the plan pauses itself with the reason Sold Out (1-100000). 0 means no limit; access codes and trials never count.',
+      },
+      {
+        displayName: 'Plan IDs in Order',
+        name: 'planIds',
+        type: 'string',
+        default: '',
+        displayOptions: { show: { resource: ['plan'], operation: ['reorder'] } },
+        description: 'Comma-separated plan UUIDs, first shown first. Every ID must belong to the project; a plan left out follows the pinned ones in the built-in order. Leave empty to restore the built-in order for every plan.',
       },
 
       // --- kind: subscription ---
@@ -617,10 +635,11 @@ export class Subscriby implements INodeType {
         default: {},
         displayOptions: { show: { resource: ['plan'], operation: ['update'] } },
         options: [
-          { displayName: 'Name', name: 'name', type: 'string', default: '' },
-          { displayName: 'Description', name: 'description', type: 'string', default: '', typeOptions: { rows: 3 } },
-          { displayName: 'Price', name: 'price', type: 'number', typeOptions: { numberPrecision: 2 }, default: 0 },
           { displayName: 'Active', name: 'active', type: 'boolean', default: true },
+          { displayName: 'Description', name: 'description', type: 'string', default: '', typeOptions: { rows: 3 } },
+          { displayName: 'Name', name: 'name', type: 'string', default: '' },
+          { displayName: 'Price', name: 'price', type: 'number', typeOptions: { numberPrecision: 2 }, default: 0 },
+          { displayName: 'Sales Cap', name: 'sales_cap', type: 'number', typeOptions: { minValue: 0, maxValue: 100000 }, default: 0, description: 'Paid purchases allowed before the plan pauses itself. 0 lifts the cap; changing the cap restarts the count.' },
         ],
       },
 
@@ -2134,6 +2153,10 @@ function idList(raw: string): string[] {
  * The previous version of this function sent `currency` instead of
  * `currency_id`, a `billing_cycle` enum the API does not accept, and never sent
  * the required `resources`, so every plan:create call 422'd.
+ *
+ * `sales_cap` rides at the top level beside `kind`. n8n cannot leave a number
+ * unset, so `0` stands for "no limit" on create and is left out; on update it
+ * means "lift the cap", which the API only accepts as an explicit `null`.
  */
 function buildPlanBody(this: IExecuteFunctions, i: number, isCreate: boolean): IDataObject {
   const kind = this.getNodeParameter('kind', i, 'subscription') as string;
@@ -2149,8 +2172,18 @@ function buildPlanBody(this: IExecuteFunctions, i: number, isCreate: boolean): I
     if (resources.length > 0) {
       body.resources = resources;
     }
+
+    const salesCap = this.getNodeParameter('salesCap', i, 0) as number;
+
+    if (salesCap > 0) {
+      body.sales_cap = salesCap;
+    }
   } else {
     Object.assign(body, compactBody(this.getNodeParameter('updateFields', i, {}) as IDataObject));
+
+    if (body.sales_cap === 0) {
+      body.sales_cap = null;
+    }
   }
 
   if (kind === 'subscription') {
@@ -2276,6 +2309,12 @@ async function dispatchPlan(
       undefined,
       { name: planName },
     );
+  }
+
+  if (operation === 'reorder') {
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/plans/order`, {
+      plan_ids: idList(this.getNodeParameter('planIds', i, '') as string),
+    });
   }
 
   if (operation === 'startNextSeason') {
