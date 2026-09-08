@@ -70,6 +70,8 @@ export const EVENT_CATALOG = [
   { family: 'Plan', name: 'Plan — Created', value: 'plan.created' },
   { family: 'Plan', name: 'Plan — Deactivated', value: 'plan.deactivated' },
   { family: 'Plan', name: 'Plan — Deleted', value: 'plan.deleted' },
+  { family: 'Plan', name: 'Plan — Order Changed', value: 'plan.order_changed' },
+  { family: 'Plan', name: 'Plan — Sold Out', value: 'plan.sold_out' },
   { family: 'Plan', name: 'Plan — Sync Completed', value: 'plan.sync_completed' },
   { family: 'Plan', name: 'Plan — Updated', value: 'plan.updated' },
   { family: 'Project', name: 'Project — Archived', value: 'project.archived' },

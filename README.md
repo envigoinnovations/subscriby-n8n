@@ -4,7 +4,7 @@
 
 Provides two nodes:
 
-- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, plans, projects, project resources, payment methods, bot connectivity, billing, groups, roles, teams, team members, member support conversations, saved replies and inbox settings, and message broadcasts (116 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
+- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, plans, projects, project resources, payment methods, bot connectivity, billing, groups, roles, teams, team members, member support conversations, saved replies and inbox settings, and message broadcasts (118 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
 - **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 25 resources across creator-facing surfaces (projects, plans, pass windows, subscriptions, subscribers, members, broadcasts, support conversations, canned replies, support inbox settings, coupons, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, bot status, distribution links).
 
 ## Installation
@@ -35,7 +35,7 @@ Restart the n8n process after install.
 2. In n8n, **Credentials → New → Subscriby API** and paste the `sbt_...` token. Leave the base URL at the default unless you are self-hosting.
 3. Add a **Subscriby Trigger** node, pick one or more events, optionally scope to a single project, and activate the workflow. On activation n8n registers the endpoint with Subscriby. Deactivating the workflow deletes the endpoint.
 
-## Supported events (116)
+## Supported events (118)
 
 The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/event-reference). This table is generated from that file by `npm run sync:readme` — do not edit it by hand.
 
@@ -47,9 +47,9 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Member | 10 | `member.banned`, `member.churned`, `member.converted`, `member.joined`, `member.kicked`, `member.removed`, `member.resource_added`, `member.resource_removed`, `member.trial_joined`, `member.unbanned` |
 | Pass | 8 | `pass.holder_missed`, `pass.holder_moved`, `pass.holder_queued`, `pass.holder_stranded`, `pass.window_cancelled`, `pass.window_closed`, `pass.window_opened`, `pass.window_scheduled` |
 | Pass Series | 8 | `pass_series.completed`, `pass_series.leg_added`, `pass_series.leg_completed`, `pass_series.leg_dropped`, `pass_series.leg_substituted`, `pass_series.presale_opened`, `pass_series.purchased`, `pass_series.seats_exhausted` |
+| Plan | 8 | `plan.activated`, `plan.created`, `plan.deactivated`, `plan.deleted`, `plan.order_changed`, `plan.sold_out`, `plan.sync_completed`, `plan.updated` |
 | Project | 8 | `project.archived`, `project.bot.connected`, `project.bot.disconnected`, `project.bot.status_changed`, `project.created`, `project.deleted`, `project.restored`, `project.updated` |
 | Coupon | 7 | `coupon.activated`, `coupon.created`, `coupon.deactivated`, `coupon.deleted`, `coupon.exhausted`, `coupon.redeemed`, `coupon.updated` |
-| Plan | 6 | `plan.activated`, `plan.created`, `plan.deactivated`, `plan.deleted`, `plan.sync_completed`, `plan.updated` |
 | Project Resource | 6 | `project.resource.created`, `project.resource.deleted`, `project.resource.linked`, `project.resource.status_changed`, `project.resource.unlinked`, `project.resource.updated` |
 | Group | 4 | `group.created`, `group.deleted`, `group.members_synced`, `group.updated` |
 | Payment | 4 | `payment.failed`, `payment.pending`, `payment.refunded`, `payment.succeeded` |
@@ -59,7 +59,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Team | 3 | `team.created`, `team.deleted`, `team.updated` |
 | Broadcast | 2 | `broadcast.completed`, `broadcast.queued` |
 | Project Payment Method | 2 | `project.payment_method.deleted`, `project.payment_method.updated` |
-| **Total** | **116** | |
+| **Total** | **118** | |
 
 ## Supported actions
 
