@@ -709,7 +709,9 @@ export class Subscriby implements INodeType {
           { name: 'Get', value: 'get', action: 'Get a member', description: 'Fetch a member by UUID' },
           { name: 'Kick', value: 'kick', action: 'Kick a member', description: 'Remove a member without a permanent ban' },
           { name: 'List', value: 'list', action: 'List members', description: 'List members of a project' },
+          { name: 'List Identities', value: 'listIdentities', action: 'List a members connected accounts', description: 'List the platform accounts a member has connected, with the preferred one marked' },
           { name: 'Unban', value: 'unban', action: 'Unban a member', description: 'Lift a previous ban' },
+          { name: 'Unlink Identity', value: 'unlinkIdentity', action: 'Disconnect a members connected account', description: 'Disconnect one of a member\'s platform accounts; refused when it is their last way to sign in' },
         ],
         default: 'ban',
       },
@@ -727,7 +729,16 @@ export class Subscriby implements INodeType {
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['member'], operation: ['ban', 'unban', 'kick', 'get'] } },
+        displayOptions: { show: { resource: ['member'], operation: ['ban', 'unban', 'kick', 'get', 'listIdentities', 'unlinkIdentity'] } },
+      },
+      {
+        displayName: 'Identity Link ID',
+        name: 'identityId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['member'], operation: ['unlinkIdentity'] } },
+        description: 'The ID of the connected account from List Identities (the link, not the platform\'s own account ID)',
       },
       {
         displayName: 'Filters',
@@ -2504,6 +2515,16 @@ async function dispatchMember(
 
   if (operation === 'get') {
     return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/members/${memberId}`);
+  }
+
+  if (operation === 'listIdentities') {
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/members/${memberId}/identities`);
+  }
+
+  if (operation === 'unlinkIdentity') {
+    const identityId = this.getNodeParameter('identityId', i) as string;
+    await subscribyApiRequest.call(this, 'DELETE', `/projects/${projectId}/members/${memberId}/identities/${identityId}`);
+    return { member_id: memberId, identity_id: identityId, removed: true };
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown member operation: ${operation}`);

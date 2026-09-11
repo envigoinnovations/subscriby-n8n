@@ -39,6 +39,8 @@ export const EVENT_CATALOG = [
   { family: 'Member', name: 'Member — Banned', value: 'member.banned' },
   { family: 'Member', name: 'Member — Churned', value: 'member.churned' },
   { family: 'Member', name: 'Member — Converted', value: 'member.converted' },
+  { family: 'Member', name: 'Member — Identity Linked', value: 'member.identity_linked' },
+  { family: 'Member', name: 'Member — Identity Unlinked', value: 'member.identity_unlinked' },
   { family: 'Member', name: 'Member — Joined', value: 'member.joined' },
   { family: 'Member', name: 'Member — Kicked', value: 'member.kicked' },
   { family: 'Member', name: 'Member — Removed', value: 'member.removed' },
