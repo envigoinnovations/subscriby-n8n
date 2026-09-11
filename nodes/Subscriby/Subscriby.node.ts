@@ -664,6 +664,13 @@ export class Subscriby implements INodeType {
           },
           { name: 'Pause Access', value: 'pause', action: 'Pause subscription access', description: 'Suspend the member resource access. Billing is unaffected and continues on schedule.' },
           { name: 'Reactivate', value: 'reactivate', action: 'Reactivate a subscription', description: 'Call off a scheduled cancellation. Stripe only; other providers end the agreement outright.' },
+          {
+            name: 'Reissue Grants',
+            value: 'reissueGrants',
+            action: 'Reissue subscription grants',
+            description:
+              'Revoke the access grants a member holds (every resource, or one) and issue fresh ones. The member is sent the new links by the bot.',
+          },
           { name: 'Remind Pass Holder', value: 'remind', action: 'Remind a pass holder', description: 'Nudge a pass holder who has not joined their window yet. Returns whether anything was sent.' },
           { name: 'Unpause Access', value: 'unpause', action: 'Unpause subscription access', description: 'Restore suspended access and issue fresh invite links' },
         ],
@@ -678,9 +685,17 @@ export class Subscriby implements INodeType {
         displayOptions: {
           show: {
             resource: ['subscription'],
-            operation: ['cancel', 'get', 'listGrants', 'pause', 'unpause', 'reactivate', 'remind'],
+            operation: ['cancel', 'get', 'listGrants', 'pause', 'unpause', 'reactivate', 'reissueGrants', 'remind'],
           },
         },
+      },
+      {
+        displayName: 'Resource ID',
+        name: 'grantResourceId',
+        type: 'string',
+        default: '',
+        description: 'Limit the reissue to one resource UUID of the plan. Leave empty to reissue every resource the subscription grants.',
+        displayOptions: { show: { resource: ['subscription'], operation: ['reissueGrants'] } },
       },
       {
         displayName: 'Filters',
@@ -2384,6 +2399,17 @@ async function dispatchSubscription(
     const subscriptionId = this.getNodeParameter('subscriptionId', i) as string;
 
     return subscribyApiRequest.call(this, 'GET', `/subscriptions/${subscriptionId}/grants`);
+  }
+
+  if (operation === 'reissueGrants') {
+    const subscriptionId = this.getNodeParameter('subscriptionId', i) as string;
+    const resourceId = this.getNodeParameter('grantResourceId', i, '') as string;
+    const body: IDataObject = {};
+    if (resourceId) {
+      body.resource_id = resourceId;
+    }
+
+    return subscribyApiRequest.call(this, 'POST', `/subscriptions/${subscriptionId}/grants/reissue`, body);
   }
 
   if (operation === 'list') {
