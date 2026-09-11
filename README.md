@@ -83,6 +83,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Bot                  | Get Status, Disconnect                                                                                           |
 | Analytics            | Get Dashboard, Get Earnings, Get Subscribers, Get Transaction Breakdown, Get Plan Performance, List Transactions |
 | Activity             | List                                                                                                             |
+| Account              | Get Me                                                                                                           |
 | Team                 | Create, Update, Delete, List, Get, Get Current                                                                   |
 | Team Member          | Invite, Change Role, Remove, Cancel Invitation, List, Get                                                        |
 | Role                 | Create, Update, Delete, List, Get                                                                                |

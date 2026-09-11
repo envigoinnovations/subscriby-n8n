@@ -50,6 +50,7 @@ export class Subscriby implements INodeType {
         noDataExpression: true,
         options: [
           { name: 'Access Code', value: 'accessCode' },
+          { name: 'Account', value: 'account' },
           { name: 'Activity', value: 'activity' },
           { name: 'Analytics', value: 'analytics' },
           { name: 'Bot', value: 'bot' },
@@ -1456,6 +1457,25 @@ export class Subscriby implements INodeType {
         ],
       },
 
+      // === ACCOUNT ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['account'] } },
+        options: [
+          {
+            name: 'Get Me',
+            value: 'getMe',
+            action: 'Get the current account',
+            description:
+              'Fetch the creator the API token belongs to: the team it is scoped to, every team held, plan capabilities, connected accounts and alert destinations',
+          },
+        ],
+        default: 'getMe',
+      },
+
       // === TOKEN ===
       {
         displayName: 'Operation',
@@ -2016,6 +2036,8 @@ async function dispatch(
       return dispatchWebhookDelivery.call(this, operation, i);
     case 'token':
       return dispatchToken.call(this, operation, i);
+    case 'account':
+      return dispatchAccount.call(this, operation);
     case 'team':
       return dispatchTeam.call(this, operation, i);
     case 'teamMember':
@@ -3000,6 +3022,14 @@ async function dispatchToken(
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown token operation: ${operation}`);
+}
+
+async function dispatchAccount(this: IExecuteFunctions, operation: string): Promise<IDataObject> {
+  if (operation === 'getMe') {
+    return subscribyApiRequest.call(this, 'GET', '/me');
+  }
+
+  throw new NodeOperationError(this.getNode(), `Unknown account operation: ${operation}`);
 }
 
 async function dispatchTeam(
