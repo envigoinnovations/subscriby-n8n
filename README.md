@@ -4,7 +4,7 @@
 
 Provides two nodes:
 
-- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, plans, projects, project resources, payment methods, bot connectivity, billing, groups, roles, teams, team members, member support conversations, saved replies and inbox settings, and message broadcasts (120 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
+- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, plans, projects, project resources, payment methods, bot connectivity, billing, groups, roles, teams, team members, member support conversations, saved replies and inbox settings, and message broadcasts (121 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
 - **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 25 resources across creator-facing surfaces (projects, plans, pass windows, subscriptions, subscribers, members, broadcasts, support conversations, canned replies, support inbox settings, coupons, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, bot status, distribution links).
 
 ## Installation
@@ -35,14 +35,14 @@ Restart the n8n process after install.
 2. In n8n, **Credentials → New → Subscriby API** and paste the `sbt_...` token. Leave the base URL at the default unless you are self-hosting.
 3. Add a **Subscriby Trigger** node, pick one or more events, optionally scope to a single project, and activate the workflow. On activation n8n registers the endpoint with Subscriby. Deactivating the workflow deletes the endpoint.
 
-## Supported events (120)
+## Supported events (121)
 
 The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/event-reference). This table is generated from that file by `npm run sync:readme` — do not edit it by hand.
 
 | Family | Count | Events |
 | ------ | ----- | ------ |
 | Subscription | 16 | `subscription.activated`, `subscription.cancelled`, `subscription.created`, `subscription.downgraded`, `subscription.expired`, `subscription.past_due`, `subscription.paused`, `subscription.reactivated`, `subscription.refunded`, `subscription.renewed`, `subscription.trial_converting`, `subscription.trial_expired`, `subscription.trial_started`, `subscription.unpaid`, `subscription.unpaused`, `subscription.upgraded` |
-| Member | 12 | `member.banned`, `member.churned`, `member.converted`, `member.identity_linked`, `member.identity_unlinked`, `member.joined`, `member.kicked`, `member.removed`, `member.resource_added`, `member.resource_removed`, `member.trial_joined`, `member.unbanned` |
+| Member | 13 | `member.banned`, `member.churned`, `member.converted`, `member.identity_linked`, `member.identity_unlinked`, `member.joined`, `member.kicked`, `member.removed`, `member.resource_added`, `member.resource_pending`, `member.resource_removed`, `member.trial_joined`, `member.unbanned` |
 | Support | 12 | `support.canned_reply.created`, `support.canned_reply.deleted`, `support.canned_reply.updated`, `support.conversation.assigned`, `support.conversation.blocked`, `support.conversation.opened`, `support.conversation.reopened`, `support.conversation.resolved`, `support.conversation.unblocked`, `support.message.received`, `support.message.sent`, `support.settings.updated` |
 | Billing | 10 | `billing.account_locked`, `billing.grace_period_warning`, `billing.invoice_created`, `billing.invoice_overdue`, `billing.invoice_paid`, `billing.payment_failed`, `billing.tier_cancelled`, `billing.tier_downgraded`, `billing.tier_upgraded`, `billing.trial_ending` |
 | Pass | 8 | `pass.holder_missed`, `pass.holder_moved`, `pass.holder_queued`, `pass.holder_stranded`, `pass.window_cancelled`, `pass.window_closed`, `pass.window_opened`, `pass.window_scheduled` |
@@ -59,7 +59,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Team | 3 | `team.created`, `team.deleted`, `team.updated` |
 | Broadcast | 2 | `broadcast.completed`, `broadcast.queued` |
 | Project Payment Method | 2 | `project.payment_method.deleted`, `project.payment_method.updated` |
-| **Total** | **120** | |
+| **Total** | **121** | |
 
 ## Supported actions
 
