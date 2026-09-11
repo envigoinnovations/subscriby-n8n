@@ -32,6 +32,8 @@ export const EVENT_CATALOG = [
   { family: 'Coupon', name: 'Coupon — Exhausted', value: 'coupon.exhausted' },
   { family: 'Coupon', name: 'Coupon — Redeemed', value: 'coupon.redeemed' },
   { family: 'Coupon', name: 'Coupon — Updated', value: 'coupon.updated' },
+  { family: 'Creator Task', name: 'Creator Task — Completed', value: 'creator_task.completed' },
+  { family: 'Creator Task', name: 'Creator Task — Opened', value: 'creator_task.opened' },
   { family: 'Group', name: 'Group — Created', value: 'group.created' },
   { family: 'Group', name: 'Group — Deleted', value: 'group.deleted' },
   { family: 'Group', name: 'Group — Members Synced', value: 'group.members_synced' },

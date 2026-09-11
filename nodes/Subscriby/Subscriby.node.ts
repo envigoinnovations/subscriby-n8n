@@ -57,6 +57,7 @@ export class Subscriby implements INodeType {
           { name: 'Broadcast', value: 'broadcast' },
           { name: 'Canned Reply', value: 'cannedReply' },
           { name: 'Coupon', value: 'coupon' },
+          { name: 'Creator Task', value: 'creatorTask' },
           { name: 'Distribution', value: 'distribution' },
           { name: 'Group', value: 'group' },
           { name: 'Member', value: 'member' },
@@ -1236,6 +1237,70 @@ export class Subscriby implements INodeType {
         ],
       },
 
+      // === CREATOR TASK ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['creatorTask'] } },
+        options: [
+          {
+            name: 'Complete',
+            value: 'complete',
+            action: 'Complete a creator task',
+            description: 'Mark a hand-arranged perk as handed over: the grant is issued and creator_task.completed then member.resource_added fire',
+          },
+          {
+            name: 'List',
+            value: 'list',
+            action: 'List creator tasks',
+            description: "List the hand-arranged perks a creator still has to hand over in a project (one task per subscriber and manual resource, oldest first), or the ones already done",
+          },
+        ],
+        default: 'list',
+      },
+      {
+        displayName: 'Project ID',
+        name: 'projectId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['creatorTask'] } },
+      },
+      {
+        displayName: 'Task ID',
+        name: 'taskId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['creatorTask'], operation: ['complete'] } },
+        description: 'UUID of the task, from List or the Creator Task — Opened event',
+      },
+      {
+        displayName: 'Filters',
+        name: 'creatorTaskListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['creatorTask'], operation: ['list'] } },
+        options: [
+          {
+            displayName: 'Status',
+            name: 'status',
+            type: 'options',
+            options: [
+              { name: 'Open', value: 'open', description: 'Not yet done, purchase still standing (the default)' },
+              { name: 'Completed', value: 'completed' },
+              { name: 'All', value: 'all' },
+            ],
+            default: 'open',
+          },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+        ],
+      },
+
       // === RESOURCE ===
       {
         displayName: 'Operation',
@@ -2044,6 +2109,8 @@ async function dispatch(
       return dispatchSupportSettings.call(this, operation, i);
     case 'coupon':
       return dispatchCoupon.call(this, operation, i);
+    case 'creatorTask':
+      return dispatchCreatorTask.call(this, operation, i);
     case 'subscriber':
       return dispatchSubscriber.call(this, operation, i);
     case 'accessCode':
@@ -2978,6 +3045,35 @@ async function dispatchCoupon(
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown coupon operation: ${operation}`);
+}
+
+async function dispatchCreatorTask(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  const projectId = this.getNodeParameter('projectId', i) as string;
+
+  if (operation === 'list') {
+    const filters = this.getNodeParameter('creatorTaskListFilters', i, {}) as IDataObject;
+    const qs: IDataObject = {};
+    if (filters.status) {
+      qs.status = filters.status;
+    }
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/creator-tasks`, qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/creator-tasks`, undefined, qs);
+  }
+
+  if (operation === 'complete') {
+    const taskId = this.getNodeParameter('taskId', i) as string;
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/creator-tasks/${taskId}/complete`);
+  }
+
+  throw new NodeOperationError(this.getNode(), `Unknown creator task operation: ${operation}`);
 }
 
 async function dispatchCannedReply(

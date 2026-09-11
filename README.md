@@ -4,8 +4,8 @@
 
 Provides two nodes:
 
-- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, plans, projects, project resources, payment methods, bot connectivity, billing, groups, roles, teams, team members, member support conversations, saved replies and inbox settings, and message broadcasts (122 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
-- **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 25 resources across creator-facing surfaces (projects, plans, pass windows, subscriptions, subscribers, members, broadcasts, support conversations, canned replies, support inbox settings, coupons, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, bot status, distribution links).
+- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, plans, projects, project resources, payment methods, bot connectivity, billing, groups, roles, teams, team members, member support conversations, saved replies and inbox settings, and message broadcasts (124 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
+- **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 26 resources across creator-facing surfaces (projects, plans, pass windows, subscriptions, subscribers, members, broadcasts, support conversations, canned replies, support inbox settings, coupons, creator tasks, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, bot status, distribution links).
 
 ## Installation
 
@@ -35,7 +35,7 @@ Restart the n8n process after install.
 2. In n8n, **Credentials → New → Subscriby API** and paste the `sbt_...` token. Leave the base URL at the default unless you are self-hosting.
 3. Add a **Subscriby Trigger** node, pick one or more events, optionally scope to a single project, and activate the workflow. On activation n8n registers the endpoint with Subscriby. Deactivating the workflow deletes the endpoint.
 
-## Supported events (122)
+## Supported events (124)
 
 The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/event-reference). This table is generated from that file by `npm run sync:readme` — do not edit it by hand.
 
@@ -58,8 +58,9 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Role | 3 | `role.created`, `role.deleted`, `role.updated` |
 | Team | 3 | `team.created`, `team.deleted`, `team.updated` |
 | Broadcast | 2 | `broadcast.completed`, `broadcast.queued` |
+| Creator Task | 2 | `creator_task.completed`, `creator_task.opened` |
 | Project Payment Method | 2 | `project.payment_method.deleted`, `project.payment_method.updated` |
-| **Total** | **122** | |
+| **Total** | **124** | |
 
 ## Supported actions
 
@@ -77,6 +78,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Support Settings     | Get, Update                                                                                                      |
 | Access Code          | Bulk Generate, List, Delete, Preview                                                                             |
 | Coupon               | Create, Update, Activate, Deactivate, Delete, List, Get                                                          |
+| Creator Task         | List, Complete                                                                                                   |
 | Resource             | Create, Update, Activate, Deactivate, List, Get, Unlink, Delete                                                  |
 | Payment Method       | List, Get, Activate, Deactivate, Sync Plans, Delete                                                              |
 | Distribution         | Get Bot Link, Get Portal URL, Get Deep Link                                                                      |
