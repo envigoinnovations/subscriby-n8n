@@ -655,6 +655,13 @@ export class Subscriby implements INodeType {
           { name: 'Cancel', value: 'cancel', action: 'Cancel a subscription', description: 'Cancel a subscription immediately or at period end' },
           { name: 'Get', value: 'get', action: 'Get a subscription', description: 'Fetch a subscription by UUID' },
           { name: 'List', value: 'list', action: 'List subscriptions', description: 'List subscriptions filtered by status or plan' },
+          {
+            name: 'List Grants',
+            value: 'listGrants',
+            action: 'List subscription grants',
+            description:
+              'List the access grants a subscription holds: one per resource and pass window, with the connector, how access was given, its state and why it failed if it did',
+          },
           { name: 'Pause Access', value: 'pause', action: 'Pause subscription access', description: 'Suspend the member resource access. Billing is unaffected and continues on schedule.' },
           { name: 'Reactivate', value: 'reactivate', action: 'Reactivate a subscription', description: 'Call off a scheduled cancellation. Stripe only; other providers end the agreement outright.' },
           { name: 'Remind Pass Holder', value: 'remind', action: 'Remind a pass holder', description: 'Nudge a pass holder who has not joined their window yet. Returns whether anything was sent.' },
@@ -671,7 +678,7 @@ export class Subscriby implements INodeType {
         displayOptions: {
           show: {
             resource: ['subscription'],
-            operation: ['cancel', 'get', 'pause', 'unpause', 'reactivate', 'remind'],
+            operation: ['cancel', 'get', 'listGrants', 'pause', 'unpause', 'reactivate', 'remind'],
           },
         },
       },
@@ -2371,6 +2378,12 @@ async function dispatchSubscription(
       'POST',
       `/subscriptions/${subscriptionId}/${operation}`,
     );
+  }
+
+  if (operation === 'listGrants') {
+    const subscriptionId = this.getNodeParameter('subscriptionId', i) as string;
+
+    return subscribyApiRequest.call(this, 'GET', `/subscriptions/${subscriptionId}/grants`);
   }
 
   if (operation === 'list') {
