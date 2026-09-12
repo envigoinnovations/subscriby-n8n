@@ -27,6 +27,7 @@ export const EVENT_CATALOG = [
   { family: 'Broadcast', name: 'Broadcast — Queued', value: 'broadcast.queued' },
   { family: 'Connector', name: 'Connector — Connected', value: 'connector.connected' },
   { family: 'Connector', name: 'Connector — Disconnected', value: 'connector.disconnected' },
+  { family: 'Connector', name: 'Connector — Doctor Completed', value: 'connector.doctor_completed' },
   { family: 'Connector', name: 'Connector — Installed', value: 'connector.installed' },
   { family: 'Connector', name: 'Connector — Settings Updated', value: 'connector.settings_updated' },
   { family: 'Connector', name: 'Connector — Status Changed', value: 'connector.status_changed' },

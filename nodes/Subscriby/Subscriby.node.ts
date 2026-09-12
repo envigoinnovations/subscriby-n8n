@@ -2288,6 +2288,7 @@ export class Subscriby implements INodeType {
           { name: 'Install', value: 'install', action: 'Install a connector', description: 'Install a connector on a project as a pending installation the creator then connects from the dashboard' },
           { name: 'List', value: 'list', action: 'List connectors', description: 'List the Connectors Marketplace: every connector Subscriby knows, lane by lane, with its badges, manifest and connect form' },
           { name: 'List Installations', value: 'listInstallations', action: 'List connector installations', description: 'List every connector installation a project holds, live and standby, with its state and health' },
+          { name: 'Run Doctor', value: 'doctor', action: 'Run the connector doctor', description: 'Verify the installation and ask the connector about every resource it gates; one report with a finding per check' },
           { name: 'Uninstall', value: 'uninstall', action: 'Uninstall a connector', description: 'Revoke the grants, detach the resources and keep the row; the two opt-ins act on the plans left with nothing to grant' },
           { name: 'Update Settings', value: 'updateSettings', action: 'Update connector installation settings', description: "Change an installation's declared settings; keys are the field names the connector declares" },
           { name: 'Verify', value: 'verify', action: 'Verify a connector installation', description: 'Ask the connector whether the installation still answers and record the verdict' },
@@ -4118,6 +4119,10 @@ async function dispatchConnector(
 
   if (operation === 'verify') {
     return subscribyApiRequest.call(this, 'POST', `${installationPath}/verify`);
+  }
+
+  if (operation === 'doctor') {
+    return subscribyApiRequest.call(this, 'POST', `${installationPath}/doctor`);
   }
 
   if (operation === 'updateSettings') {
