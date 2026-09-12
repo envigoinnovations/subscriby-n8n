@@ -2403,6 +2403,7 @@ export class Subscriby implements INodeType {
           { name: 'Get Dashboard', value: 'getDashboard', action: 'Get dashboard analytics', description: 'Fetch aggregated dashboard metrics' },
           { name: 'Get Earnings', value: 'getEarnings', action: 'Get earnings analytics', description: 'Fetch earnings time-series data' },
           { name: 'Get Plan Performance', value: 'getPlanPerformance', action: 'Get plan performance', description: 'Fetch per-plan performance analytics for a project' },
+          { name: 'Get Revenue Composition', value: 'getRevenueComposition', action: 'Get revenue composition', description: 'Fetch fees by provider, transactions by plan kind, revenue by currency, payment outcomes and MRR by plan' },
           { name: 'Get Subscribers', value: 'getSubscribers', action: 'Get subscriber analytics', description: 'Fetch subscriber growth analytics' },
           { name: 'Get Transaction Breakdown', value: 'getTransactionBreakdown', action: 'Get transaction breakdown', description: 'Fetch a transaction breakdown by dimension' },
           { name: 'List Transactions', value: 'listTransactions', action: 'List transactions', description: 'List raw transactions for a project' },
@@ -2459,6 +2460,7 @@ export class Subscriby implements INodeType {
               'getSubscribers',
               'getTransactionBreakdown',
               'getPlanPerformance',
+              'getRevenueComposition',
               'listTransactions',
             ],
           },
@@ -4225,6 +4227,10 @@ async function dispatchAnalytics(
 
   if (operation === 'getConnectorAnalytics') {
     return subscribyApiRequest.call(this, 'GET', '/analytics/connectors', undefined, qs);
+  }
+
+  if (operation === 'getRevenueComposition') {
+    return subscribyApiRequest.call(this, 'GET', '/analytics/composition', undefined, qs);
   }
 
   if (operation === 'getDashboard') {
