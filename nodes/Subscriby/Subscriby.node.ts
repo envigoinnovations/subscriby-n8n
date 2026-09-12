@@ -63,6 +63,7 @@ export class Subscriby implements INodeType {
           { name: 'Distribution', value: 'distribution' },
           { name: 'Group', value: 'group' },
           { name: 'Member', value: 'member' },
+          { name: 'Notification', value: 'notification' },
           { name: 'Pass Window', value: 'passWindow' },
           { name: 'Payment Method', value: 'paymentMethod' },
           { name: 'Plan', value: 'plan' },
@@ -1835,6 +1836,75 @@ export class Subscriby implements INodeType {
         default: 'getMe',
       },
 
+      // === NOTIFICATION ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['notification'] } },
+        options: [
+          {
+            name: 'List',
+            value: 'list',
+            action: 'List notifications',
+            description:
+              'List the entries of the notification centre, newest first: every alert Subscriby sent the creator, with its class, title, body, where it points and whether it was read',
+          },
+          {
+            name: 'Mark All Read',
+            value: 'markAllRead',
+            action: 'Mark all notifications read',
+            description: 'Mark every unread entry of the notification centre read in one call and learn how many were marked',
+          },
+          {
+            name: 'Mark Read',
+            value: 'markRead',
+            action: 'Mark a notification read',
+            description: 'Mark one entry of the notification centre read, so the dashboard bell stops counting it',
+          },
+        ],
+        default: 'list',
+      },
+      {
+        displayName: 'Notification ID',
+        name: 'notificationId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['notification'], operation: ['markRead'] } },
+        description: 'UUID of the entry, from List',
+      },
+      {
+        displayName: 'Filters',
+        name: 'notificationListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['notification'], operation: ['list'] } },
+        options: [
+          {
+            displayName: 'Class',
+            name: 'class',
+            type: 'options',
+            options: [
+              { name: 'All', value: '' },
+              { name: 'Billing', value: 'billing' },
+              { name: 'Onboarding', value: 'onboarding' },
+              { name: 'Passes', value: 'passes' },
+              { name: 'Recovery', value: 'recovery' },
+              { name: 'Sales', value: 'sales' },
+              { name: 'Security', value: 'security' },
+              { name: 'Support', value: 'support' },
+            ],
+            default: '',
+          },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+          { displayName: 'Unread Only', name: 'unread', type: 'boolean', default: false, description: 'Whether to list only the entries not yet read' },
+        ],
+      },
+
       // === TOKEN ===
       {
         displayName: 'Operation',
@@ -2481,6 +2551,8 @@ async function dispatch(
       return dispatchToken.call(this, operation, i);
     case 'account':
       return dispatchAccount.call(this, operation);
+    case 'notification':
+      return dispatchNotification.call(this, operation, i);
     case 'team':
       return dispatchTeam.call(this, operation, i);
     case 'teamMember':
@@ -3665,6 +3737,40 @@ async function dispatchAccount(this: IExecuteFunctions, operation: string): Prom
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown account operation: ${operation}`);
+}
+
+async function dispatchNotification(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  if (operation === 'list') {
+    const filters = this.getNodeParameter('notificationListFilters', i, {}) as IDataObject;
+    const qs: IDataObject = {};
+    if (filters.unread === true) {
+      qs.unread = 1;
+    }
+    if (filters.class) {
+      qs.class = filters.class;
+    }
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', '/me/notifications', qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(this, 'GET', '/me/notifications', undefined, qs);
+  }
+
+  if (operation === 'markRead') {
+    const notificationId = this.getNodeParameter('notificationId', i) as string;
+    return subscribyApiRequest.call(this, 'POST', `/me/notifications/${notificationId}/read`);
+  }
+
+  if (operation === 'markAllRead') {
+    return subscribyApiRequest.call(this, 'POST', '/me/notifications/read-all');
+  }
+
+  throw new NodeOperationError(this.getNode(), `Unknown notification operation: ${operation}`);
 }
 
 async function dispatchTeam(
