@@ -57,6 +57,7 @@ export class Subscriby implements INodeType {
           { name: 'Bot', value: 'bot' },
           { name: 'Broadcast', value: 'broadcast' },
           { name: 'Canned Reply', value: 'cannedReply' },
+          { name: 'Connector', value: 'connector' },
           { name: 'Coupon', value: 'coupon' },
           { name: 'Creator Task', value: 'creatorTask' },
           { name: 'Distribution', value: 'distribution' },
@@ -2201,6 +2202,55 @@ export class Subscriby implements INodeType {
         displayOptions: { show: { resource: ['bot'] } },
       },
 
+      // === CONNECTOR ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['connector'] } },
+        options: [
+          { name: 'Get', value: 'get', action: 'Get a connector', description: 'Fetch one Connector Directory card by key: its lane, badges, manifest and the form that connects it' },
+          { name: 'Get Installation', value: 'getInstallation', action: 'Get a connector installation', description: "Fetch a project's live installation of one connector, with its state and health" },
+          { name: 'List', value: 'list', action: 'List connectors', description: 'List the Connector Directory: every connector Subscriby knows, lane by lane, with its badges, manifest and connect form' },
+          { name: 'List Installations', value: 'listInstallations', action: 'List connector installations', description: 'List every connector installation a project holds, live and standby, with its state and health' },
+        ],
+        default: 'list',
+      },
+      {
+        displayName: 'Connector Key',
+        name: 'connectorKey',
+        type: 'string',
+        default: '',
+        required: true,
+        description: 'The connector key as the List operation returns it, for example telegram',
+        displayOptions: { show: { resource: ['connector'], operation: ['get', 'getInstallation'] } },
+      },
+      {
+        displayName: 'Project ID',
+        name: 'projectId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['connector'], operation: ['listInstallations', 'getInstallation'] } },
+      },
+      {
+        displayName: 'Status',
+        name: 'connectorStatus',
+        type: 'options',
+        options: [
+          { name: 'All Lanes', value: '' },
+          { name: 'Available Now', value: 'available' },
+          { name: 'Coming Soon', value: 'coming_soon' },
+          { name: 'Experimental', value: 'beta' },
+          { name: 'Paused', value: 'paused' },
+          { name: 'Under Development', value: 'in_development' },
+        ],
+        default: '',
+        description: 'Narrow the directory to one lane',
+        displayOptions: { show: { resource: ['connector'], operation: ['list'] } },
+      },
+
       // === DISTRIBUTION ===
       {
         displayName: 'Operation',
@@ -2412,6 +2462,8 @@ async function dispatch(
       return dispatchActivity.call(this, operation, i);
     case 'bot':
       return dispatchBot.call(this, operation, i);
+    case 'connector':
+      return dispatchConnector.call(this, operation, i);
     case 'distribution':
       return dispatchDistribution.call(this, operation, i);
     case 'analytics':
@@ -3884,6 +3936,39 @@ async function dispatchBot(
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown bot operation: ${operation}`);
+}
+
+async function dispatchConnector(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  if (operation === 'list') {
+    const status = this.getNodeParameter('connectorStatus', i, '') as string;
+    const qs: IDataObject = status ? { status } : {};
+
+    return subscribyApiRequest.call(this, 'GET', '/connectors', {}, qs);
+  }
+
+  if (operation === 'get') {
+    const connectorKey = this.getNodeParameter('connectorKey', i) as string;
+
+    return subscribyApiRequest.call(this, 'GET', `/connectors/${encodeURIComponent(connectorKey)}`);
+  }
+
+  const projectId = this.getNodeParameter('projectId', i) as string;
+
+  if (operation === 'listInstallations') {
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/connectors`);
+  }
+
+  if (operation === 'getInstallation') {
+    const connectorKey = this.getNodeParameter('connectorKey', i) as string;
+
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/connectors/${encodeURIComponent(connectorKey)}/installation`);
+  }
+
+  throw new NodeOperationError(this.getNode(), `Unknown connector operation: ${operation}`);
 }
 
 async function dispatchDistribution(
