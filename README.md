@@ -5,7 +5,7 @@
 Provides two nodes:
 
 - **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, plans, projects, project resources, payment methods, bot connectivity, billing, groups, roles, teams, team members, member support conversations, saved replies and inbox settings, and message broadcasts (124 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
-- **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 26 resources across creator-facing surfaces (projects, plans, pass windows, subscriptions, subscribers, members, broadcasts, support conversations, canned replies, support inbox settings, coupons, creator tasks, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, bot status, distribution links).
+- **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 28 resources across creator-facing surfaces (projects, plans, pass windows, subscriptions, subscribers, members, broadcasts, support conversations, canned replies, support inbox settings, coupons, creator tasks, the Disaster Recovery ledger, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, bot status, distribution links).
 
 ## Installation
 
@@ -30,7 +30,7 @@ Restart the n8n process after install.
 
 1. Mint an API token at `https://app.subscriby.net/settings/tokens`. Every token is auto-bound to a team (`scope:team:<uuid>`); you pick the abilities it carries. See the [ability catalogue](https://docs.subscriby.net/api/abilities) for the full list. Minimums per use-case:
    - **Trigger node** — `webhook-endpoint:manage`. Restrict to a single project by also scoping the token to that project (`scope:project:<uuid>`).
-   - **Read-only workflows** — combine `*:view` / `*:view-any` abilities for the resources you list or fetch (e.g. `project:view-any`, `project-subscription:view`, `project-subscription-plan:view`, `project-access-code:view-any`, `team-member:view-any`, `role:view`, `group:view`, `activity:read`, `dashboard:read`, `distribution:read`, `billing:read`).
+   - **Read-only workflows** — combine `*:view` / `*:view-any` abilities for the resources you list or fetch (e.g. `project:view-any`, `project-subscription:view`, `project-subscription-plan:view`, `project-access-code:view-any`, `team-member:view-any`, `role:view`, `group:view`, `project-recovery:view-any`, `activity:read`, `dashboard:read`, `distribution:read`, `billing:read`).
    - **Write workflows** — add the matching `*:create` / `*:update` / `*:delete` abilities (e.g. `project:create`, `project-subscription-plan:update`, `project-access-code:create`, `project-resource:delete`). Cancelling a subscription is `project-subscription:update`; banning/kicking a member is `project-user:update`.
 2. In n8n, **Credentials → New → Subscriby API** and paste the `sbt_...` token. Leave the base URL at the default unless you are self-hosting.
 3. Add a **Subscriby Trigger** node, pick one or more events, optionally scope to a single project, and activate the workflow. On activation n8n registers the endpoint with Subscriby. Deactivating the workflow deletes the endpoint.
@@ -79,6 +79,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Access Code          | Bulk Generate, List, Delete, Preview                                                                             |
 | Coupon               | Create, Update, Activate, Deactivate, Delete, List, Get                                                          |
 | Creator Task         | List, Complete                                                                                                   |
+| Recovery             | Get Readiness, List Incidents, Get Incident, List Operations, Get Operation, Get Roll Call, Get Allowances       |
 | Resource             | Create, Update, Activate, Deactivate, List, Get, Unlink, Delete                                                  |
 | Payment Method       | List, Get, Activate, Deactivate, Sync Plans, Delete                                                              |
 | Distribution         | Get Bot Link, Get Portal URL, Get Deep Link                                                                      |

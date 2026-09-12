@@ -65,6 +65,7 @@ export class Subscriby implements INodeType {
           { name: 'Payment Method', value: 'paymentMethod' },
           { name: 'Plan', value: 'plan' },
           { name: 'Project', value: 'project' },
+          { name: 'Recovery', value: 'recovery' },
           { name: 'Resource', value: 'resource' },
           { name: 'Role', value: 'role' },
           { name: 'Subscriber', value: 'subscriber' },
@@ -1301,6 +1302,136 @@ export class Subscriby implements INodeType {
         ],
       },
 
+      // === RECOVERY ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['recovery'] } },
+        options: [
+          {
+            name: 'Get Allowances',
+            value: 'allowances',
+            action: 'Get recovery allowances',
+            description: 'How many self-service Disaster Recoveries of each kind the creator may still run, what support has released on top, and when the allowance returns',
+          },
+          {
+            name: 'Get Incident',
+            value: 'getIncident',
+            action: 'Get a recovery incident',
+            description: 'Fetch one Disaster Recovery incident by UUID',
+          },
+          {
+            name: 'Get Operation',
+            value: 'getOperation',
+            action: 'Get a recovery operation',
+            description: 'Fetch one Disaster Recovery operation by UUID, with whether it can still be undone',
+          },
+          {
+            name: 'Get Readiness',
+            value: 'readiness',
+            action: 'Get recovery readiness',
+            description: 'The Disaster Recovery readiness checklist for the creator: every line with its state, and the totals',
+          },
+          {
+            name: 'Get Roll Call',
+            value: 'rollCall',
+            action: 'Get a recovery roll call',
+            description: 'Where the re-admission after one channel recovery stands: members re-admitted, joined, still outside, and whether a reminder may go out now',
+          },
+          {
+            name: 'List Incidents',
+            value: 'listIncidents',
+            action: 'List recovery incidents',
+            description: 'What the health probes found broken (open by default), with the reason in the connector\'s words',
+          },
+          {
+            name: 'List Operations',
+            value: 'listOperations',
+            action: 'List recovery operations',
+            description: 'Every recovery ever run, by the creator, the platform or on demand, with its state and undo window',
+          },
+        ],
+        default: 'listIncidents',
+      },
+      {
+        displayName: 'Incident ID',
+        name: 'incidentId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['recovery'], operation: ['getIncident'] } },
+        description: 'UUID of the incident, from List Incidents',
+      },
+      {
+        displayName: 'Operation ID',
+        name: 'operationId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['recovery'], operation: ['getOperation', 'rollCall'] } },
+        description: 'UUID of the recovery operation, from List Operations',
+      },
+      {
+        displayName: 'Filters',
+        name: 'recoveryIncidentFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['recovery'], operation: ['listIncidents'] } },
+        options: [
+          {
+            displayName: 'Status',
+            name: 'status',
+            type: 'options',
+            options: [
+              { name: 'Open', value: 'open', description: 'Still needing attention (the default)' },
+              { name: 'Resolved', value: 'resolved' },
+              { name: 'All', value: 'all' },
+            ],
+            default: 'open',
+          },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+        ],
+      },
+      {
+        displayName: 'Filters',
+        name: 'recoveryOperationFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['recovery'], operation: ['listOperations'] } },
+        options: [
+          {
+            displayName: 'Kind',
+            name: 'kind',
+            type: 'options',
+            options: [
+              { name: 'Account', value: 'account' },
+              { name: 'Bot', value: 'bot' },
+              { name: 'Channels & Groups', value: 'resources' },
+            ],
+            default: 'resources',
+          },
+          {
+            displayName: 'Status',
+            name: 'status',
+            type: 'options',
+            options: [
+              { name: 'In Progress', value: 'started' },
+              { name: 'Completed', value: 'completed' },
+              { name: 'Failed', value: 'failed' },
+              { name: 'Reverted', value: 'reverted' },
+            ],
+            default: 'completed',
+          },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+        ],
+      },
+
       // === RESOURCE ===
       {
         displayName: 'Operation',
@@ -2111,6 +2242,8 @@ async function dispatch(
       return dispatchCoupon.call(this, operation, i);
     case 'creatorTask':
       return dispatchCreatorTask.call(this, operation, i);
+    case 'recovery':
+      return dispatchRecovery.call(this, operation, i);
     case 'subscriber':
       return dispatchSubscriber.call(this, operation, i);
     case 'accessCode':
@@ -3074,6 +3207,64 @@ async function dispatchCreatorTask(
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown creator task operation: ${operation}`);
+}
+
+async function dispatchRecovery(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  if (operation === 'readiness') {
+    return subscribyApiRequest.call(this, 'GET', '/recovery/readiness');
+  }
+
+  if (operation === 'allowances') {
+    return subscribyApiRequest.call(this, 'GET', '/recovery/allowances');
+  }
+
+  if (operation === 'listIncidents') {
+    const filters = this.getNodeParameter('recoveryIncidentFilters', i, {}) as IDataObject;
+    const qs: IDataObject = {};
+    if (filters.status) {
+      qs.status = filters.status;
+    }
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', '/recovery/incidents', qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(this, 'GET', '/recovery/incidents', undefined, qs);
+  }
+
+  if (operation === 'getIncident') {
+    const incidentId = this.getNodeParameter('incidentId', i) as string;
+    return subscribyApiRequest.call(this, 'GET', `/recovery/incidents/${incidentId}`);
+  }
+
+  if (operation === 'listOperations') {
+    const filters = this.getNodeParameter('recoveryOperationFilters', i, {}) as IDataObject;
+    const qs: IDataObject = {};
+    if (filters.kind) {
+      qs.kind = filters.kind;
+    }
+    if (filters.status) {
+      qs.status = filters.status;
+    }
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', '/recovery/operations', qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(this, 'GET', '/recovery/operations', undefined, qs);
+  }
+
+  if (operation === 'getOperation' || operation === 'rollCall') {
+    const operationId = this.getNodeParameter('operationId', i) as string;
+    const suffix = operation === 'rollCall' ? '/roll-call' : '';
+    return subscribyApiRequest.call(this, 'GET', `/recovery/operations/${operationId}${suffix}`);
+  }
+
+  throw new NodeOperationError(this.getNode(), `Unknown recovery operation: ${operation}`);
 }
 
 async function dispatchCannedReply(
