@@ -109,6 +109,7 @@ export const EVENT_CATALOG = [
   { family: 'Recovery', name: 'Recovery — Operation Failed', value: 'recovery.operation_failed' },
   { family: 'Recovery', name: 'Recovery — Operation Reverted', value: 'recovery.operation_reverted' },
   { family: 'Recovery', name: 'Recovery — Operation Started', value: 'recovery.operation_started' },
+  { family: 'Recovery', name: 'Recovery — Readiness Changed', value: 'recovery.readiness_changed' },
   { family: 'Recovery', name: 'Recovery — Resource Failed Over', value: 'recovery.resource_failed_over' },
   { family: 'Recovery', name: 'Recovery — Resource Replaced', value: 'recovery.resource_replaced' },
   { family: 'Recovery', name: 'Recovery — Standby Registered', value: 'recovery.standby_registered' },
