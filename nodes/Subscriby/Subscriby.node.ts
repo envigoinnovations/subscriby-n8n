@@ -1901,6 +1901,7 @@ export class Subscriby implements INodeType {
           },
           { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
           { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+          { displayName: 'Search', name: 'search', type: 'string', default: '', description: 'Words a title or body must contain' },
           { displayName: 'Unread Only', name: 'unread', type: 'boolean', default: false, description: 'Whether to list only the entries not yet read' },
         ],
       },
@@ -3752,6 +3753,9 @@ async function dispatchNotification(
     }
     if (filters.class) {
       qs.class = filters.class;
+    }
+    if (filters.search) {
+      qs.q = filters.search;
     }
     if (filters.returnAll === true) {
       const rows = await subscribyApiRequestAllItems.call(this, 'GET', '/me/notifications', qs);
