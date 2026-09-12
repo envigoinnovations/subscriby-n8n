@@ -2211,11 +2211,11 @@ export class Subscriby implements INodeType {
         displayOptions: { show: { resource: ['connector'] } },
         options: [
           { name: 'Disconnect', value: 'disconnect', action: 'Disconnect a connector', description: "Disconnect a project's installation: the connector withdraws it, the credentials are wiped, the row stays and members keep their access" },
-          { name: 'Get', value: 'get', action: 'Get a connector', description: 'Fetch one Connector Directory card by key: its lane, badges, manifest and the form that connects it' },
+          { name: 'Get', value: 'get', action: 'Get a connector', description: 'Fetch one Connectors Marketplace card by key: its lane, badges, manifest and the form that connects it' },
           { name: 'Get Installation', value: 'getInstallation', action: 'Get a connector installation', description: "Fetch a project's live installation of one connector, with its state and health" },
           { name: 'Get Uninstall Preview', value: 'getUninstallPreview', action: 'Get a connector uninstall preview', description: 'Show what uninstalling would touch, changing nothing: resources, live grants, emptied plans, the subscriptions on them' },
           { name: 'Install', value: 'install', action: 'Install a connector', description: 'Install a connector on a project as a pending installation the creator then connects from the dashboard' },
-          { name: 'List', value: 'list', action: 'List connectors', description: 'List the Connector Directory: every connector Subscriby knows, lane by lane, with its badges, manifest and connect form' },
+          { name: 'List', value: 'list', action: 'List connectors', description: 'List the Connectors Marketplace: every connector Subscriby knows, lane by lane, with its badges, manifest and connect form' },
           { name: 'List Installations', value: 'listInstallations', action: 'List connector installations', description: 'List every connector installation a project holds, live and standby, with its state and health' },
           { name: 'Uninstall', value: 'uninstall', action: 'Uninstall a connector', description: 'Revoke the grants, detach the resources and keep the row; the two opt-ins act on the plans left with nothing to grant' },
           { name: 'Update Settings', value: 'updateSettings', action: 'Update connector installation settings', description: "Change an installation's declared settings; keys are the field names the connector declares" },
