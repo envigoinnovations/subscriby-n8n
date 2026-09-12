@@ -4,6 +4,7 @@ import type {
   INodeType,
   INodeTypeDescription,
   IDataObject,
+  IHttpRequestMethods,
 } from 'n8n-workflow';
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 import {
@@ -1341,6 +1342,18 @@ export class Subscriby implements INodeType {
             description: 'Where the re-admission after one channel recovery stands: members re-admitted, joined, still outside, and whether a reminder may go out now',
           },
           {
+            name: 'Get Settings',
+            value: 'getSettings',
+            action: 'Get recovery settings',
+            description: "One project's Disaster Recovery settings: automatic failover and its fee consent, how members are told after a swap, whether a standby installation is kept",
+          },
+          {
+            name: 'Get Standby',
+            value: 'getStandby',
+            action: 'Get a resource standby',
+            description: 'The standby kept for one resource: health, mirror switch, when it was last probed and written to',
+          },
+          {
             name: 'List Incidents',
             value: 'listIncidents',
             action: 'List recovery incidents',
@@ -1352,8 +1365,135 @@ export class Subscriby implements INodeType {
             action: 'List recovery operations',
             description: 'Every recovery ever run, by the creator, the platform or on demand, with its state and undo window',
           },
+          {
+            name: 'Notify Members',
+            value: 'notifyMembers',
+            action: 'Notify members of a recovery',
+            description: 'Email every member the project can reach that its bot changed after a bot replacement, at the per-email fee; sent once per recovery',
+          },
+          {
+            name: 'Nudge Pending Readmissions',
+            value: 'nudge',
+            action: 'Nudge pending readmissions',
+            description: 'Remind, with a fresh link, every member a channel recovery re-admitted who has not joined yet',
+          },
+          {
+            name: 'Remove Standby',
+            value: 'removeStandby',
+            action: 'Remove a resource standby',
+            description: 'Stop keeping a standby for one resource; the chat itself is untouched',
+          },
+          {
+            name: 'Remove Standby Installation',
+            value: 'removeStandbyInstallation',
+            action: 'Remove a standby installation',
+            description: "Stop keeping the standby installation (the spare bot) registered for a project",
+          },
+          {
+            name: 'Request Replacement',
+            value: 'requestReplacement',
+            action: 'Request a resource replacement',
+            description: "Ask the creator, through the connector, to pick the chat that replaces a resource's; the swap runs when they choose",
+          },
+          {
+            name: 'Request Standby',
+            value: 'requestStandby',
+            action: 'Request a resource standby',
+            description: 'Ask the creator, through the connector, to pick the chat that becomes the standby for one resource',
+          },
+          {
+            name: 'Revert',
+            value: 'revert',
+            action: 'Revert a recovery operation',
+            description: 'Undo a completed recovery inside its window: a swapped channel put back (name the resource), or the previous sign-in account restored',
+          },
+          {
+            name: 'Set Standby Mirror',
+            value: 'setStandbyMirror',
+            action: 'Set a resource standby mirror',
+            description: "Switch the live mirror into a resource's standby on or off",
+          },
+          {
+            name: 'Update Settings',
+            value: 'updateSettings',
+            action: 'Update recovery settings',
+            description: 'Change automatic failover (with the fee consent) and how members are told after a swap; fields left out keep their value',
+          },
+          {
+            name: 'Use Standby',
+            value: 'useStandby',
+            action: 'Use a resource standby',
+            description: 'Swap a resource onto its standby now: old links revoked, every active member re-admitted, the standby consumed',
+          },
+          {
+            name: 'Withdraw Replacement Request',
+            value: 'withdrawReplacementRequest',
+            action: 'Withdraw a resource replacement request',
+            description: 'Take back the replacement request the creator has open on the connector',
+          },
+          {
+            name: 'Withdraw Standby Request',
+            value: 'withdrawStandbyRequest',
+            action: 'Withdraw a resource standby request',
+            description: 'Take back the standby request the creator has open on the connector',
+          },
         ],
         default: 'listIncidents',
+      },
+      {
+        displayName: 'Project ID',
+        name: 'projectId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['recovery'], operation: ['getSettings', 'updateSettings', 'removeStandbyInstallation'] } },
+      },
+      {
+        displayName: 'Resource ID',
+        name: 'resourceId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['recovery'], operation: ['getStandby', 'requestStandby', 'withdrawStandbyRequest', 'useStandby', 'removeStandby', 'setStandbyMirror', 'requestReplacement', 'withdrawReplacementRequest'] } },
+        description: 'UUID of the resource; the withdraw operations take back the creator\'s open request whichever resource it was for',
+      },
+      {
+        displayName: 'Mirror',
+        name: 'mirror',
+        type: 'boolean',
+        default: true,
+        displayOptions: { show: { resource: ['recovery'], operation: ['setStandbyMirror'] } },
+        description: 'Whether every post is copied into the standby as it is made',
+      },
+      {
+        displayName: 'Resource ID (Channel Recovery)',
+        name: 'revertResourceId',
+        type: 'string',
+        default: '',
+        displayOptions: { show: { resource: ['recovery'], operation: ['revert'] } },
+        description: 'For a channel recovery, the resource to put back on its old chat. Leave blank for an account relink.',
+      },
+      {
+        displayName: 'Settings',
+        name: 'recoverySettingsFields',
+        type: 'collection',
+        placeholder: 'Add Setting',
+        default: {},
+        displayOptions: { show: { resource: ['recovery'], operation: ['updateSettings'] } },
+        options: [
+          { displayName: 'Auto Failover', name: 'autoFailover', type: 'boolean', default: false, description: 'Whether the platform may swap a banned channel for its standby on its own' },
+          { displayName: 'Accepts Email Fee', name: 'acceptsEmailFee', type: 'boolean', default: false, description: 'Whether the creator accepts the per-email fee a failover may charge; required when switching failover on' },
+          {
+            displayName: 'Email Delivery',
+            name: 'emailDelivery',
+            type: 'options',
+            options: [
+              { name: 'Self', value: 'self', description: 'The creator tells members after a swap' },
+              { name: 'Platform', value: 'platform', description: 'Subscriby emails members at the per-email fee' },
+            ],
+            default: 'self',
+          },
+        ],
       },
       {
         displayName: 'Incident ID',
@@ -1370,7 +1510,7 @@ export class Subscriby implements INodeType {
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['recovery'], operation: ['getOperation', 'rollCall'] } },
+        displayOptions: { show: { resource: ['recovery'], operation: ['getOperation', 'rollCall', 'revert', 'nudge', 'notifyMembers'] } },
         description: 'UUID of the recovery operation, from List Operations',
       },
       {
@@ -3264,7 +3404,93 @@ async function dispatchRecovery(
     return subscribyApiRequest.call(this, 'GET', `/recovery/operations/${operationId}${suffix}`);
   }
 
+  if (operation === 'revert') {
+    const operationId = this.getNodeParameter('operationId', i) as string;
+    const resourceId = this.getNodeParameter('revertResourceId', i, '') as string;
+    const body: IDataObject = {};
+    if (resourceId) {
+      body.resource_id = resourceId;
+    }
+    return subscribyApiRequest.call(this, 'POST', `/recovery/operations/${operationId}/revert`, body);
+  }
+
+  if (operation === 'nudge' || operation === 'notifyMembers') {
+    const operationId = this.getNodeParameter('operationId', i) as string;
+    const verb = operation === 'nudge' ? 'nudge' : 'notify-members';
+    return subscribyApiRequest.call(this, 'POST', `/recovery/operations/${operationId}/${verb}`);
+  }
+
+  if (operation === 'getSettings') {
+    const projectId = this.getNodeParameter('projectId', i) as string;
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/recovery/settings`);
+  }
+
+  if (operation === 'updateSettings') {
+    const projectId = this.getNodeParameter('projectId', i) as string;
+    const fields = this.getNodeParameter('recoverySettingsFields', i, {}) as IDataObject;
+    const body: IDataObject = {};
+    if (fields.autoFailover !== undefined) {
+      body.auto_failover = fields.autoFailover;
+    }
+    if (fields.acceptsEmailFee !== undefined) {
+      body.accepts_email_fee = fields.acceptsEmailFee;
+    }
+    if (fields.emailDelivery) {
+      body.email_delivery = fields.emailDelivery;
+    }
+    return subscribyApiRequest.call(this, 'PATCH', `/projects/${projectId}/recovery/settings`, body);
+  }
+
+  if (operation === 'removeStandbyInstallation') {
+    const projectId = this.getNodeParameter('projectId', i) as string;
+    return subscribyApiRequest.call(this, 'DELETE', `/projects/${projectId}/recovery/standby-installation`);
+  }
+
+  const resourceOperations: Record<string, [IHttpRequestMethods, string]> = {
+    getStandby: ['GET', '/standby'],
+    requestStandby: ['POST', '/standby/request'],
+    withdrawStandbyRequest: ['DELETE', '/standby/request'],
+    useStandby: ['POST', '/standby/use'],
+    removeStandby: ['DELETE', '/standby'],
+    requestReplacement: ['POST', '/replacement/request'],
+    withdrawReplacementRequest: ['DELETE', '/replacement/request'],
+  };
+
+  if (resourceOperations[operation]) {
+    const resourceId = this.getNodeParameter('resourceId', i) as string;
+    const projectId = await recoveryProjectIdOfResource.call(this, resourceId);
+    const [method, suffix] = resourceOperations[operation];
+    return subscribyApiRequest.call(this, method, `/projects/${projectId}/resources/${resourceId}${suffix}`);
+  }
+
+  if (operation === 'setStandbyMirror') {
+    const resourceId = this.getNodeParameter('resourceId', i) as string;
+    const projectId = await recoveryProjectIdOfResource.call(this, resourceId);
+    const mirror = this.getNodeParameter('mirror', i) as boolean;
+    return subscribyApiRequest.call(this, 'PATCH', `/projects/${projectId}/resources/${resourceId}/standby`, { mirror });
+  }
+
   throw new NodeOperationError(this.getNode(), `Unknown recovery operation: ${operation}`);
+}
+
+/**
+ * The project a resource belongs to, so the standby routes can be built from
+ * the resource alone: the API keys them under the project, the node asks for
+ * the resource only.
+ */
+async function recoveryProjectIdOfResource(this: IExecuteFunctions, resourceId: string): Promise<string> {
+  const projects = await subscribyApiRequestAllItems.call(this, 'GET', '/projects');
+
+  for (const project of projects) {
+    const projectId = String((project as IDataObject).id);
+    const resources = await subscribyApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/resources`);
+
+    if (resources.some((resource) => String((resource as IDataObject).id) === resourceId)) {
+      return projectId;
+    }
+  }
+
+  throw new NodeOperationError(this.getNode(), `Resource ${resourceId} was not found on any project the token can see.`);
 }
 
 async function dispatchCannedReply(
