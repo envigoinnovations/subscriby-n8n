@@ -30,6 +30,7 @@ export const EVENT_CATALOG = [
   { family: 'Connector', name: 'Connector — Installed', value: 'connector.installed' },
   { family: 'Connector', name: 'Connector — Settings Updated', value: 'connector.settings_updated' },
   { family: 'Connector', name: 'Connector — Status Changed', value: 'connector.status_changed' },
+  { family: 'Connector', name: 'Connector — Uninstalled', value: 'connector.uninstalled' },
   { family: 'Coupon', name: 'Coupon — Activated', value: 'coupon.activated' },
   { family: 'Coupon', name: 'Coupon — Created', value: 'coupon.created' },
   { family: 'Coupon', name: 'Coupon — Deactivated', value: 'coupon.deactivated' },

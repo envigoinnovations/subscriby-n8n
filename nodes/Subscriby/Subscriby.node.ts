@@ -2213,9 +2213,11 @@ export class Subscriby implements INodeType {
           { name: 'Disconnect', value: 'disconnect', action: 'Disconnect a connector', description: "Disconnect a project's installation: the connector withdraws it, the credentials are wiped, the row stays and members keep their access" },
           { name: 'Get', value: 'get', action: 'Get a connector', description: 'Fetch one Connector Directory card by key: its lane, badges, manifest and the form that connects it' },
           { name: 'Get Installation', value: 'getInstallation', action: 'Get a connector installation', description: "Fetch a project's live installation of one connector, with its state and health" },
+          { name: 'Get Uninstall Preview', value: 'getUninstallPreview', action: 'Get a connector uninstall preview', description: 'Show what uninstalling would touch, changing nothing: resources, live grants, emptied plans, the subscriptions on them' },
           { name: 'Install', value: 'install', action: 'Install a connector', description: 'Install a connector on a project as a pending installation the creator then connects from the dashboard' },
           { name: 'List', value: 'list', action: 'List connectors', description: 'List the Connector Directory: every connector Subscriby knows, lane by lane, with its badges, manifest and connect form' },
           { name: 'List Installations', value: 'listInstallations', action: 'List connector installations', description: 'List every connector installation a project holds, live and standby, with its state and health' },
+          { name: 'Uninstall', value: 'uninstall', action: 'Uninstall a connector', description: 'Revoke the grants, detach the resources and keep the row; the two opt-ins act on the plans left with nothing to grant' },
           { name: 'Update Settings', value: 'updateSettings', action: 'Update connector installation settings', description: "Change an installation's declared settings; keys are the field names the connector declares" },
           { name: 'Verify', value: 'verify', action: 'Verify a connector installation', description: 'Ask the connector whether the installation still answers and record the verdict' },
         ],
@@ -2228,7 +2230,7 @@ export class Subscriby implements INodeType {
         default: '',
         required: true,
         description: 'The connector key as the List operation returns it, for example telegram',
-        displayOptions: { show: { resource: ['connector'], operation: ['get', 'getInstallation', 'install', 'verify', 'updateSettings', 'disconnect'] } },
+        displayOptions: { show: { resource: ['connector'], operation: ['get', 'getInstallation', 'install', 'verify', 'updateSettings', 'disconnect', 'getUninstallPreview', 'uninstall'] } },
       },
       {
         displayName: 'Project ID',
@@ -2236,7 +2238,7 @@ export class Subscriby implements INodeType {
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['connector'], operation: ['listInstallations', 'getInstallation', 'install', 'verify', 'updateSettings', 'disconnect'] } },
+        displayOptions: { show: { resource: ['connector'], operation: ['listInstallations', 'getInstallation', 'install', 'verify', 'updateSettings', 'disconnect', 'getUninstallPreview', 'uninstall'] } },
       },
       {
         displayName: 'Settings',
@@ -2246,6 +2248,22 @@ export class Subscriby implements INodeType {
         required: true,
         description: 'The fields to change as a JSON object keyed by the names the connector declares in its settings fields; fields left out keep their value',
         displayOptions: { show: { resource: ['connector'], operation: ['updateSettings'] } },
+      },
+      {
+        displayName: 'Unpublish Emptied Plans',
+        name: 'unpublishEmptiedPlans',
+        type: 'boolean',
+        default: true,
+        description: 'Whether to take the plans left with nothing to grant off sale',
+        displayOptions: { show: { resource: ['connector'], operation: ['uninstall'] } },
+      },
+      {
+        displayName: 'Cancel Recurring Subscriptions',
+        name: 'cancelRecurringSubscriptions',
+        type: 'boolean',
+        default: true,
+        description: 'Whether to cancel the live recurring subscriptions on those plans at the end of their paid period and email each member; one-time purchases are never cancelled',
+        displayOptions: { show: { resource: ['connector'], operation: ['uninstall'] } },
       },
       {
         displayName: 'Status',
@@ -3999,6 +4017,19 @@ async function dispatchConnector(
 
   if (operation === 'disconnect') {
     return subscribyApiRequest.call(this, 'DELETE', installationPath);
+  }
+
+  if (operation === 'getUninstallPreview') {
+    return subscribyApiRequest.call(this, 'GET', `${installationPath.replace(/\/installation$/, '')}/uninstall-preview`);
+  }
+
+  if (operation === 'uninstall') {
+    const body: IDataObject = {
+      unpublish_emptied_plans: this.getNodeParameter('unpublishEmptiedPlans', i, true) as boolean,
+      cancel_recurring_subscriptions: this.getNodeParameter('cancelRecurringSubscriptions', i, true) as boolean,
+    };
+
+    return subscribyApiRequest.call(this, 'DELETE', `/projects/${projectId}/connectors/${encodeURIComponent(connectorKey)}`, body);
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown connector operation: ${operation}`);
