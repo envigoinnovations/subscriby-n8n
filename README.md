@@ -87,7 +87,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Distribution         | Get Bot Link, Get Portal URL, Get Deep Link                                                                      |
 | Bot                  | Get Status, Disconnect                                                                                           |
 | Connector            | List, Get, List Installations, Get Installation, Install, Verify, Update Settings, Disconnect, Get Uninstall Preview, Uninstall |
-| Analytics            | Get Dashboard, Get Earnings, Get Subscribers, Get Transaction Breakdown, Get Plan Performance, List Transactions |
+| Analytics            | Get Dashboard, Get Earnings, Get Subscribers, Get Connector Analytics, Get Transaction Breakdown, Get Plan Performance, List Transactions |
 | Activity             | List                                                                                                             |
 | Account              | Get Me                                                                                                           |
 | Notification         | List, Mark Read, Mark All Read                                                                                   |

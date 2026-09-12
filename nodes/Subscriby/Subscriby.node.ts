@@ -2398,6 +2398,7 @@ export class Subscriby implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['analytics'] } },
         options: [
+          { name: 'Get Connector Analytics', value: 'getConnectorAnalytics', action: 'Get connector analytics', description: 'Fetch members, access and revenue per connector' },
           { name: 'Get Dashboard', value: 'getDashboard', action: 'Get dashboard analytics', description: 'Fetch aggregated dashboard metrics' },
           { name: 'Get Earnings', value: 'getEarnings', action: 'Get earnings analytics', description: 'Fetch earnings time-series data' },
           { name: 'Get Plan Performance', value: 'getPlanPerformance', action: 'Get plan performance', description: 'Fetch per-plan performance analytics for a project' },
@@ -2451,6 +2452,7 @@ export class Subscriby implements INodeType {
           show: {
             resource: ['analytics'],
             operation: [
+              'getConnectorAnalytics',
               'getDashboard',
               'getEarnings',
               'getSubscribers',
@@ -4214,6 +4216,10 @@ async function dispatchAnalytics(
     if (value !== undefined && value !== '') {
       qs[key as string] = value;
     }
+  }
+
+  if (operation === 'getConnectorAnalytics') {
+    return subscribyApiRequest.call(this, 'GET', '/analytics/connectors', undefined, qs);
   }
 
   if (operation === 'getDashboard') {
