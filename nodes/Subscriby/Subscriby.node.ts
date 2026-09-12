@@ -2210,10 +2210,14 @@ export class Subscriby implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['connector'] } },
         options: [
+          { name: 'Disconnect', value: 'disconnect', action: 'Disconnect a connector', description: "Disconnect a project's installation: the connector withdraws it, the credentials are wiped, the row stays and members keep their access" },
           { name: 'Get', value: 'get', action: 'Get a connector', description: 'Fetch one Connector Directory card by key: its lane, badges, manifest and the form that connects it' },
           { name: 'Get Installation', value: 'getInstallation', action: 'Get a connector installation', description: "Fetch a project's live installation of one connector, with its state and health" },
+          { name: 'Install', value: 'install', action: 'Install a connector', description: 'Install a connector on a project as a pending installation the creator then connects from the dashboard' },
           { name: 'List', value: 'list', action: 'List connectors', description: 'List the Connector Directory: every connector Subscriby knows, lane by lane, with its badges, manifest and connect form' },
           { name: 'List Installations', value: 'listInstallations', action: 'List connector installations', description: 'List every connector installation a project holds, live and standby, with its state and health' },
+          { name: 'Update Settings', value: 'updateSettings', action: 'Update connector installation settings', description: "Change an installation's declared settings; keys are the field names the connector declares" },
+          { name: 'Verify', value: 'verify', action: 'Verify a connector installation', description: 'Ask the connector whether the installation still answers and record the verdict' },
         ],
         default: 'list',
       },
@@ -2224,7 +2228,7 @@ export class Subscriby implements INodeType {
         default: '',
         required: true,
         description: 'The connector key as the List operation returns it, for example telegram',
-        displayOptions: { show: { resource: ['connector'], operation: ['get', 'getInstallation'] } },
+        displayOptions: { show: { resource: ['connector'], operation: ['get', 'getInstallation', 'install', 'verify', 'updateSettings', 'disconnect'] } },
       },
       {
         displayName: 'Project ID',
@@ -2232,7 +2236,16 @@ export class Subscriby implements INodeType {
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['connector'], operation: ['listInstallations', 'getInstallation'] } },
+        displayOptions: { show: { resource: ['connector'], operation: ['listInstallations', 'getInstallation', 'install', 'verify', 'updateSettings', 'disconnect'] } },
+      },
+      {
+        displayName: 'Settings',
+        name: 'connectorSettings',
+        type: 'json',
+        default: '{}',
+        required: true,
+        description: 'The fields to change as a JSON object keyed by the names the connector declares in its settings fields; fields left out keep their value',
+        displayOptions: { show: { resource: ['connector'], operation: ['updateSettings'] } },
       },
       {
         displayName: 'Status',
@@ -3962,10 +3975,30 @@ async function dispatchConnector(
     return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/connectors`);
   }
 
-  if (operation === 'getInstallation') {
-    const connectorKey = this.getNodeParameter('connectorKey', i) as string;
+  const connectorKey = this.getNodeParameter('connectorKey', i) as string;
+  const installationPath = `/projects/${projectId}/connectors/${encodeURIComponent(connectorKey)}/installation`;
 
-    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/connectors/${encodeURIComponent(connectorKey)}/installation`);
+  if (operation === 'getInstallation') {
+    return subscribyApiRequest.call(this, 'GET', installationPath);
+  }
+
+  if (operation === 'install') {
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/connectors/${encodeURIComponent(connectorKey)}`);
+  }
+
+  if (operation === 'verify') {
+    return subscribyApiRequest.call(this, 'POST', `${installationPath}/verify`);
+  }
+
+  if (operation === 'updateSettings') {
+    const raw = this.getNodeParameter('connectorSettings', i, '{}');
+    const settings = typeof raw === 'string' ? (JSON.parse(raw) as IDataObject) : (raw as IDataObject);
+
+    return subscribyApiRequest.call(this, 'PATCH', `${installationPath}/settings`, { settings });
+  }
+
+  if (operation === 'disconnect') {
+    return subscribyApiRequest.call(this, 'DELETE', installationPath);
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown connector operation: ${operation}`);
