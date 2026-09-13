@@ -122,16 +122,6 @@ export class Subscriby implements INodeType {
         description: 'URL-safe handle (lowercase letters, numbers, hyphens)',
       },
       {
-        displayName: 'Platform',
-        name: 'platform',
-        type: 'options',
-        options: [
-          { name: 'Telegram', value: 'telegram' },
-        ],
-        default: 'telegram',
-        displayOptions: { show: { resource: ['project'], operation: ['create'] } },
-      },
-      {
         displayName: 'Project ID',
         name: 'projectId',
         type: 'string',
@@ -2613,7 +2603,6 @@ async function dispatchProject(
     const body = compactBody({
       name: this.getNodeParameter('name', i) as string,
       handle: this.getNodeParameter('handle', i) as string,
-      platform: this.getNodeParameter('platform', i) as string,
     });
     return subscribyApiRequest.call(this, 'POST', '/projects', body);
   }
