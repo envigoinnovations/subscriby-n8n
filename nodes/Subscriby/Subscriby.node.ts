@@ -1588,6 +1588,7 @@ export class Subscriby implements INodeType {
           { name: 'Delete', value: 'delete', action: 'Delete a resource', description: 'Permanently delete a resource' },
           { name: 'Get', value: 'get', action: 'Get a resource', description: 'Fetch a resource by UUID' },
           { name: 'List', value: 'list', action: 'List resources', description: 'List all resources attached to a project' },
+          { name: 'Request Link', value: 'requestLink', action: 'Request a resource link', description: 'Ask the creator, through the connector, to pick the channel, group or supergroup a new resource will be; it appears when they choose' },
           { name: 'Unlink', value: 'unlink', action: 'Unlink a resource', description: 'Detach a resource from delivery without deleting it' },
           { name: 'Update', value: 'update', action: 'Update a resource', description: 'Change the title, description or switch. Fields you leave out keep their stored values.' },
         ],
@@ -1609,6 +1610,20 @@ export class Subscriby implements INodeType {
         required: true,
         displayOptions: { show: { resource: ['resource'], operation: ['get', 'unlink', 'delete', 'update', 'activate', 'deactivate'] } },
         description: 'UUID of the resource',
+      },
+      {
+        displayName: 'Kind',
+        name: 'kind',
+        type: 'options',
+        options: [
+          { name: 'Channel', value: 'channel' },
+          { name: 'Group', value: 'group' },
+          { name: 'Supergroup', value: 'supergroup' },
+        ],
+        default: 'channel',
+        required: true,
+        description: 'The kind of place the connector should ask the creator to pick',
+        displayOptions: { show: { resource: ['resource'], operation: ['requestLink'] } },
       },
       {
         displayName: 'Title',
@@ -3210,6 +3225,12 @@ async function dispatchResource(
   if (operation === 'get') {
     const resourceId = this.getNodeParameter('resourceId', i) as string;
     return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/resources/${resourceId}`);
+  }
+
+  if (operation === 'requestLink') {
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/resources/link-requests`, {
+      kind: this.getNodeParameter('kind', i) as string,
+    });
   }
 
   if (operation === 'unlink') {
