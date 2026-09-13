@@ -30,6 +30,8 @@ export const EVENT_CATALOG = [
   { family: 'Connector', name: 'Connector — Doctor Completed', value: 'connector.doctor_completed' },
   { family: 'Connector', name: 'Connector — Installed', value: 'connector.installed' },
   { family: 'Connector', name: 'Connector — Settings Updated', value: 'connector.settings_updated' },
+  { family: 'Connector', name: 'Connector — Outage Closed', value: 'connector.outage_closed' },
+  { family: 'Connector', name: 'Connector — Outage Opened', value: 'connector.outage_opened' },
   { family: 'Connector', name: 'Connector — Status Changed', value: 'connector.status_changed' },
   { family: 'Connector', name: 'Connector — Uninstalled', value: 'connector.uninstalled' },
   { family: 'Coupon', name: 'Coupon — Activated', value: 'coupon.activated' },
