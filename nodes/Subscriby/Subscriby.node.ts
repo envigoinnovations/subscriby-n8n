@@ -2332,8 +2332,15 @@ export class Subscriby implements INodeType {
         name: 'connectorSettings',
         type: 'json',
         default: '{}',
-        required: true,
-        description: 'The fields to change as a JSON object keyed by the names the connector declares in its settings fields; fields left out keep their value',
+        description: 'The fields to change as a JSON object keyed by the names the connector declares in its settings fields; fields left out keep their value. Leave empty to change only capability switches.',
+        displayOptions: { show: { resource: ['connector'], operation: ['updateSettings'] } },
+      },
+      {
+        displayName: 'Capability Switches',
+        name: 'connectorCapabilities',
+        type: 'json',
+        default: '{}',
+        description: 'Capabilities to switch on or off as a JSON object keyed by capability (messaging, broadcasts, support_relay, native_payments, recovery_probes, recovery_standby_installations, recovery_resource_standby, recovery_mirror, recovery_identity_relink) to true or false; a capability the connector does not declare, or one that cannot be switched off, is refused. Switches left out keep their value.',
         displayOptions: { show: { resource: ['connector'], operation: ['updateSettings'] } },
       },
       {
@@ -4151,8 +4158,19 @@ async function dispatchConnector(
   if (operation === 'updateSettings') {
     const raw = this.getNodeParameter('connectorSettings', i, '{}');
     const settings = typeof raw === 'string' ? (JSON.parse(raw) as IDataObject) : (raw as IDataObject);
+    const rawCapabilities = this.getNodeParameter('connectorCapabilities', i, '{}');
+    const capabilities = typeof rawCapabilities === 'string' ? (JSON.parse(rawCapabilities) as IDataObject) : (rawCapabilities as IDataObject);
+    const body: IDataObject = {};
 
-    return subscribyApiRequest.call(this, 'PATCH', `${installationPath}/settings`, { settings });
+    if (Object.keys(settings).length > 0) {
+      body.settings = settings;
+    }
+
+    if (Object.keys(capabilities).length > 0) {
+      body.capabilities = capabilities;
+    }
+
+    return subscribyApiRequest.call(this, 'PATCH', `${installationPath}/settings`, body);
   }
 
   if (operation === 'disconnect') {
