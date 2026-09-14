@@ -68,6 +68,7 @@ const INDIRECT_OPERATIONS = new Map([
   ["GET /projects/{}/connectors/{}/installation", "connector: installationPath variable"],
   ["POST /projects/{}/connectors/{}/installation/verify", "connector: installationPath variable"],
   ["POST /projects/{}/connectors/{}/installation/doctor", "connector: installationPath variable"],
+  ["POST /projects/{}/connectors/{}/installation/restore-access", "connector: installationPath variable"],
   ["PATCH /projects/{}/connectors/{}/installation/settings", "connector: installationPath variable"],
   ["DELETE /projects/{}/connectors/{}/installation", "connector: installationPath variable"],
   ["GET /projects/{}/connectors/{}/uninstall-preview", "connector: installationPath variable"],
