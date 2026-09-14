@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 191,
+    "count": 192,
     "items": [
         {
             "name": "api.v1.activity.index",
@@ -407,6 +407,14 @@
             "method": "POST",
             "uri": "/api/v1/projects/{project}/connectors/{key}/installation/doctor",
             "action": "App\\Http\\Controllers\\Api\\V1\\ProjectConnectorController@doctor",
+            "entity": "projects",
+            "required_ability": "project-connector:update"
+        },
+        {
+            "name": "api.v1.projects.connectors.restore-access",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/connectors/{key}/installation/restore-access",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ProjectConnectorController@restoreAccess",
             "entity": "projects",
             "required_ability": "project-connector:update"
         },
