@@ -1,0 +1,1759 @@
+{
+    "version": "2026-05-01",
+    "count": 148,
+    "items": [
+        {
+            "name": "project.created",
+            "family": "project",
+            "required_ability": "project:view",
+            "payload_keys": [
+                "project"
+            ]
+        },
+        {
+            "name": "project.updated",
+            "family": "project",
+            "required_ability": "project:view",
+            "payload_keys": [
+                "changes",
+                "project"
+            ]
+        },
+        {
+            "name": "project.archived",
+            "family": "project",
+            "required_ability": "project:view",
+            "payload_keys": [
+                "project"
+            ]
+        },
+        {
+            "name": "project.restored",
+            "family": "project",
+            "required_ability": "project:view",
+            "payload_keys": [
+                "project"
+            ]
+        },
+        {
+            "name": "project.deleted",
+            "family": "project",
+            "required_ability": "project:view",
+            "payload_keys": [
+                "project"
+            ]
+        },
+        {
+            "name": "project.bot.connected",
+            "family": "project",
+            "required_ability": "project:view",
+            "payload_keys": [
+                "bot_id",
+                "bot_name",
+                "bot_url",
+                "project_id"
+            ]
+        },
+        {
+            "name": "project.bot.disconnected",
+            "family": "project",
+            "required_ability": "project:view",
+            "payload_keys": [
+                "bot_id",
+                "project_id"
+            ]
+        },
+        {
+            "name": "project.bot.status_changed",
+            "family": "project",
+            "required_ability": "project:view",
+            "payload_keys": [
+                "bot_id",
+                "project_id",
+                "reason",
+                "status"
+            ]
+        },
+        {
+            "name": "project.resource.created",
+            "family": "project",
+            "required_ability": "project-resource:view",
+            "payload_keys": [
+                "resource"
+            ]
+        },
+        {
+            "name": "project.resource.linked",
+            "family": "project",
+            "required_ability": "project-resource:view",
+            "payload_keys": [
+                "chat_id",
+                "project_id",
+                "resource_id",
+                "title",
+                "type"
+            ]
+        },
+        {
+            "name": "project.resource.unlinked",
+            "family": "project",
+            "required_ability": "project-resource:view",
+            "payload_keys": [
+                "resource"
+            ]
+        },
+        {
+            "name": "project.resource.deleted",
+            "family": "project",
+            "required_ability": "project-resource:view",
+            "payload_keys": [
+                "resource"
+            ]
+        },
+        {
+            "name": "project.resource.updated",
+            "family": "project",
+            "required_ability": "project-resource:view",
+            "payload_keys": [
+                "changes",
+                "resource"
+            ]
+        },
+        {
+            "name": "project.resource.status_changed",
+            "family": "project",
+            "required_ability": "project-resource:view",
+            "payload_keys": [
+                "project_id",
+                "reason",
+                "resource_id",
+                "status"
+            ]
+        },
+        {
+            "name": "project.payment_method.updated",
+            "family": "project",
+            "required_ability": "project-payment-method:view",
+            "payload_keys": [
+                "changes",
+                "payment_method"
+            ]
+        },
+        {
+            "name": "project.payment_method.deleted",
+            "family": "project",
+            "required_ability": "project-payment-method:view",
+            "payload_keys": [
+                "payment_method"
+            ]
+        },
+        {
+            "name": "plan.created",
+            "family": "plan",
+            "required_ability": "project-subscription-plan:view",
+            "payload_keys": [
+                "duplicated_from_plan_id",
+                "kind",
+                "plan",
+                "plan_id",
+                "plan_name"
+            ]
+        },
+        {
+            "name": "plan.updated",
+            "family": "plan",
+            "required_ability": "project-subscription-plan:view",
+            "payload_keys": [
+                "changes",
+                "plan"
+            ]
+        },
+        {
+            "name": "plan.activated",
+            "family": "plan",
+            "required_ability": "project-subscription-plan:view",
+            "payload_keys": [
+                "plan"
+            ]
+        },
+        {
+            "name": "plan.deactivated",
+            "family": "plan",
+            "required_ability": "project-subscription-plan:view",
+            "payload_keys": [
+                "plan",
+                "plan_id",
+                "plan_name",
+                "reason",
+                "successor_plan_id",
+                "window_count"
+            ]
+        },
+        {
+            "name": "plan.sold_out",
+            "family": "plan",
+            "required_ability": "project-subscription-plan:view",
+            "payload_keys": [
+                "plan",
+                "plan_id",
+                "plan_name",
+                "reason",
+                "sales_cap",
+                "sales_cap_sold"
+            ]
+        },
+        {
+            "name": "plan.order_changed",
+            "family": "plan",
+            "required_ability": "project-subscription-plan:view",
+            "payload_keys": [
+                "plan_ids",
+                "project_id"
+            ]
+        },
+        {
+            "name": "plan.deleted",
+            "family": "plan",
+            "required_ability": "project-subscription-plan:view",
+            "payload_keys": [
+                "plan"
+            ]
+        },
+        {
+            "name": "plan.sync_completed",
+            "family": "plan",
+            "required_ability": "project-subscription-plan:view",
+            "payload_keys": [
+                "plan_id",
+                "providers",
+                "synced_at"
+            ]
+        },
+        {
+            "name": "pass.window_scheduled",
+            "family": "pass",
+            "required_ability": "project-subscription-plan:view",
+            "payload_keys": [
+                "ends_at",
+                "plan_id",
+                "source",
+                "starts_at",
+                "timezone",
+                "window_id"
+            ]
+        },
+        {
+            "name": "pass.window_opened",
+            "family": "pass",
+            "required_ability": "project-subscription-plan:view",
+            "payload_keys": [
+                "ends_at",
+                "plan_id",
+                "starts_at",
+                "subscribers_affected",
+                "window_id"
+            ]
+        },
+        {
+            "name": "pass.window_closed",
+            "family": "pass",
+            "required_ability": "project-subscription-plan:view",
+            "payload_keys": [
+                "ends_at",
+                "plan_id",
+                "starts_at",
+                "subscribers_affected",
+                "window_id"
+            ]
+        },
+        {
+            "name": "pass.window_cancelled",
+            "family": "pass",
+            "required_ability": "project-subscription-plan:view",
+            "payload_keys": [
+                "ends_at",
+                "plan_id",
+                "rebound",
+                "refund_due",
+                "starts_at",
+                "subscribers_affected",
+                "window_id"
+            ]
+        },
+        {
+            "name": "pass.holder_queued",
+            "family": "pass",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "ends_at",
+                "plan_id",
+                "plan_kind",
+                "source_plan_id",
+                "starts_at",
+                "subscriber_id",
+                "subscription_id",
+                "window_id"
+            ]
+        },
+        {
+            "name": "pass.holder_moved",
+            "family": "pass",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "from_ends_at",
+                "from_starts_at",
+                "from_window_id",
+                "plan_id",
+                "subscriber_id",
+                "subscription_id",
+                "to_ends_at",
+                "to_starts_at",
+                "to_window_id",
+                "was_queued"
+            ]
+        },
+        {
+            "name": "pass.holder_missed",
+            "family": "pass",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "ends_at",
+                "join_requested",
+                "plan_id",
+                "starts_at",
+                "subscriber_id",
+                "subscription_id",
+                "window_id"
+            ]
+        },
+        {
+            "name": "pass.holder_stranded",
+            "family": "pass",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "amount_paid",
+                "currency",
+                "from_ends_at",
+                "from_starts_at",
+                "from_window_id",
+                "payment_id",
+                "plan_id",
+                "refund_due",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "pass_series.purchased",
+            "family": "pass_series",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "ends_at",
+                "passes_already_held",
+                "passes_granted",
+                "passes_total",
+                "plan_id",
+                "plan_name",
+                "seat_cap",
+                "seats_remaining",
+                "starts_at",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "pass_series.leg_added",
+            "family": "pass_series",
+            "required_ability": "project-subscription-plan:view",
+            "payload_keys": [
+                "ends_at",
+                "plan_id",
+                "plan_name",
+                "source_plan_id",
+                "starts_at",
+                "timezone",
+                "window_count",
+                "window_id"
+            ]
+        },
+        {
+            "name": "pass_series.leg_completed",
+            "family": "pass_series",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "granted",
+                "joined",
+                "passes_attended",
+                "passes_missed",
+                "passes_remaining",
+                "passes_total",
+                "plan_id",
+                "source_plan_id",
+                "subscriber_id",
+                "subscription_id",
+                "window_id"
+            ]
+        },
+        {
+            "name": "pass_series.leg_substituted",
+            "family": "pass_series",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "from_ends_at",
+                "from_starts_at",
+                "from_window_id",
+                "plan_id",
+                "subscriber_id",
+                "subscription_id",
+                "to_ends_at",
+                "to_starts_at",
+                "to_window_id",
+                "was_queued"
+            ]
+        },
+        {
+            "name": "pass_series.leg_dropped",
+            "family": "pass_series",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "amount_paid",
+                "currency",
+                "from_ends_at",
+                "from_starts_at",
+                "from_window_id",
+                "passes_remaining",
+                "plan_id",
+                "refund_per_holder",
+                "series_ended",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "pass_series.seats_exhausted",
+            "family": "pass_series",
+            "required_ability": "project-subscription-plan:view",
+            "payload_keys": [
+                "last_subscription_id",
+                "plan_id",
+                "plan_name",
+                "seat_cap",
+                "seats_taken"
+            ]
+        },
+        {
+            "name": "pass_series.completed",
+            "family": "pass_series",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "passes_attended",
+                "passes_missed",
+                "passes_total",
+                "plan_id",
+                "plan_name",
+                "subscriber_id",
+                "subscription_id",
+                "successor_plan_id"
+            ]
+        },
+        {
+            "name": "pass_series.presale_opened",
+            "family": "pass_series",
+            "required_ability": "project-subscription-plan:view",
+            "payload_keys": [
+                "closes_at",
+                "eligible_holders",
+                "plan_id",
+                "plan_name",
+                "presale_hours",
+                "successor_plan_id"
+            ]
+        },
+        {
+            "name": "coupon.created",
+            "family": "coupon",
+            "required_ability": "project-coupon:view",
+            "payload_keys": [
+                "coupon"
+            ]
+        },
+        {
+            "name": "coupon.updated",
+            "family": "coupon",
+            "required_ability": "project-coupon:view",
+            "payload_keys": [
+                "changes",
+                "coupon"
+            ]
+        },
+        {
+            "name": "coupon.activated",
+            "family": "coupon",
+            "required_ability": "project-coupon:view",
+            "payload_keys": [
+                "coupon"
+            ]
+        },
+        {
+            "name": "coupon.deactivated",
+            "family": "coupon",
+            "required_ability": "project-coupon:view",
+            "payload_keys": [
+                "coupon"
+            ]
+        },
+        {
+            "name": "coupon.deleted",
+            "family": "coupon",
+            "required_ability": "project-coupon:view",
+            "payload_keys": [
+                "coupon"
+            ]
+        },
+        {
+            "name": "coupon.redeemed",
+            "family": "coupon",
+            "required_ability": "project-coupon:view",
+            "payload_keys": [
+                "code",
+                "coupon_id",
+                "currency_id",
+                "discount_amount",
+                "final_amount",
+                "max_redemptions",
+                "original_amount",
+                "plan_id",
+                "redemptions_count",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "coupon.exhausted",
+            "family": "coupon",
+            "required_ability": "project-coupon:view",
+            "payload_keys": [
+                "code",
+                "coupon_id",
+                "max_redemptions",
+                "redemptions_count"
+            ]
+        },
+        {
+            "name": "subscription.created",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "access_code",
+                "plan_id",
+                "project_id",
+                "subscriber_id",
+                "subscription_id",
+                "trial_ends_at"
+            ]
+        },
+        {
+            "name": "subscription.activated",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "plan_id",
+                "provider",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "subscription.trial_started",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "access_code",
+                "plan_id",
+                "project_id",
+                "provider",
+                "subscriber_id",
+                "subscription_id",
+                "trial_ends_at"
+            ]
+        },
+        {
+            "name": "subscription.trial_converting",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "plan_id",
+                "subscriber_id",
+                "subscription_id",
+                "trial_ends_at"
+            ]
+        },
+        {
+            "name": "subscription.trial_expired",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "ends_at",
+                "plan_id",
+                "subscriber_id",
+                "subscription_id",
+                "trial_ends_at"
+            ]
+        },
+        {
+            "name": "subscription.renewed",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "amount",
+                "currency",
+                "plan_id",
+                "provider",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "subscription.reactivated",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "ends_at",
+                "plan_id",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "subscription.paused",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "paused_at",
+                "plan_id",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "subscription.unpaused",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "plan_id",
+                "resumed_at",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "subscription.past_due",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "external_payment_id",
+                "plan_id",
+                "provider",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "subscription.unpaid",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "plan_id",
+                "provider",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "subscription.cancelled",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "paypal_event",
+                "plan_id",
+                "provider",
+                "reason",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "subscription.expired",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "ends_at",
+                "plan_id",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "subscription.refunded",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "amount",
+                "external_payment_id",
+                "full_refund",
+                "plan_id",
+                "reason",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "subscription.upgraded",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "from_plan_id",
+                "proration_amount",
+                "subscriber_id",
+                "subscription_id",
+                "to_plan_id"
+            ]
+        },
+        {
+            "name": "subscription.downgraded",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "from_plan_id",
+                "proration_amount",
+                "subscriber_id",
+                "subscription_id",
+                "to_plan_id"
+            ]
+        },
+        {
+            "name": "payment.succeeded",
+            "family": "payment",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "amount",
+                "billing_reason",
+                "currency",
+                "external_payment_id",
+                "plan_id",
+                "provider",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "payment.failed",
+            "family": "payment",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "amount",
+                "currency",
+                "external_payment_id",
+                "plan_id",
+                "provider",
+                "reason",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "payment.pending",
+            "family": "payment",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "order_id",
+                "plan_id",
+                "provider",
+                "session_id",
+                "subscriber_id"
+            ]
+        },
+        {
+            "name": "payment.refunded",
+            "family": "payment",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "amount",
+                "external_payment_id",
+                "full_refund",
+                "plan_id",
+                "reason",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "member.joined",
+            "family": "member",
+            "required_ability": "project-user:view",
+            "payload_keys": [
+                "access_code",
+                "plan_id",
+                "project_id",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "member.trial_joined",
+            "family": "member",
+            "required_ability": "project-user:view",
+            "payload_keys": [
+                "access_code",
+                "plan_id",
+                "project_id",
+                "subscriber_id",
+                "subscription_id",
+                "trial_ends_at"
+            ]
+        },
+        {
+            "name": "member.converted",
+            "family": "member",
+            "required_ability": "project-user:view",
+            "payload_keys": [
+                "plan_id",
+                "provider",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "member.churned",
+            "family": "member",
+            "required_ability": "project-user:view",
+            "payload_keys": [
+                "ends_at",
+                "last_plan_id",
+                "plan_id",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "member.removed",
+            "family": "member",
+            "required_ability": "project-user:view",
+            "payload_keys": [
+                "reason",
+                "subscriber"
+            ]
+        },
+        {
+            "name": "member.banned",
+            "family": "member",
+            "required_ability": "project-user:view",
+            "payload_keys": [
+                "reason",
+                "subscriber"
+            ]
+        },
+        {
+            "name": "member.unbanned",
+            "family": "member",
+            "required_ability": "project-user:view",
+            "payload_keys": [
+                "subscriber"
+            ]
+        },
+        {
+            "name": "member.kicked",
+            "family": "member",
+            "required_ability": "project-user:view",
+            "payload_keys": [
+                "reason",
+                "subscriber"
+            ]
+        },
+        {
+            "name": "member.resource_added",
+            "family": "member",
+            "required_ability": "project-user:view",
+            "payload_keys": [
+                "connector",
+                "grant_id",
+                "mode",
+                "resource_id",
+                "resource_type",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "member.resource_pending",
+            "family": "member",
+            "required_ability": "project-user:view",
+            "payload_keys": [
+                "connector",
+                "grant_id",
+                "mode",
+                "resource_id",
+                "resource_type",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "member.resource_reissued",
+            "family": "member",
+            "required_ability": "project-user:view",
+            "payload_keys": [
+                "connector",
+                "grant_id",
+                "mode",
+                "resource_id",
+                "resource_type",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "member.access_extended",
+            "family": "member",
+            "required_ability": "project-user:view",
+            "payload_keys": [
+                "applies_at",
+                "banked_seconds",
+                "connector",
+                "ends_at",
+                "extended_seconds",
+                "outage_id",
+                "project_id",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "member.resource_removed",
+            "family": "member",
+            "required_ability": "project-user:view",
+            "payload_keys": [
+                "connector",
+                "grant_id",
+                "mode",
+                "resource_id",
+                "resource_type",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "member.identity_linked",
+            "family": "member",
+            "required_ability": "project-user:view",
+            "payload_keys": [
+                "connector",
+                "display_name",
+                "external_id",
+                "identity_id",
+                "preferred",
+                "source",
+                "subscriber_id"
+            ]
+        },
+        {
+            "name": "member.identity_unlinked",
+            "family": "member",
+            "required_ability": "project-user:view",
+            "payload_keys": [
+                "connector",
+                "external_id",
+                "identity_id",
+                "subscriber_id"
+            ]
+        },
+        {
+            "name": "creator_task.opened",
+            "family": "creator_task",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "due_at",
+                "grant_id",
+                "instructions",
+                "resource_id",
+                "resource_type",
+                "subscriber_id",
+                "subscription_id",
+                "task_id"
+            ]
+        },
+        {
+            "name": "creator_task.completed",
+            "family": "creator_task",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "completed_at",
+                "completed_by_user_id",
+                "grant_id",
+                "resource_id",
+                "resource_type",
+                "subscriber_id",
+                "subscription_id",
+                "task_id"
+            ]
+        },
+        {
+            "name": "connector.installed",
+            "family": "connector",
+            "required_ability": "project-connector:view",
+            "payload_keys": [
+                "connector",
+                "installation_id",
+                "project_id",
+                "state"
+            ]
+        },
+        {
+            "name": "connector.connected",
+            "family": "connector",
+            "required_ability": "project-connector:view",
+            "payload_keys": [
+                "connector",
+                "display_name",
+                "handle",
+                "installation_id",
+                "project_id"
+            ]
+        },
+        {
+            "name": "connector.disconnected",
+            "family": "connector",
+            "required_ability": "project-connector:view",
+            "payload_keys": [
+                "connector",
+                "installation_id",
+                "project_id"
+            ]
+        },
+        {
+            "name": "connector.status_changed",
+            "family": "connector",
+            "required_ability": "project-connector:view",
+            "payload_keys": [
+                "connector",
+                "installation_id",
+                "previous_state",
+                "project_id",
+                "reason",
+                "state"
+            ]
+        },
+        {
+            "name": "connector.settings_updated",
+            "family": "connector",
+            "required_ability": "project-connector:view",
+            "payload_keys": [
+                "changed_fields",
+                "connector",
+                "installation_id",
+                "project_id"
+            ]
+        },
+        {
+            "name": "connector.uninstalled",
+            "family": "connector",
+            "required_ability": "project-connector:view",
+            "payload_keys": [
+                "connector",
+                "grants_revoked",
+                "installation_id",
+                "plans_unpublished",
+                "project_id",
+                "resources_detached",
+                "subscriptions_cancelled"
+            ]
+        },
+        {
+            "name": "connector.doctor_completed",
+            "family": "connector",
+            "required_ability": "project-connector:view",
+            "payload_keys": [
+                "connector",
+                "critical",
+                "findings",
+                "healthy",
+                "installation_id",
+                "project_id",
+                "ran_at",
+                "warnings"
+            ]
+        },
+        {
+            "name": "connector.outage_opened",
+            "family": "connector",
+            "required_ability": "project-connector:view",
+            "payload_keys": [
+                "connector",
+                "installation_id",
+                "outage_id",
+                "project_id",
+                "reason",
+                "started_at"
+            ]
+        },
+        {
+            "name": "connector.outage_closed",
+            "family": "connector",
+            "required_ability": "project-connector:view",
+            "payload_keys": [
+                "connector",
+                "duration_seconds",
+                "ended_at",
+                "ended_by",
+                "installation_id",
+                "outage_id",
+                "project_id",
+                "started_at"
+            ]
+        },
+        {
+            "name": "connector.outage_compensated",
+            "family": "connector",
+            "required_ability": "project-connector:view",
+            "payload_keys": [
+                "connector",
+                "extended_seconds",
+                "grants_replayed",
+                "members_extended",
+                "outage_id",
+                "project_id"
+            ]
+        },
+        {
+            "name": "recovery.incident_opened",
+            "family": "recovery",
+            "required_ability": "project-recovery:view",
+            "payload_keys": [
+                "connector",
+                "detected_at",
+                "incident_id",
+                "kind",
+                "project_id",
+                "reason",
+                "resource_id"
+            ]
+        },
+        {
+            "name": "recovery.incident_resolved",
+            "family": "recovery",
+            "required_ability": "project-recovery:view",
+            "payload_keys": [
+                "connector",
+                "incident_id",
+                "kind",
+                "project_id",
+                "resolved_at",
+                "resolved_by_operation_id",
+                "resource_id"
+            ]
+        },
+        {
+            "name": "recovery.operation_started",
+            "family": "recovery",
+            "required_ability": "project-recovery:view",
+            "payload_keys": [
+                "automatic",
+                "connector",
+                "kind",
+                "on_demand",
+                "operation_id",
+                "project_id",
+                "started_at"
+            ]
+        },
+        {
+            "name": "recovery.operation_completed",
+            "family": "recovery",
+            "required_ability": "project-recovery:view",
+            "payload_keys": [
+                "automatic",
+                "completed_at",
+                "connector",
+                "kind",
+                "on_demand",
+                "operation_id",
+                "project_id",
+                "revert_window_ends_at",
+                "started_at"
+            ]
+        },
+        {
+            "name": "recovery.operation_failed",
+            "family": "recovery",
+            "required_ability": "project-recovery:view",
+            "payload_keys": [
+                "automatic",
+                "connector",
+                "failure_reason",
+                "kind",
+                "on_demand",
+                "operation_id",
+                "project_id",
+                "started_at"
+            ]
+        },
+        {
+            "name": "recovery.operation_reverted",
+            "family": "recovery",
+            "required_ability": "project-recovery:view",
+            "payload_keys": [
+                "connector",
+                "kind",
+                "operation_id",
+                "project_id",
+                "resource_id",
+                "reverted_at"
+            ]
+        },
+        {
+            "name": "recovery.standby_registered",
+            "family": "recovery",
+            "required_ability": "project-recovery:view",
+            "payload_keys": [
+                "connector",
+                "mirror",
+                "project_id",
+                "resource_id",
+                "standby"
+            ]
+        },
+        {
+            "name": "recovery.standby_removed",
+            "family": "recovery",
+            "required_ability": "project-recovery:view",
+            "payload_keys": [
+                "connector",
+                "project_id",
+                "reason",
+                "resource_id",
+                "standby"
+            ]
+        },
+        {
+            "name": "recovery.installation_failed_over",
+            "family": "recovery",
+            "required_ability": "project-recovery:view",
+            "payload_keys": [
+                "connector",
+                "installation_id",
+                "members_emailed",
+                "operation_id",
+                "project_id",
+                "replaced_at"
+            ]
+        },
+        {
+            "name": "recovery.resource_failed_over",
+            "family": "recovery",
+            "required_ability": "project-recovery:view",
+            "payload_keys": [
+                "connector",
+                "operation_id",
+                "project_id",
+                "replaced_at",
+                "resource_id",
+                "resource_title"
+            ]
+        },
+        {
+            "name": "recovery.resource_replaced",
+            "family": "recovery",
+            "required_ability": "project-recovery:view",
+            "payload_keys": [
+                "connector",
+                "on_demand",
+                "operation_id",
+                "project_id",
+                "replaced_at",
+                "resource_id",
+                "resource_title"
+            ]
+        },
+        {
+            "name": "recovery.identity_relinked",
+            "family": "recovery",
+            "required_ability": "project-recovery:view",
+            "payload_keys": [
+                "completed_at",
+                "connector",
+                "display_name",
+                "from_backup",
+                "identity_id",
+                "operation_id",
+                "started_at"
+            ]
+        },
+        {
+            "name": "recovery.readiness_changed",
+            "family": "recovery",
+            "required_ability": "project-recovery:view",
+            "payload_keys": [
+                "changed",
+                "complete",
+                "completed",
+                "items",
+                "total"
+            ]
+        },
+        {
+            "name": "broadcast.queued",
+            "family": "broadcast",
+            "required_ability": "broadcast:send",
+            "payload_keys": [
+                "audience",
+                "expiring_within_days",
+                "pass_window_id",
+                "plan_id",
+                "project_id",
+                "recipient_estimate"
+            ]
+        },
+        {
+            "name": "broadcast.completed",
+            "family": "broadcast",
+            "required_ability": "broadcast:send",
+            "payload_keys": [
+                "audience",
+                "expiring_within_days",
+                "failed",
+                "pass_window_id",
+                "plan_id",
+                "project_id",
+                "sent"
+            ]
+        },
+        {
+            "name": "access_code.generated",
+            "family": "access_code",
+            "required_ability": "project-access-code:view",
+            "payload_keys": [
+                "count",
+                "expires_at",
+                "plan_id",
+                "plan_name"
+            ]
+        },
+        {
+            "name": "access_code.redeemed",
+            "family": "access_code",
+            "required_ability": "project-access-code:view",
+            "payload_keys": [
+                "access_code",
+                "plan_id",
+                "project_id",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "access_code.expired",
+            "family": "access_code",
+            "required_ability": "project-access-code:view",
+            "payload_keys": [
+                "expired_at",
+                "plan_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "support.conversation.opened",
+            "family": "support",
+            "required_ability": "support-conversation:view",
+            "payload_keys": [
+                "channel",
+                "conversation_id",
+                "project_id",
+                "subscriber_id"
+            ]
+        },
+        {
+            "name": "support.conversation.assigned",
+            "family": "support",
+            "required_ability": "support-conversation:view",
+            "payload_keys": [
+                "assigned_to_user_id",
+                "conversation_id",
+                "project_id",
+                "subscriber_id"
+            ]
+        },
+        {
+            "name": "support.conversation.resolved",
+            "family": "support",
+            "required_ability": "support-conversation:view",
+            "payload_keys": [
+                "conversation_id",
+                "project_id",
+                "subscriber_id"
+            ]
+        },
+        {
+            "name": "support.conversation.reopened",
+            "family": "support",
+            "required_ability": "support-conversation:view",
+            "payload_keys": [
+                "conversation_id",
+                "project_id",
+                "subscriber_id"
+            ]
+        },
+        {
+            "name": "support.conversation.blocked",
+            "family": "support",
+            "required_ability": "support-conversation:view",
+            "payload_keys": [
+                "conversation_id",
+                "project_id",
+                "subscriber_id"
+            ]
+        },
+        {
+            "name": "support.conversation.unblocked",
+            "family": "support",
+            "required_ability": "support-conversation:view",
+            "payload_keys": [
+                "conversation_id",
+                "project_id",
+                "subscriber_id"
+            ]
+        },
+        {
+            "name": "support.message.received",
+            "family": "support",
+            "required_ability": "support-conversation:view",
+            "payload_keys": [
+                "conversation_id",
+                "has_attachments",
+                "message_id",
+                "project_id",
+                "subscriber_id",
+                "type"
+            ]
+        },
+        {
+            "name": "support.message.sent",
+            "family": "support",
+            "required_ability": "support-conversation:view",
+            "payload_keys": [
+                "conversation_id",
+                "message_id",
+                "project_id",
+                "subscriber_id",
+                "type"
+            ]
+        },
+        {
+            "name": "support.canned_reply.created",
+            "family": "support",
+            "required_ability": "support-conversation:view",
+            "payload_keys": [
+                "canned_reply",
+                "project_id"
+            ]
+        },
+        {
+            "name": "support.canned_reply.updated",
+            "family": "support",
+            "required_ability": "support-conversation:view",
+            "payload_keys": [
+                "canned_reply",
+                "changes",
+                "project_id"
+            ]
+        },
+        {
+            "name": "support.canned_reply.deleted",
+            "family": "support",
+            "required_ability": "support-conversation:view",
+            "payload_keys": [
+                "canned_reply",
+                "project_id"
+            ]
+        },
+        {
+            "name": "support.settings.updated",
+            "family": "support",
+            "required_ability": "support-conversation:view",
+            "payload_keys": [
+                "changes",
+                "project_id",
+                "settings"
+            ]
+        },
+        {
+            "name": "team.created",
+            "family": "team",
+            "required_ability": "team:view",
+            "payload_keys": [
+                "name",
+                "owner_id",
+                "team_id"
+            ]
+        },
+        {
+            "name": "team.updated",
+            "family": "team",
+            "required_ability": "team:view",
+            "payload_keys": [
+                "name",
+                "owner_id",
+                "team_id"
+            ]
+        },
+        {
+            "name": "team.deleted",
+            "family": "team",
+            "required_ability": "team:view",
+            "payload_keys": [
+                "name",
+                "team_id"
+            ]
+        },
+        {
+            "name": "team.member.invited",
+            "family": "team",
+            "required_ability": "team:view",
+            "payload_keys": [
+                "email",
+                "role_code",
+                "role_id",
+                "team_id"
+            ]
+        },
+        {
+            "name": "team.member.joined",
+            "family": "team",
+            "required_ability": "team:view",
+            "payload_keys": [
+                "team_id",
+                "user_id"
+            ]
+        },
+        {
+            "name": "team.member.removed",
+            "family": "team",
+            "required_ability": "team:view",
+            "payload_keys": [
+                "team_id",
+                "user_id"
+            ]
+        },
+        {
+            "name": "team.member.role_changed",
+            "family": "team",
+            "required_ability": "team:view",
+            "payload_keys": [
+                "role_id",
+                "team_id",
+                "user_id"
+            ]
+        },
+        {
+            "name": "role.created",
+            "family": "role",
+            "required_ability": "role:view",
+            "payload_keys": [
+                "code",
+                "name",
+                "role_id",
+                "team_id"
+            ]
+        },
+        {
+            "name": "role.updated",
+            "family": "role",
+            "required_ability": "role:view",
+            "payload_keys": [
+                "code",
+                "name",
+                "role_id",
+                "team_id"
+            ]
+        },
+        {
+            "name": "role.deleted",
+            "family": "role",
+            "required_ability": "role:view",
+            "payload_keys": [
+                "code",
+                "role_id",
+                "team_id"
+            ]
+        },
+        {
+            "name": "group.created",
+            "family": "group",
+            "required_ability": "group:view",
+            "payload_keys": [
+                "code",
+                "group_id",
+                "name",
+                "team_id"
+            ]
+        },
+        {
+            "name": "group.updated",
+            "family": "group",
+            "required_ability": "group:view",
+            "payload_keys": [
+                "code",
+                "group_id",
+                "name",
+                "team_id"
+            ]
+        },
+        {
+            "name": "group.members_synced",
+            "family": "group",
+            "required_ability": "group:view",
+            "payload_keys": [
+                "added_ids",
+                "code",
+                "group_id",
+                "member_count",
+                "member_ids",
+                "name",
+                "removed_ids",
+                "team_id"
+            ]
+        },
+        {
+            "name": "group.deleted",
+            "family": "group",
+            "required_ability": "group:view",
+            "payload_keys": [
+                "code",
+                "group_id",
+                "team_id"
+            ]
+        },
+        {
+            "name": "billing.invoice_created",
+            "family": "billing",
+            "required_ability": "billing:read",
+            "payload_keys": [
+                "amount",
+                "attempt_count",
+                "creator_id",
+                "currency",
+                "hosted_invoice_url",
+                "invoice_id"
+            ]
+        },
+        {
+            "name": "billing.invoice_paid",
+            "family": "billing",
+            "required_ability": "billing:read",
+            "payload_keys": [
+                "amount",
+                "attempt_count",
+                "creator_id",
+                "currency",
+                "hosted_invoice_url",
+                "invoice_id"
+            ]
+        },
+        {
+            "name": "billing.invoice_overdue",
+            "family": "billing",
+            "required_ability": "billing:read",
+            "payload_keys": [
+                "amount",
+                "attempt_count",
+                "creator_id",
+                "currency",
+                "hosted_invoice_url",
+                "invoice_id"
+            ]
+        },
+        {
+            "name": "billing.payment_failed",
+            "family": "billing",
+            "required_ability": "billing:read",
+            "payload_keys": [
+                "amount",
+                "attempt_count",
+                "creator_id",
+                "currency",
+                "hosted_invoice_url",
+                "invoice_id",
+                "reason"
+            ]
+        },
+        {
+            "name": "billing.trial_ending",
+            "family": "billing",
+            "required_ability": "billing:read",
+            "payload_keys": [
+                "amount",
+                "amount_estimated",
+                "creator_id",
+                "currency",
+                "hours_remaining",
+                "plan_id",
+                "subscription_id",
+                "trial_ends_at"
+            ]
+        },
+        {
+            "name": "billing.grace_period_warning",
+            "family": "billing",
+            "required_ability": "billing:read",
+            "payload_keys": [
+                "creator_id",
+                "days_until_lockdown",
+                "past_due_since"
+            ]
+        },
+        {
+            "name": "billing.account_locked",
+            "family": "billing",
+            "required_ability": "billing:read",
+            "payload_keys": [
+                "creator_id",
+                "locked_at",
+                "past_due_since"
+            ]
+        },
+        {
+            "name": "billing.tier_upgraded",
+            "family": "billing",
+            "required_ability": "billing:read",
+            "payload_keys": [
+                "creator_id",
+                "effective_at",
+                "from_tier",
+                "to_tier"
+            ]
+        },
+        {
+            "name": "billing.tier_downgraded",
+            "family": "billing",
+            "required_ability": "billing:read",
+            "payload_keys": [
+                "creator_id",
+                "effective_at",
+                "from_tier",
+                "to_tier"
+            ]
+        },
+        {
+            "name": "billing.tier_cancelled",
+            "family": "billing",
+            "required_ability": "billing:read",
+            "payload_keys": [
+                "canceled_at",
+                "creator_id",
+                "effective_at",
+                "plan_id",
+                "status",
+                "subscription_id"
+            ]
+        }
+    ]
+}

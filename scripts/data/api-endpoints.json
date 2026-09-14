@@ -1,0 +1,1534 @@
+{
+    "version": "2026-05-01",
+    "count": 191,
+    "items": [
+        {
+            "name": "api.v1.activity.index",
+            "method": "GET",
+            "uri": "/api/v1/activity",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ActivityController@index",
+            "entity": "activity",
+            "required_ability": "activity:read"
+        },
+        {
+            "name": "api.v1.analytics.composition",
+            "method": "GET",
+            "uri": "/api/v1/analytics/composition",
+            "action": "App\\Http\\Controllers\\Api\\V1\\AnalyticsController@composition",
+            "entity": "analytics",
+            "required_ability": "dashboard:read"
+        },
+        {
+            "name": "api.v1.analytics.connectors",
+            "method": "GET",
+            "uri": "/api/v1/analytics/connectors",
+            "action": "App\\Http\\Controllers\\Api\\V1\\AnalyticsController@connectors",
+            "entity": "analytics",
+            "required_ability": "dashboard:read"
+        },
+        {
+            "name": "api.v1.analytics.dashboard",
+            "method": "GET",
+            "uri": "/api/v1/analytics/dashboard",
+            "action": "App\\Http\\Controllers\\Api\\V1\\AnalyticsController@dashboard",
+            "entity": "analytics",
+            "required_ability": "dashboard:read"
+        },
+        {
+            "name": "api.v1.analytics.earnings",
+            "method": "GET",
+            "uri": "/api/v1/analytics/earnings",
+            "action": "App\\Http\\Controllers\\Api\\V1\\AnalyticsController@earnings",
+            "entity": "analytics",
+            "required_ability": "dashboard:read"
+        },
+        {
+            "name": "api.v1.analytics.plan-performance",
+            "method": "GET",
+            "uri": "/api/v1/analytics/plan-performance",
+            "action": "App\\Http\\Controllers\\Api\\V1\\AnalyticsController@planPerformance",
+            "entity": "analytics",
+            "required_ability": "dashboard:read"
+        },
+        {
+            "name": "api.v1.analytics.subscribers",
+            "method": "GET",
+            "uri": "/api/v1/analytics/subscribers",
+            "action": "App\\Http\\Controllers\\Api\\V1\\AnalyticsController@subscribers",
+            "entity": "analytics",
+            "required_ability": "dashboard:read"
+        },
+        {
+            "name": "api.v1.analytics.transactions",
+            "method": "GET",
+            "uri": "/api/v1/analytics/transactions",
+            "action": "App\\Http\\Controllers\\Api\\V1\\AnalyticsController@transactions",
+            "entity": "analytics",
+            "required_ability": "dashboard:read"
+        },
+        {
+            "name": "api.v1.analytics.transactions.breakdown",
+            "method": "GET",
+            "uri": "/api/v1/analytics/transactions/breakdown",
+            "action": "App\\Http\\Controllers\\Api\\V1\\AnalyticsController@transactionBreakdown",
+            "entity": "analytics",
+            "required_ability": "dashboard:read"
+        },
+        {
+            "name": "api.v1.connectors.index",
+            "method": "GET",
+            "uri": "/api/v1/connectors",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ConnectorController@index",
+            "entity": "connectors",
+            "required_ability": "project-connector:view-any"
+        },
+        {
+            "name": "api.v1.connectors.show",
+            "method": "GET",
+            "uri": "/api/v1/connectors/{key}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ConnectorController@show",
+            "entity": "connectors",
+            "required_ability": "project-connector:view-any"
+        },
+        {
+            "name": "api.v1.groups.index",
+            "method": "GET",
+            "uri": "/api/v1/groups",
+            "action": "App\\Http\\Controllers\\Api\\V1\\GroupController@index",
+            "entity": "groups",
+            "required_ability": "group:view-any"
+        },
+        {
+            "name": "api.v1.groups.store",
+            "method": "POST",
+            "uri": "/api/v1/groups",
+            "action": "App\\Http\\Controllers\\Api\\V1\\GroupController@store",
+            "entity": "groups",
+            "required_ability": "group:create"
+        },
+        {
+            "name": "api.v1.groups.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/groups/{group}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\GroupController@destroy",
+            "entity": "groups",
+            "required_ability": "group:delete"
+        },
+        {
+            "name": "api.v1.groups.show",
+            "method": "GET",
+            "uri": "/api/v1/groups/{group}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\GroupController@show",
+            "entity": "groups",
+            "required_ability": "group:view"
+        },
+        {
+            "name": "api.v1.groups.update",
+            "method": "PATCH",
+            "uri": "/api/v1/groups/{group}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\GroupController@update",
+            "entity": "groups",
+            "required_ability": "group:update"
+        },
+        {
+            "name": "api.v1.groups.sync-members",
+            "method": "PUT",
+            "uri": "/api/v1/groups/{group}/members",
+            "action": "App\\Http\\Controllers\\Api\\V1\\GroupController@syncMembers",
+            "entity": "groups",
+            "required_ability": "group:update"
+        },
+        {
+            "name": "api.v1.me.show",
+            "method": "GET",
+            "uri": "/api/v1/me",
+            "action": "App\\Http\\Controllers\\Api\\V1\\MeController@show",
+            "entity": "me",
+            "required_ability": "account:read"
+        },
+        {
+            "name": "api.v1.me.alert-destinations.index",
+            "method": "GET",
+            "uri": "/api/v1/me/alert-destinations",
+            "action": "App\\Http\\Controllers\\Api\\V1\\AlertDestinationController@index",
+            "entity": "me",
+            "required_ability": "account:read"
+        },
+        {
+            "name": "api.v1.me.alert-destinations.update",
+            "method": "PUT",
+            "uri": "/api/v1/me/alert-destinations",
+            "action": "App\\Http\\Controllers\\Api\\V1\\AlertDestinationController@update",
+            "entity": "me",
+            "required_ability": "account:write"
+        },
+        {
+            "name": "api.v1.me.identities.index",
+            "method": "GET",
+            "uri": "/api/v1/me/identities",
+            "action": "App\\Http\\Controllers\\Api\\V1\\CreatorIdentityController@index",
+            "entity": "me",
+            "required_ability": "account:read"
+        },
+        {
+            "name": "api.v1.me.identities.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/me/identities/{identity}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\CreatorIdentityController@destroy",
+            "entity": "me",
+            "required_ability": "account:write"
+        },
+        {
+            "name": "api.v1.me.notifications.index",
+            "method": "GET",
+            "uri": "/api/v1/me/notifications",
+            "action": "App\\Http\\Controllers\\Api\\V1\\NotificationController@index",
+            "entity": "me",
+            "required_ability": "account:read"
+        },
+        {
+            "name": "api.v1.me.notifications.read-all",
+            "method": "POST",
+            "uri": "/api/v1/me/notifications/read-all",
+            "action": "App\\Http\\Controllers\\Api\\V1\\NotificationController@readAll",
+            "entity": "me",
+            "required_ability": "account:write"
+        },
+        {
+            "name": "api.v1.me.notifications.read",
+            "method": "POST",
+            "uri": "/api/v1/me/notifications/{notification}/read",
+            "action": "App\\Http\\Controllers\\Api\\V1\\NotificationController@read",
+            "entity": "me",
+            "required_ability": "account:write"
+        },
+        {
+            "name": "api.v1.me.recovery.show",
+            "method": "GET",
+            "uri": "/api/v1/me/recovery",
+            "action": "App\\Http\\Controllers\\Api\\V1\\MeRecoveryController@show",
+            "entity": "me",
+            "required_ability": "project-recovery:view"
+        },
+        {
+            "name": "api.v1.me.recovery.backup-identity.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/me/recovery/backup-identity",
+            "action": "App\\Http\\Controllers\\Api\\V1\\MeRecoveryController@removeBackup",
+            "entity": "me",
+            "required_ability": "project-recovery:delete"
+        },
+        {
+            "name": "api.v1.me.recovery.backup-identity.store",
+            "method": "POST",
+            "uri": "/api/v1/me/recovery/backup-identity",
+            "action": "App\\Http\\Controllers\\Api\\V1\\MeRecoveryController@registerBackup",
+            "entity": "me",
+            "required_ability": "project-recovery:create"
+        },
+        {
+            "name": "api.v1.me.recovery.backup-identity.switch",
+            "method": "POST",
+            "uri": "/api/v1/me/recovery/backup-identity/switch",
+            "action": "App\\Http\\Controllers\\Api\\V1\\MeRecoveryController@switchToBackup",
+            "entity": "me",
+            "required_ability": "project-recovery:create"
+        },
+        {
+            "name": "api.v1.me.recovery.handshakes.store",
+            "method": "POST",
+            "uri": "/api/v1/me/recovery/handshakes",
+            "action": "App\\Http\\Controllers\\Api\\V1\\MeRecoveryController@openHandshake",
+            "entity": "me",
+            "required_ability": "project-recovery:create"
+        },
+        {
+            "name": "api.v1.me.recovery.handshakes.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/me/recovery/handshakes/{handshake}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\MeRecoveryController@cancelHandshake",
+            "entity": "me",
+            "required_ability": "project-recovery:delete"
+        },
+        {
+            "name": "api.v1.me.recovery.handshakes.show",
+            "method": "GET",
+            "uri": "/api/v1/me/recovery/handshakes/{handshake}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\MeRecoveryController@showHandshake",
+            "entity": "me",
+            "required_ability": "project-recovery:view"
+        },
+        {
+            "name": "api.v1.me.recovery.handshakes.confirm",
+            "method": "POST",
+            "uri": "/api/v1/me/recovery/handshakes/{handshake}/confirm",
+            "action": "App\\Http\\Controllers\\Api\\V1\\MeRecoveryController@confirmHandshake",
+            "entity": "me",
+            "required_ability": "project-recovery:create"
+        },
+        {
+            "name": "api.v1.ping",
+            "method": "GET",
+            "uri": "/api/v1/ping",
+            "action": "Closure",
+            "entity": "ping",
+            "required_ability": null
+        },
+        {
+            "name": "api.v1.projects.index",
+            "method": "GET",
+            "uri": "/api/v1/projects",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ProjectController@index",
+            "entity": "projects",
+            "required_ability": "project:view-any"
+        },
+        {
+            "name": "api.v1.projects.store",
+            "method": "POST",
+            "uri": "/api/v1/projects",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ProjectController@store",
+            "entity": "projects",
+            "required_ability": "project:create"
+        },
+        {
+            "name": "api.v1.projects.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/projects/{project}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ProjectController@destroy",
+            "entity": "projects",
+            "required_ability": "project:delete"
+        },
+        {
+            "name": "api.v1.projects.show",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ProjectController@show",
+            "entity": "projects",
+            "required_ability": "project:view"
+        },
+        {
+            "name": "api.v1.projects.update",
+            "method": "PATCH",
+            "uri": "/api/v1/projects/{project}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ProjectController@update",
+            "entity": "projects",
+            "required_ability": "project:update"
+        },
+        {
+            "name": "api.v1.projects.archive",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/archive",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ProjectController@archive",
+            "entity": "projects",
+            "required_ability": "project:update"
+        },
+        {
+            "name": "api.v1.bot.disconnect",
+            "method": "DELETE",
+            "uri": "/api/v1/projects/{project}/bot",
+            "action": "App\\Http\\Controllers\\Api\\V1\\BotController@disconnect",
+            "entity": "bot",
+            "required_ability": "bot:manage"
+        },
+        {
+            "name": "api.v1.bot.status",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/bot",
+            "action": "App\\Http\\Controllers\\Api\\V1\\BotController@status",
+            "entity": "bot",
+            "required_ability": "project:view"
+        },
+        {
+            "name": "api.v1.broadcasts.store",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/broadcasts",
+            "action": "App\\Http\\Controllers\\Api\\V1\\BroadcastController@store",
+            "entity": "broadcasts",
+            "required_ability": "broadcast:send"
+        },
+        {
+            "name": "api.v1.broadcasts.audiences",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/broadcasts/audiences",
+            "action": "App\\Http\\Controllers\\Api\\V1\\BroadcastController@audiences",
+            "entity": "broadcasts",
+            "required_ability": "broadcast:send"
+        },
+        {
+            "name": "api.v1.broadcasts.preview",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/broadcasts/preview",
+            "action": "App\\Http\\Controllers\\Api\\V1\\BroadcastController@preview",
+            "entity": "broadcasts",
+            "required_ability": "broadcast:send"
+        },
+        {
+            "name": "api.v1.projects.connectors.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/connectors",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ProjectConnectorController@index",
+            "entity": "projects",
+            "required_ability": "project-connector:view-any"
+        },
+        {
+            "name": "api.v1.projects.connectors.uninstall",
+            "method": "DELETE",
+            "uri": "/api/v1/projects/{project}/connectors/{key}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ProjectConnectorController@uninstall",
+            "entity": "projects",
+            "required_ability": "project-connector:delete"
+        },
+        {
+            "name": "api.v1.projects.connectors.install",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/connectors/{key}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ProjectConnectorController@install",
+            "entity": "projects",
+            "required_ability": "project-connector:create"
+        },
+        {
+            "name": "api.v1.projects.connectors.disconnect",
+            "method": "DELETE",
+            "uri": "/api/v1/projects/{project}/connectors/{key}/installation",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ProjectConnectorController@disconnect",
+            "entity": "projects",
+            "required_ability": "project-connector:delete"
+        },
+        {
+            "name": "api.v1.projects.connectors.installation",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/connectors/{key}/installation",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ProjectConnectorController@installation",
+            "entity": "projects",
+            "required_ability": "project-connector:view"
+        },
+        {
+            "name": "api.v1.projects.connectors.doctor",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/connectors/{key}/installation/doctor",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ProjectConnectorController@doctor",
+            "entity": "projects",
+            "required_ability": "project-connector:update"
+        },
+        {
+            "name": "api.v1.projects.connectors.settings",
+            "method": "PATCH",
+            "uri": "/api/v1/projects/{project}/connectors/{key}/installation/settings",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ProjectConnectorController@updateSettings",
+            "entity": "projects",
+            "required_ability": "project-connector:update"
+        },
+        {
+            "name": "api.v1.projects.connectors.verify",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/connectors/{key}/installation/verify",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ProjectConnectorController@verify",
+            "entity": "projects",
+            "required_ability": "project-connector:update"
+        },
+        {
+            "name": "api.v1.projects.connectors.uninstall-preview",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/connectors/{key}/uninstall-preview",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ProjectConnectorController@uninstallPreview",
+            "entity": "projects",
+            "required_ability": "project-connector:view"
+        },
+        {
+            "name": "api.v1.coupons.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/coupons",
+            "action": "App\\Http\\Controllers\\Api\\V1\\CouponController@index",
+            "entity": "coupons",
+            "required_ability": "project-coupon:view-any"
+        },
+        {
+            "name": "api.v1.coupons.store",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/coupons",
+            "action": "App\\Http\\Controllers\\Api\\V1\\CouponController@store",
+            "entity": "coupons",
+            "required_ability": "project-coupon:create"
+        },
+        {
+            "name": "api.v1.coupons.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/projects/{project}/coupons/{coupon}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\CouponController@destroy",
+            "entity": "coupons",
+            "required_ability": "project-coupon:delete"
+        },
+        {
+            "name": "api.v1.coupons.show",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/coupons/{coupon}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\CouponController@show",
+            "entity": "coupons",
+            "required_ability": "project-coupon:view"
+        },
+        {
+            "name": "api.v1.coupons.update",
+            "method": "PATCH",
+            "uri": "/api/v1/projects/{project}/coupons/{coupon}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\CouponController@update",
+            "entity": "coupons",
+            "required_ability": "project-coupon:update"
+        },
+        {
+            "name": "api.v1.coupons.activate",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/coupons/{coupon}/activate",
+            "action": "App\\Http\\Controllers\\Api\\V1\\CouponController@activate",
+            "entity": "coupons",
+            "required_ability": "project-coupon:update"
+        },
+        {
+            "name": "api.v1.coupons.deactivate",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/coupons/{coupon}/deactivate",
+            "action": "App\\Http\\Controllers\\Api\\V1\\CouponController@deactivate",
+            "entity": "coupons",
+            "required_ability": "project-coupon:update"
+        },
+        {
+            "name": "api.v1.creator-tasks.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/creator-tasks",
+            "action": "App\\Http\\Controllers\\Api\\V1\\CreatorTaskController@index",
+            "entity": "creator-tasks",
+            "required_ability": "project-subscription:view"
+        },
+        {
+            "name": "api.v1.creator-tasks.complete",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/creator-tasks/{task}/complete",
+            "action": "App\\Http\\Controllers\\Api\\V1\\CreatorTaskController@complete",
+            "entity": "creator-tasks",
+            "required_ability": "project-subscription:update"
+        },
+        {
+            "name": "api.v1.distribution.bot-link",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/distribution/bot-link",
+            "action": "App\\Http\\Controllers\\Api\\V1\\DistributionController@botLink",
+            "entity": "distribution",
+            "required_ability": "distribution:read"
+        },
+        {
+            "name": "api.v1.distribution.deep-link",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/distribution/deep-link",
+            "action": "App\\Http\\Controllers\\Api\\V1\\DistributionController@deepLink",
+            "entity": "distribution",
+            "required_ability": "distribution:read"
+        },
+        {
+            "name": "api.v1.distribution.portal-url",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/distribution/portal-url",
+            "action": "App\\Http\\Controllers\\Api\\V1\\DistributionController@portalUrl",
+            "entity": "distribution",
+            "required_ability": "distribution:read"
+        },
+        {
+            "name": "api.v1.members.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/members",
+            "action": "App\\Http\\Controllers\\Api\\V1\\MemberController@index",
+            "entity": "members",
+            "required_ability": "project-user:view-any"
+        },
+        {
+            "name": "api.v1.members.show",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/members/{member}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\MemberController@show",
+            "entity": "members",
+            "required_ability": "project-user:view"
+        },
+        {
+            "name": "api.v1.members.ban",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/members/{member}/ban",
+            "action": "App\\Http\\Controllers\\Api\\V1\\MemberController@ban",
+            "entity": "members",
+            "required_ability": "project-user:update"
+        },
+        {
+            "name": "api.v1.members.identities.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/members/{member}/identities",
+            "action": "App\\Http\\Controllers\\Api\\V1\\MemberIdentityController@index",
+            "entity": "members",
+            "required_ability": "project-user:view"
+        },
+        {
+            "name": "api.v1.members.identities.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/projects/{project}/members/{member}/identities/{link}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\MemberIdentityController@destroy",
+            "entity": "members",
+            "required_ability": "project-user:update"
+        },
+        {
+            "name": "api.v1.members.kick",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/members/{member}/kick",
+            "action": "App\\Http\\Controllers\\Api\\V1\\MemberController@kick",
+            "entity": "members",
+            "required_ability": "project-user:update"
+        },
+        {
+            "name": "api.v1.members.unban",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/members/{member}/unban",
+            "action": "App\\Http\\Controllers\\Api\\V1\\MemberController@unban",
+            "entity": "members",
+            "required_ability": "project-user:update"
+        },
+        {
+            "name": "api.v1.pass-windows.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/pass-windows",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PassWindowController@index",
+            "entity": "pass-windows",
+            "required_ability": "pass-window:view-any"
+        },
+        {
+            "name": "api.v1.pass-windows.show",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/pass-windows/{window}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PassWindowController@show",
+            "entity": "pass-windows",
+            "required_ability": "pass-window:view"
+        },
+        {
+            "name": "api.v1.pass-windows.cancel",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/pass-windows/{window}/cancel",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PassWindowController@cancel",
+            "entity": "pass-windows",
+            "required_ability": "pass-window:delete"
+        },
+        {
+            "name": "api.v1.pass-windows.remind",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/pass-windows/{window}/remind",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PassWindowController@remind",
+            "entity": "pass-windows",
+            "required_ability": "pass-window:update"
+        },
+        {
+            "name": "api.v1.payment-methods.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/payment-methods",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PaymentMethodController@index",
+            "entity": "payment-methods",
+            "required_ability": "project-payment-method:view-any"
+        },
+        {
+            "name": "api.v1.payment-methods.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/projects/{project}/payment-methods/{method}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PaymentMethodController@destroy",
+            "entity": "payment-methods",
+            "required_ability": "project-payment-method:delete"
+        },
+        {
+            "name": "api.v1.payment-methods.show",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/payment-methods/{method}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PaymentMethodController@show",
+            "entity": "payment-methods",
+            "required_ability": "project-payment-method:view"
+        },
+        {
+            "name": "api.v1.payment-methods.activate",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/payment-methods/{method}/activate",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PaymentMethodController@activate",
+            "entity": "payment-methods",
+            "required_ability": "project-payment-method:update"
+        },
+        {
+            "name": "api.v1.payment-methods.deactivate",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/payment-methods/{method}/deactivate",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PaymentMethodController@deactivate",
+            "entity": "payment-methods",
+            "required_ability": "project-payment-method:update"
+        },
+        {
+            "name": "api.v1.payment-methods.sync",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/payment-methods/{method}/sync",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PaymentMethodController@sync",
+            "entity": "payment-methods",
+            "required_ability": "project-payment-method:update"
+        },
+        {
+            "name": "api.v1.plans.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/plans",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PlanController@index",
+            "entity": "plans",
+            "required_ability": "project-subscription-plan:view-any"
+        },
+        {
+            "name": "api.v1.plans.store",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/plans",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PlanController@store",
+            "entity": "plans",
+            "required_ability": "project-subscription-plan:create"
+        },
+        {
+            "name": "api.v1.plans.reorder",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/plans/order",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PlanController@reorder",
+            "entity": "plans",
+            "required_ability": "project-subscription-plan:update"
+        },
+        {
+            "name": "api.v1.plans.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/projects/{project}/plans/{plan}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PlanController@destroy",
+            "entity": "plans",
+            "required_ability": "project-subscription-plan:delete"
+        },
+        {
+            "name": "api.v1.plans.show",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/plans/{plan}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PlanController@show",
+            "entity": "plans",
+            "required_ability": "project-subscription-plan:view"
+        },
+        {
+            "name": "api.v1.plans.update",
+            "method": "PATCH",
+            "uri": "/api/v1/projects/{project}/plans/{plan}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PlanController@update",
+            "entity": "plans",
+            "required_ability": "project-subscription-plan:update"
+        },
+        {
+            "name": "api.v1.access-codes.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/plans/{plan}/access-codes",
+            "action": "App\\Http\\Controllers\\Api\\V1\\AccessCodeController@index",
+            "entity": "access-codes",
+            "required_ability": "project-access-code:view-any"
+        },
+        {
+            "name": "api.v1.access-codes.bulk-generate",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/plans/{plan}/access-codes/bulk-generate",
+            "action": "App\\Http\\Controllers\\Api\\V1\\AccessCodeController@bulkGenerate",
+            "entity": "access-codes",
+            "required_ability": "project-access-code:create"
+        },
+        {
+            "name": "api.v1.access-codes.preview",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/plans/{plan}/access-codes/preview",
+            "action": "App\\Http\\Controllers\\Api\\V1\\AccessCodeController@preview",
+            "entity": "access-codes",
+            "required_ability": "project-access-code:view-any"
+        },
+        {
+            "name": "api.v1.access-codes.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/projects/{project}/plans/{plan}/access-codes/{accessCode}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\AccessCodeController@destroy",
+            "entity": "access-codes",
+            "required_ability": "project-access-code:delete"
+        },
+        {
+            "name": "api.v1.pass-windows.store",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/plans/{plan}/pass-windows",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PassWindowController@store",
+            "entity": "pass-windows",
+            "required_ability": "pass-window:create"
+        },
+        {
+            "name": "api.v1.plans.publish",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/plans/{plan}/publish",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PlanController@publish",
+            "entity": "plans",
+            "required_ability": "project-subscription-plan:update"
+        },
+        {
+            "name": "api.v1.plans.successor",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/plans/{plan}/successor",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PlanController@successor",
+            "entity": "plans",
+            "required_ability": "project-subscription-plan:create"
+        },
+        {
+            "name": "api.v1.plans.unpublish",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/plans/{plan}/unpublish",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PlanController@unpublish",
+            "entity": "plans",
+            "required_ability": "project-subscription-plan:update"
+        },
+        {
+            "name": "api.v1.recovery.members.export",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/recovery/members/export",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RecoverySettingsController@exportMembers",
+            "entity": "recovery",
+            "required_ability": "project-recovery:view-any"
+        },
+        {
+            "name": "api.v1.recovery.settings.show",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/recovery/settings",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RecoverySettingsController@show",
+            "entity": "recovery",
+            "required_ability": "project-recovery:view"
+        },
+        {
+            "name": "api.v1.recovery.settings.update",
+            "method": "PATCH",
+            "uri": "/api/v1/projects/{project}/recovery/settings",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RecoverySettingsController@update",
+            "entity": "recovery",
+            "required_ability": "project-recovery:update"
+        },
+        {
+            "name": "api.v1.recovery.standby-installation.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/projects/{project}/recovery/standby-installation",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RecoverySettingsController@removeStandbyInstallation",
+            "entity": "recovery",
+            "required_ability": "project-recovery:delete"
+        },
+        {
+            "name": "api.v1.resources.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/resources",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ResourceController@index",
+            "entity": "resources",
+            "required_ability": "project-resource:view-any"
+        },
+        {
+            "name": "api.v1.resources.store",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/resources",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ResourceController@store",
+            "entity": "resources",
+            "required_ability": "project-resource:create"
+        },
+        {
+            "name": "api.v1.resources.link-requests.store",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/resources/link-requests",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ResourceController@requestLink",
+            "entity": "resources",
+            "required_ability": "project-resource:create"
+        },
+        {
+            "name": "api.v1.resources.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/projects/{project}/resources/{resource}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ResourceController@destroy",
+            "entity": "resources",
+            "required_ability": "project-resource:delete"
+        },
+        {
+            "name": "api.v1.resources.show",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/resources/{resource}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ResourceController@show",
+            "entity": "resources",
+            "required_ability": "project-resource:view"
+        },
+        {
+            "name": "api.v1.resources.update",
+            "method": "PATCH",
+            "uri": "/api/v1/projects/{project}/resources/{resource}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ResourceController@update",
+            "entity": "resources",
+            "required_ability": "project-resource:update"
+        },
+        {
+            "name": "api.v1.resources.activate",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/resources/{resource}/activate",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ResourceController@activate",
+            "entity": "resources",
+            "required_ability": "project-resource:update"
+        },
+        {
+            "name": "api.v1.resources.deactivate",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/resources/{resource}/deactivate",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ResourceController@deactivate",
+            "entity": "resources",
+            "required_ability": "project-resource:update"
+        },
+        {
+            "name": "api.v1.recovery.resource-replacement.withdraw-request",
+            "method": "DELETE",
+            "uri": "/api/v1/projects/{project}/resources/{resource}/replacement/request",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ResourceStandbyController@withdrawReplacementRequest",
+            "entity": "recovery",
+            "required_ability": "project-recovery:delete"
+        },
+        {
+            "name": "api.v1.recovery.resource-replacement.request",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/resources/{resource}/replacement/request",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ResourceStandbyController@requestReplacement",
+            "entity": "recovery",
+            "required_ability": "project-recovery:create"
+        },
+        {
+            "name": "api.v1.recovery.resource-standby.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/projects/{project}/resources/{resource}/standby",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ResourceStandbyController@destroy",
+            "entity": "recovery",
+            "required_ability": "project-recovery:delete"
+        },
+        {
+            "name": "api.v1.recovery.resource-standby.show",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/resources/{resource}/standby",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ResourceStandbyController@show",
+            "entity": "recovery",
+            "required_ability": "project-recovery:view"
+        },
+        {
+            "name": "api.v1.recovery.resource-standby.update",
+            "method": "PATCH",
+            "uri": "/api/v1/projects/{project}/resources/{resource}/standby",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ResourceStandbyController@update",
+            "entity": "recovery",
+            "required_ability": "project-recovery:update"
+        },
+        {
+            "name": "api.v1.recovery.resource-standby.withdraw-request",
+            "method": "DELETE",
+            "uri": "/api/v1/projects/{project}/resources/{resource}/standby/request",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ResourceStandbyController@withdrawRequest",
+            "entity": "recovery",
+            "required_ability": "project-recovery:delete"
+        },
+        {
+            "name": "api.v1.recovery.resource-standby.request",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/resources/{resource}/standby/request",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ResourceStandbyController@request",
+            "entity": "recovery",
+            "required_ability": "project-recovery:create"
+        },
+        {
+            "name": "api.v1.recovery.resource-standby.use",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/resources/{resource}/standby/use",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ResourceStandbyController@use",
+            "entity": "recovery",
+            "required_ability": "project-recovery:create"
+        },
+        {
+            "name": "api.v1.resources.unlink",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/resources/{resource}/unlink",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ResourceController@unlink",
+            "entity": "resources",
+            "required_ability": "project-resource:update"
+        },
+        {
+            "name": "api.v1.projects.restore",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/restore",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ProjectController@restore",
+            "entity": "projects",
+            "required_ability": "project:update"
+        },
+        {
+            "name": "api.v1.support-canned-replies.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/support/canned-replies",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SupportCannedReplyController@index",
+            "entity": "support-canned-replies",
+            "required_ability": "support-canned-reply:view-any"
+        },
+        {
+            "name": "api.v1.support-canned-replies.store",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/support/canned-replies",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SupportCannedReplyController@store",
+            "entity": "support-canned-replies",
+            "required_ability": "support-canned-reply:create"
+        },
+        {
+            "name": "api.v1.support-canned-replies.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/projects/{project}/support/canned-replies/{reply}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SupportCannedReplyController@destroy",
+            "entity": "support-canned-replies",
+            "required_ability": "support-canned-reply:delete"
+        },
+        {
+            "name": "api.v1.support-canned-replies.show",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/support/canned-replies/{reply}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SupportCannedReplyController@show",
+            "entity": "support-canned-replies",
+            "required_ability": "support-canned-reply:view-any"
+        },
+        {
+            "name": "api.v1.support-canned-replies.update",
+            "method": "PATCH",
+            "uri": "/api/v1/projects/{project}/support/canned-replies/{reply}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SupportCannedReplyController@update",
+            "entity": "support-canned-replies",
+            "required_ability": "support-canned-reply:update"
+        },
+        {
+            "name": "api.v1.support-settings.show",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/support/settings",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SupportSettingsController@show",
+            "entity": "support-settings",
+            "required_ability": "project:view"
+        },
+        {
+            "name": "api.v1.support-settings.update",
+            "method": "PATCH",
+            "uri": "/api/v1/projects/{project}/support/settings",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SupportSettingsController@update",
+            "entity": "support-settings",
+            "required_ability": "project:update"
+        },
+        {
+            "name": "api.v1.recovery.allowances",
+            "method": "GET",
+            "uri": "/api/v1/recovery/allowances",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RecoveryController@allowances",
+            "entity": "recovery",
+            "required_ability": "project-recovery:view-any"
+        },
+        {
+            "name": "api.v1.recovery.incidents.index",
+            "method": "GET",
+            "uri": "/api/v1/recovery/incidents",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RecoveryController@incidents",
+            "entity": "recovery",
+            "required_ability": "project-recovery:view-any"
+        },
+        {
+            "name": "api.v1.recovery.incidents.show",
+            "method": "GET",
+            "uri": "/api/v1/recovery/incidents/{incident}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RecoveryController@incident",
+            "entity": "recovery",
+            "required_ability": "project-recovery:view"
+        },
+        {
+            "name": "api.v1.recovery.operations.index",
+            "method": "GET",
+            "uri": "/api/v1/recovery/operations",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RecoveryController@operations",
+            "entity": "recovery",
+            "required_ability": "project-recovery:view-any"
+        },
+        {
+            "name": "api.v1.recovery.operations.show",
+            "method": "GET",
+            "uri": "/api/v1/recovery/operations/{operation}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RecoveryController@operation",
+            "entity": "recovery",
+            "required_ability": "project-recovery:view"
+        },
+        {
+            "name": "api.v1.recovery.operations.notify-members",
+            "method": "POST",
+            "uri": "/api/v1/recovery/operations/{operation}/notify-members",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RecoveryController@notifyMembers",
+            "entity": "recovery",
+            "required_ability": "project-recovery:update"
+        },
+        {
+            "name": "api.v1.recovery.operations.nudge",
+            "method": "POST",
+            "uri": "/api/v1/recovery/operations/{operation}/nudge",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RecoveryController@nudge",
+            "entity": "recovery",
+            "required_ability": "project-recovery:update"
+        },
+        {
+            "name": "api.v1.recovery.operations.revert",
+            "method": "POST",
+            "uri": "/api/v1/recovery/operations/{operation}/revert",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RecoveryController@revert",
+            "entity": "recovery",
+            "required_ability": "project-recovery:update"
+        },
+        {
+            "name": "api.v1.recovery.operations.roll-call",
+            "method": "GET",
+            "uri": "/api/v1/recovery/operations/{operation}/roll-call",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RecoveryController@rollCall",
+            "entity": "recovery",
+            "required_ability": "project-recovery:view"
+        },
+        {
+            "name": "api.v1.recovery.readiness",
+            "method": "GET",
+            "uri": "/api/v1/recovery/readiness",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RecoveryController@readiness",
+            "entity": "recovery",
+            "required_ability": "project-recovery:view-any"
+        },
+        {
+            "name": "api.v1.roles.index",
+            "method": "GET",
+            "uri": "/api/v1/roles",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RoleController@index",
+            "entity": "roles",
+            "required_ability": "role:view-any"
+        },
+        {
+            "name": "api.v1.roles.store",
+            "method": "POST",
+            "uri": "/api/v1/roles",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RoleController@store",
+            "entity": "roles",
+            "required_ability": "role:create"
+        },
+        {
+            "name": "api.v1.roles.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/roles/{role}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RoleController@destroy",
+            "entity": "roles",
+            "required_ability": "role:delete"
+        },
+        {
+            "name": "api.v1.roles.show",
+            "method": "GET",
+            "uri": "/api/v1/roles/{role}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RoleController@show",
+            "entity": "roles",
+            "required_ability": "role:view"
+        },
+        {
+            "name": "api.v1.roles.update",
+            "method": "PATCH",
+            "uri": "/api/v1/roles/{role}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RoleController@update",
+            "entity": "roles",
+            "required_ability": "role:update"
+        },
+        {
+            "name": "api.v1.subscriptions.index",
+            "method": "GET",
+            "uri": "/api/v1/subscriptions",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SubscriptionController@index",
+            "entity": "subscriptions",
+            "required_ability": "project-subscription:view-any"
+        },
+        {
+            "name": "api.v1.subscriptions.show",
+            "method": "GET",
+            "uri": "/api/v1/subscriptions/{subscription}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SubscriptionController@show",
+            "entity": "subscriptions",
+            "required_ability": "project-subscription:view"
+        },
+        {
+            "name": "api.v1.subscriptions.cancel",
+            "method": "POST",
+            "uri": "/api/v1/subscriptions/{subscription}/cancel",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SubscriptionController@cancel",
+            "entity": "subscriptions",
+            "required_ability": "project-subscription:update"
+        },
+        {
+            "name": "api.v1.subscriptions.grants.index",
+            "method": "GET",
+            "uri": "/api/v1/subscriptions/{subscription}/grants",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SubscriptionController@grants",
+            "entity": "subscriptions",
+            "required_ability": "project-subscription:view"
+        },
+        {
+            "name": "api.v1.subscriptions.grants.reissue",
+            "method": "POST",
+            "uri": "/api/v1/subscriptions/{subscription}/grants/reissue",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SubscriptionController@reissueGrants",
+            "entity": "subscriptions",
+            "required_ability": "project-subscription:update"
+        },
+        {
+            "name": "api.v1.subscriptions.pause",
+            "method": "POST",
+            "uri": "/api/v1/subscriptions/{subscription}/pause",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SubscriptionController@pause",
+            "entity": "subscriptions",
+            "required_ability": "project-subscription:update"
+        },
+        {
+            "name": "api.v1.subscriptions.reactivate",
+            "method": "POST",
+            "uri": "/api/v1/subscriptions/{subscription}/reactivate",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SubscriptionController@reactivate",
+            "entity": "subscriptions",
+            "required_ability": "project-subscription:update"
+        },
+        {
+            "name": "api.v1.subscriptions.remind",
+            "method": "POST",
+            "uri": "/api/v1/subscriptions/{subscription}/remind",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SubscriptionController@remind",
+            "entity": "subscriptions",
+            "required_ability": "project-subscription:update"
+        },
+        {
+            "name": "api.v1.subscriptions.unpause",
+            "method": "POST",
+            "uri": "/api/v1/subscriptions/{subscription}/unpause",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SubscriptionController@unpause",
+            "entity": "subscriptions",
+            "required_ability": "project-subscription:update"
+        },
+        {
+            "name": "api.v1.support-conversations.index",
+            "method": "GET",
+            "uri": "/api/v1/support/conversations",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SupportConversationController@index",
+            "entity": "support-conversations",
+            "required_ability": "support-conversation:view-any"
+        },
+        {
+            "name": "api.v1.support-conversations.show",
+            "method": "GET",
+            "uri": "/api/v1/support/conversations/{conversation}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SupportConversationController@show",
+            "entity": "support-conversations",
+            "required_ability": "support-conversation:view"
+        },
+        {
+            "name": "api.v1.support-conversations.assign",
+            "method": "POST",
+            "uri": "/api/v1/support/conversations/{conversation}/assign",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SupportConversationController@assign",
+            "entity": "support-conversations",
+            "required_ability": "support-conversation:update"
+        },
+        {
+            "name": "api.v1.support-conversations.block",
+            "method": "POST",
+            "uri": "/api/v1/support/conversations/{conversation}/block",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SupportConversationController@block",
+            "entity": "support-conversations",
+            "required_ability": "support-conversation:update"
+        },
+        {
+            "name": "api.v1.support-conversations.messages",
+            "method": "GET",
+            "uri": "/api/v1/support/conversations/{conversation}/messages",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SupportConversationController@messages",
+            "entity": "support-conversations",
+            "required_ability": "support-conversation:view"
+        },
+        {
+            "name": "api.v1.support-conversations.reply",
+            "method": "POST",
+            "uri": "/api/v1/support/conversations/{conversation}/messages",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SupportConversationController@reply",
+            "entity": "support-conversations",
+            "required_ability": "support-conversation:update"
+        },
+        {
+            "name": "api.v1.support-conversations.reopen",
+            "method": "POST",
+            "uri": "/api/v1/support/conversations/{conversation}/reopen",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SupportConversationController@reopen",
+            "entity": "support-conversations",
+            "required_ability": "support-conversation:update"
+        },
+        {
+            "name": "api.v1.support-conversations.resolve",
+            "method": "POST",
+            "uri": "/api/v1/support/conversations/{conversation}/resolve",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SupportConversationController@resolve",
+            "entity": "support-conversations",
+            "required_ability": "support-conversation:update"
+        },
+        {
+            "name": "api.v1.support-conversations.unblock",
+            "method": "POST",
+            "uri": "/api/v1/support/conversations/{conversation}/unblock",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SupportConversationController@unblock",
+            "entity": "support-conversations",
+            "required_ability": "support-conversation:update"
+        },
+        {
+            "name": "api.v1.teams.index",
+            "method": "GET",
+            "uri": "/api/v1/teams",
+            "action": "App\\Http\\Controllers\\Api\\V1\\TeamController@index",
+            "entity": "teams",
+            "required_ability": "team:view-any"
+        },
+        {
+            "name": "api.v1.teams.store",
+            "method": "POST",
+            "uri": "/api/v1/teams",
+            "action": "App\\Http\\Controllers\\Api\\V1\\TeamController@store",
+            "entity": "teams",
+            "required_ability": "team:create"
+        },
+        {
+            "name": "api.v1.teams.current",
+            "method": "GET",
+            "uri": "/api/v1/teams/current",
+            "action": "App\\Http\\Controllers\\Api\\V1\\TeamController@current",
+            "entity": "teams",
+            "required_ability": "team:view"
+        },
+        {
+            "name": "api.v1.teams.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/teams/{team}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\TeamController@destroy",
+            "entity": "teams",
+            "required_ability": "team:delete"
+        },
+        {
+            "name": "api.v1.teams.show",
+            "method": "GET",
+            "uri": "/api/v1/teams/{team}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\TeamController@show",
+            "entity": "teams",
+            "required_ability": "team:view"
+        },
+        {
+            "name": "api.v1.teams.update",
+            "method": "PATCH",
+            "uri": "/api/v1/teams/{team}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\TeamController@update",
+            "entity": "teams",
+            "required_ability": "team:update"
+        },
+        {
+            "name": "api.v1.team-members.destroy-invitation",
+            "method": "DELETE",
+            "uri": "/api/v1/teams/{team}/invitations/{invitation}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\TeamMemberController@destroyInvitation",
+            "entity": "team-members",
+            "required_ability": "team-member:remove"
+        },
+        {
+            "name": "api.v1.team-members.index",
+            "method": "GET",
+            "uri": "/api/v1/teams/{team}/members",
+            "action": "App\\Http\\Controllers\\Api\\V1\\TeamMemberController@index",
+            "entity": "team-members",
+            "required_ability": "team-member:view-any"
+        },
+        {
+            "name": "api.v1.team-members.store",
+            "method": "POST",
+            "uri": "/api/v1/teams/{team}/members",
+            "action": "App\\Http\\Controllers\\Api\\V1\\TeamMemberController@store",
+            "entity": "team-members",
+            "required_ability": "team-member:invite"
+        },
+        {
+            "name": "api.v1.team-members.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/teams/{team}/members/{member}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\TeamMemberController@destroy",
+            "entity": "team-members",
+            "required_ability": "team-member:remove"
+        },
+        {
+            "name": "api.v1.team-members.show",
+            "method": "GET",
+            "uri": "/api/v1/teams/{team}/members/{member}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\TeamMemberController@show",
+            "entity": "team-members",
+            "required_ability": "team-member:view"
+        },
+        {
+            "name": "api.v1.team-members.update-role",
+            "method": "PATCH",
+            "uri": "/api/v1/teams/{team}/members/{member}/role",
+            "action": "App\\Http\\Controllers\\Api\\V1\\TeamMemberController@updateRole",
+            "entity": "team-members",
+            "required_ability": "team-member:update-role"
+        },
+        {
+            "name": "api.v1.tokens.index",
+            "method": "GET",
+            "uri": "/api/v1/tokens",
+            "action": "App\\Http\\Controllers\\Api\\V1\\TokenController@index",
+            "entity": "tokens",
+            "required_ability": "token:view-any"
+        },
+        {
+            "name": "api.v1.tokens.store",
+            "method": "POST",
+            "uri": "/api/v1/tokens",
+            "action": "App\\Http\\Controllers\\Api\\V1\\TokenController@store",
+            "entity": "tokens",
+            "required_ability": "token:create"
+        },
+        {
+            "name": "api.v1.tokens.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/tokens/{token}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\TokenController@destroy",
+            "entity": "tokens",
+            "required_ability": "token:delete"
+        },
+        {
+            "name": "api.v1.tokens.show",
+            "method": "GET",
+            "uri": "/api/v1/tokens/{token}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\TokenController@show",
+            "entity": "tokens",
+            "required_ability": "token:view"
+        },
+        {
+            "name": "api.v1.webhook-deliveries.index",
+            "method": "GET",
+            "uri": "/api/v1/webhook-deliveries",
+            "action": "App\\Http\\Controllers\\Api\\V1\\WebhookDeliveryController@index",
+            "entity": "webhook-deliveries",
+            "required_ability": "webhook-delivery:view-any"
+        },
+        {
+            "name": "api.v1.webhook-deliveries.retry-dead",
+            "method": "POST",
+            "uri": "/api/v1/webhook-deliveries/retry-dead",
+            "action": "App\\Http\\Controllers\\Api\\V1\\WebhookDeliveryController@retryDead",
+            "entity": "webhook-deliveries",
+            "required_ability": "webhook-delivery:retry"
+        },
+        {
+            "name": "api.v1.webhook-deliveries.show",
+            "method": "GET",
+            "uri": "/api/v1/webhook-deliveries/{delivery}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\WebhookDeliveryController@show",
+            "entity": "webhook-deliveries",
+            "required_ability": "webhook-delivery:view-any"
+        },
+        {
+            "name": "api.v1.webhook-deliveries.retry",
+            "method": "POST",
+            "uri": "/api/v1/webhook-deliveries/{delivery}/retry",
+            "action": "App\\Http\\Controllers\\Api\\V1\\WebhookDeliveryController@retry",
+            "entity": "webhook-deliveries",
+            "required_ability": "webhook-delivery:retry"
+        },
+        {
+            "name": "api.v1.webhook-endpoints.index",
+            "method": "GET",
+            "uri": "/api/v1/webhook-endpoints",
+            "action": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointController@index",
+            "entity": "webhook-endpoints",
+            "required_ability": "webhook-endpoint:view-any"
+        },
+        {
+            "name": "api.v1.webhook-endpoints.store",
+            "method": "POST",
+            "uri": "/api/v1/webhook-endpoints",
+            "action": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointController@store",
+            "entity": "webhook-endpoints",
+            "required_ability": "webhook-endpoint:create"
+        },
+        {
+            "name": "api.v1.webhook-endpoints.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/webhook-endpoints/{endpoint}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointController@destroy",
+            "entity": "webhook-endpoints",
+            "required_ability": "webhook-endpoint:delete"
+        },
+        {
+            "name": "api.v1.webhook-endpoints.show",
+            "method": "GET",
+            "uri": "/api/v1/webhook-endpoints/{endpoint}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointController@show",
+            "entity": "webhook-endpoints",
+            "required_ability": "webhook-endpoint:view"
+        },
+        {
+            "name": "api.v1.webhook-endpoints.pause",
+            "method": "POST",
+            "uri": "/api/v1/webhook-endpoints/{endpoint}/pause",
+            "action": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointController@pause",
+            "entity": "webhook-endpoints",
+            "required_ability": "webhook-endpoint:update"
+        },
+        {
+            "name": "api.v1.webhook-endpoints.resume",
+            "method": "POST",
+            "uri": "/api/v1/webhook-endpoints/{endpoint}/resume",
+            "action": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointController@resume",
+            "entity": "webhook-endpoints",
+            "required_ability": "webhook-endpoint:update"
+        },
+        {
+            "name": "api.v1.webhook-endpoints.rotate-secret",
+            "method": "POST",
+            "uri": "/api/v1/webhook-endpoints/{endpoint}/rotate-secret",
+            "action": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointController@rotateSecret",
+            "entity": "webhook-endpoints",
+            "required_ability": "webhook-endpoint:update"
+        },
+        {
+            "name": "api.v1.webhook-endpoints.test",
+            "method": "POST",
+            "uri": "/api/v1/webhook-endpoints/{endpoint}/test",
+            "action": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointController@test",
+            "entity": "webhook-endpoints",
+            "required_ability": "webhook-endpoint:update"
+        },
+        {
+            "name": "api.v1.webhook-events.index",
+            "method": "GET",
+            "uri": "/api/v1/webhook-events",
+            "action": "App\\Http\\Controllers\\Api\\V1\\WebhookEventController@index",
+            "entity": "webhook-events",
+            "required_ability": "webhook-delivery:view-any"
+        },
+        {
+            "name": "api.v1.webhook-subscriptions.index",
+            "method": "GET",
+            "uri": "/api/v1/webhook-subscriptions",
+            "action": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointController@index",
+            "entity": "webhook-subscriptions",
+            "required_ability": "webhook-endpoint:view-any"
+        },
+        {
+            "name": "api.v1.webhook-subscriptions.store",
+            "method": "POST",
+            "uri": "/api/v1/webhook-subscriptions",
+            "action": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointController@store",
+            "entity": "webhook-subscriptions",
+            "required_ability": "webhook-endpoint:create"
+        },
+        {
+            "name": "api.v1.webhook-subscriptions.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/webhook-subscriptions/{endpoint}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointController@destroy",
+            "entity": "webhook-subscriptions",
+            "required_ability": "webhook-endpoint:delete"
+        }
+    ]
+}
