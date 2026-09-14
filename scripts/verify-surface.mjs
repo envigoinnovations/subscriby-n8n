@@ -20,15 +20,19 @@
  * list only shrinks. A handful of call sites build their path through a
  * variable or a lookup table rather than a literal; those are spelt out in
  * INDIRECT_OPERATIONS so the check stays honest without rewriting the node.
+ * When the docs repo is checked out beside this one, its copy of this
+ * package's resources and events (`npm run export:operations`) must match the
+ * source too, or the n8n docs page would be generated from yesterday's node.
  */
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import { scanNode } from "./lib/scan-node.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const dataDir = join(root, "scripts/data");
 const nodesDir = join(root, "nodes");
-const eventsFile = join(nodesDir, "SubscribyTrigger", "events.ts");
+const docsCopy = join(root, "..", "SubscribyDocs", "scripts", "data", "n8n-operations.json");
 
 /**
  * Endpoints this package deliberately offers no operation for.
@@ -171,9 +175,8 @@ for (const file of walk(nodesDir)) {
   }
 }
 
-const catalogued = new Set(
-  [...readFileSync(eventsFile, "utf8").matchAll(/value:\s*'([^']+)'/g)].map((match) => match[1]),
-);
+const scanned = scanNode(root);
+const catalogued = new Set(scanned.events.map((event) => event.value));
 
 const problems = [];
 
@@ -209,10 +212,14 @@ for (const name of catalogued) {
   }
 }
 
+if (existsSync(docsCopy) && readFileSync(docsCopy, "utf8").trim() !== JSON.stringify(scanned, null, 2)) {
+  problems.push("the docs repo's copy of this package's resources and events is behind the source; run: npm run export:operations");
+}
+
 if (problems.length > 0) {
   fail(`${problems.length} surface gap(s):\n  - ${problems.join("\n  - ")}`);
 }
 
 console.log(
-  `verify-surface: ${endpoints.length} endpoints (${DELIBERATELY_ABSENT.size} deliberately absent) and ${eventNames.size} events all have an n8n counterpart.`,
+  `verify-surface: ${endpoints.length} endpoints (${DELIBERATELY_ABSENT.size} deliberately absent) and ${eventNames.size} events all have an n8n counterpart; ${scanned.resources.length} resources scanned.`,
 );

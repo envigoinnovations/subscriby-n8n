@@ -37,6 +37,7 @@
     "prepublishOnly": "npm run build",
     "release": "n8n-node release",
     "sync:readme": "node scripts/sync-readme-events.js",
+    "export:operations": "node scripts/export-operations.mjs",
     "verify:surface": "node scripts/verify-surface.mjs"
   },
   "files": [
