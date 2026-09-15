@@ -88,8 +88,11 @@
             "required_ability": "project-resource:view",
             "payload_keys": [
                 "chat_id",
+                "connector",
+                "kind",
                 "project_id",
                 "resource_id",
+                "space_id",
                 "title",
                 "type"
             ]
