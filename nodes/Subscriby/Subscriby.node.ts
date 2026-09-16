@@ -54,7 +54,6 @@ export class Subscriby implements INodeType {
           { name: 'Account', value: 'account' },
           { name: 'Activity', value: 'activity' },
           { name: 'Analytics', value: 'analytics' },
-          { name: 'Bot', value: 'bot' },
           { name: 'Broadcast', value: 'broadcast' },
           { name: 'Canned Reply', value: 'cannedReply' },
           { name: 'Connector', value: 'connector' },
@@ -2256,28 +2255,6 @@ export class Subscriby implements INodeType {
         displayOptions: { show: { resource: ['activity'], operation: ['list'] } },
       },
 
-      // === BOT ===
-      {
-        displayName: 'Operation',
-        name: 'operation',
-        type: 'options',
-        noDataExpression: true,
-        displayOptions: { show: { resource: ['bot'] } },
-        options: [
-          { name: 'Disconnect', value: 'disconnect', action: 'Disconnect the bot', description: 'Detach the Telegram bot from the project. Members keep their access; the bot stops answering for this project.' },
-          { name: 'Get Status', value: 'getStatus', action: 'Get bot status', description: 'Fetch the current bot connection status for a project' },
-        ],
-        default: 'getStatus',
-      },
-      {
-        displayName: 'Project ID',
-        name: 'projectId',
-        type: 'string',
-        default: '',
-        required: true,
-        displayOptions: { show: { resource: ['bot'] } },
-      },
-
       // === CONNECTOR ===
       {
         displayName: 'Operation',
@@ -2375,11 +2352,10 @@ export class Subscriby implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['distribution'] } },
         options: [
-          { name: 'Get Bot Link', value: 'getBotLink', action: 'Get bot link', description: 'Fetch the Telegram bot link for a project' },
           { name: 'Get Portal URL', value: 'getPortalUrl', action: 'Get portal URL', description: 'Fetch the public portal URL for a project' },
-          { name: 'Get Deep Link', value: 'getDeepLink', action: 'Get a deep link', description: 'Generate a Telegram deep link targeting an access code, plan, or custom payload' },
+          { name: 'Get Deep Link', value: 'getDeepLink', action: 'Get a deep link', description: 'Generate a deep link into the project\'s installation targeting an access code, plan, or custom payload' },
         ],
-        default: 'getBotLink',
+        default: 'getPortalUrl',
       },
       {
         displayName: 'Project ID',
@@ -2582,8 +2558,6 @@ async function dispatch(
       return dispatchGroup.call(this, operation, i);
     case 'activity':
       return dispatchActivity.call(this, operation, i);
-    case 'bot':
-      return dispatchBot.call(this, operation, i);
     case 'connector':
       return dispatchConnector.call(this, operation, i);
     case 'distribution':
@@ -4084,24 +4058,6 @@ async function dispatchBroadcast(
   throw new NodeOperationError(this.getNode(), `Unknown broadcast operation: ${operation}`);
 }
 
-async function dispatchBot(
-  this: IExecuteFunctions,
-  operation: string,
-  i: number,
-): Promise<IDataObject> {
-  const projectId = this.getNodeParameter('projectId', i) as string;
-
-  if (operation === 'getStatus') {
-    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/bot`);
-  }
-
-  if (operation === 'disconnect') {
-    return subscribyApiRequest.call(this, 'DELETE', `/projects/${projectId}/bot`);
-  }
-
-  throw new NodeOperationError(this.getNode(), `Unknown bot operation: ${operation}`);
-}
-
 async function dispatchConnector(
   this: IExecuteFunctions,
   operation: string,
@@ -4193,14 +4149,6 @@ async function dispatchDistribution(
   i: number,
 ): Promise<IDataObject> {
   const projectId = this.getNodeParameter('projectId', i) as string;
-
-  if (operation === 'getBotLink') {
-    return subscribyApiRequest.call(
-      this,
-      'GET',
-      `/projects/${projectId}/distribution/bot-link`,
-    );
-  }
 
   if (operation === 'getPortalUrl') {
     return subscribyApiRequest.call(

@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 192,
+    "count": 189,
     "items": [
         {
             "name": "api.v1.activity.index",
@@ -323,22 +323,6 @@
             "required_ability": "project:update"
         },
         {
-            "name": "api.v1.bot.disconnect",
-            "method": "DELETE",
-            "uri": "/api/v1/projects/{project}/bot",
-            "action": "App\\Http\\Controllers\\Api\\V1\\BotController@disconnect",
-            "entity": "bot",
-            "required_ability": "bot:manage"
-        },
-        {
-            "name": "api.v1.bot.status",
-            "method": "GET",
-            "uri": "/api/v1/projects/{project}/bot",
-            "action": "App\\Http\\Controllers\\Api\\V1\\BotController@status",
-            "entity": "bot",
-            "required_ability": "project:view"
-        },
-        {
             "name": "api.v1.broadcasts.store",
             "method": "POST",
             "uri": "/api/v1/projects/{project}/broadcasts",
@@ -513,14 +497,6 @@
             "action": "App\\Http\\Controllers\\Api\\V1\\CreatorTaskController@complete",
             "entity": "creator-tasks",
             "required_ability": "project-subscription:update"
-        },
-        {
-            "name": "api.v1.distribution.bot-link",
-            "method": "GET",
-            "uri": "/api/v1/projects/{project}/distribution/bot-link",
-            "action": "App\\Http\\Controllers\\Api\\V1\\DistributionController@botLink",
-            "entity": "distribution",
-            "required_ability": "distribution:read"
         },
         {
             "name": "api.v1.distribution.deep-link",

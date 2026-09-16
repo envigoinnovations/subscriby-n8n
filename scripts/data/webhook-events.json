@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 148,
+    "count": 145,
     "items": [
         {
             "name": "project.created",
@@ -41,37 +41,6 @@
             "required_ability": "project:view",
             "payload_keys": [
                 "project"
-            ]
-        },
-        {
-            "name": "project.bot.connected",
-            "family": "project",
-            "required_ability": "project:view",
-            "payload_keys": [
-                "bot_id",
-                "bot_name",
-                "bot_url",
-                "project_id"
-            ]
-        },
-        {
-            "name": "project.bot.disconnected",
-            "family": "project",
-            "required_ability": "project:view",
-            "payload_keys": [
-                "bot_id",
-                "project_id"
-            ]
-        },
-        {
-            "name": "project.bot.status_changed",
-            "family": "project",
-            "required_ability": "project:view",
-            "payload_keys": [
-                "bot_id",
-                "project_id",
-                "reason",
-                "status"
             ]
         },
         {
