@@ -56,14 +56,12 @@
             "family": "project",
             "required_ability": "project-resource:view",
             "payload_keys": [
-                "chat_id",
                 "connector",
                 "kind",
                 "project_id",
                 "resource_id",
                 "space_id",
-                "title",
-                "type"
+                "title"
             ]
         },
         {
@@ -851,7 +849,7 @@
                 "grant_id",
                 "mode",
                 "resource_id",
-                "resource_type",
+                "resource_kind",
                 "subscriber_id",
                 "subscription_id"
             ]
@@ -865,7 +863,7 @@
                 "grant_id",
                 "mode",
                 "resource_id",
-                "resource_type",
+                "resource_kind",
                 "subscriber_id",
                 "subscription_id"
             ]
@@ -879,7 +877,7 @@
                 "grant_id",
                 "mode",
                 "resource_id",
-                "resource_type",
+                "resource_kind",
                 "subscriber_id",
                 "subscription_id"
             ]
@@ -909,7 +907,7 @@
                 "grant_id",
                 "mode",
                 "resource_id",
-                "resource_type",
+                "resource_kind",
                 "subscriber_id",
                 "subscription_id"
             ]
@@ -948,7 +946,7 @@
                 "grant_id",
                 "instructions",
                 "resource_id",
-                "resource_type",
+                "resource_kind",
                 "subscriber_id",
                 "subscription_id",
                 "task_id"
@@ -963,7 +961,7 @@
                 "completed_by_user_id",
                 "grant_id",
                 "resource_id",
-                "resource_type",
+                "resource_kind",
                 "subscriber_id",
                 "subscription_id",
                 "task_id"

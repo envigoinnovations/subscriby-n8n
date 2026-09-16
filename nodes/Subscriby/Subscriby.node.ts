@@ -1572,12 +1572,12 @@ export class Subscriby implements INodeType {
         displayOptions: { show: { resource: ['resource'] } },
         options: [
           { name: 'Activate', value: 'activate', action: 'Activate a resource', description: 'Switch a resource back on so it is delivered to members' },
-          { name: 'Create', value: 'create', action: 'Create a resource', description: 'Attach an external deliverable to a project' },
+          { name: 'Create', value: 'create', action: 'Create a resource', description: 'Create a manual perk (a PDF, a token, a URL) the creator hands over by hand; a place a connector gates is linked with Request Link' },
           { name: 'Deactivate', value: 'deactivate', action: 'Deactivate a resource', description: 'Switch a resource off without deleting it; new members stop receiving it' },
           { name: 'Delete', value: 'delete', action: 'Delete a resource', description: 'Permanently delete a resource' },
           { name: 'Get', value: 'get', action: 'Get a resource', description: 'Fetch a resource by UUID' },
-          { name: 'List', value: 'list', action: 'List resources', description: 'List all resources attached to a project' },
-          { name: 'Request Link', value: 'requestLink', action: 'Request a resource link', description: 'Ask the creator, through the connector, to pick the channel, group or supergroup a new resource will be; it appears when they choose' },
+          { name: 'List', value: 'list', action: 'List resources', description: 'List the resources attached to a project, or only those of one kind or on one connector' },
+          { name: 'Request Link', value: 'requestLink', action: 'Request a resource link', description: 'Ask the creator, through the connector, to pick the place a new resource will be (a kind its connector gates, such as telegram:channel); it appears when they choose' },
           { name: 'Unlink', value: 'unlink', action: 'Unlink a resource', description: 'Detach a resource from delivery without deleting it' },
           { name: 'Update', value: 'update', action: 'Update a resource', description: 'Change the title, description or switch. Fields you leave out keep their stored values.' },
         ],
@@ -1603,16 +1603,24 @@ export class Subscriby implements INodeType {
       {
         displayName: 'Kind',
         name: 'kind',
-        type: 'options',
-        options: [
-          { name: 'Channel', value: 'channel' },
-          { name: 'Group', value: 'group' },
-          { name: 'Supergroup', value: 'supergroup' },
-        ],
-        default: 'channel',
+        type: 'string',
+        default: '',
+        placeholder: 'telegram:channel',
         required: true,
-        description: 'The kind of place the connector should ask the creator to pick',
+        description: 'The kind of place the connector should ask the creator to pick, spelled connector:kind as Connector → List lists each connector\'s resource kinds (telegram:channel, telegram:group, telegram:supergroup)',
         displayOptions: { show: { resource: ['resource'], operation: ['requestLink'] } },
+      },
+      {
+        displayName: 'Filters',
+        name: 'resourceListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['resource'], operation: ['list'] } },
+        options: [
+          { displayName: 'Kind', name: 'kind', type: 'string', default: '', placeholder: 'telegram:channel', description: 'Only resources of one kind: manual, or a connector\'s kind spelled connector:kind' },
+          { displayName: 'Connector', name: 'connector', type: 'string', default: '', placeholder: 'telegram', description: 'Only the resources one connector gates, by its key' },
+        ],
       },
       {
         displayName: 'Title',
@@ -1623,26 +1631,21 @@ export class Subscriby implements INodeType {
         displayOptions: { show: { resource: ['resource'], operation: ['create'] } },
       },
       {
-        displayName: 'Type',
-        name: 'type',
-        type: 'options',
-        options: [
-          { name: 'Telegram Chat', value: 'telegram_chat' },
-          { name: 'Telegram Channel', value: 'telegram_channel' },
-          { name: 'Link', value: 'link' },
-        ],
-        default: 'telegram_chat',
-        required: true,
+        displayName: 'Description',
+        name: 'description',
+        type: 'string',
+        typeOptions: { rows: 3 },
+        default: '',
         displayOptions: { show: { resource: ['resource'], operation: ['create'] } },
+        description: 'Up to 1000 characters of well-formed HTML, shown as a perk beside the title',
       },
       {
-        displayName: 'Target',
-        name: 'target',
-        type: 'string',
-        default: '',
-        required: true,
+        displayName: 'Active',
+        name: 'active',
+        type: 'boolean',
+        default: true,
         displayOptions: { show: { resource: ['resource'], operation: ['create'] } },
-        description: 'Chat ID, channel username, or URL — depending on the resource type',
+        description: 'Whether plans grant the perk right away',
       },
 
       {
@@ -3182,14 +3185,22 @@ async function dispatchResource(
   if (operation === 'create') {
     const body = compactBody({
       title: this.getNodeParameter('title', i) as string,
-      type: this.getNodeParameter('type', i) as string,
-      target: this.getNodeParameter('target', i) as string,
+      description: this.getNodeParameter('description', i, '') as string,
+      active: this.getNodeParameter('active', i, true) as boolean,
     });
     return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/resources`, body);
   }
 
   if (operation === 'list') {
-    const rows = await subscribyApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/resources`);
+    const filters = this.getNodeParameter('resourceListFilters', i, {}) as IDataObject;
+    const qs: IDataObject = {};
+    if (filters.kind) {
+      qs.kind = filters.kind;
+    }
+    if (filters.connector) {
+      qs.connector = filters.connector;
+    }
+    const rows = await subscribyApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/resources`, qs);
     return { data: rows };
   }
 
