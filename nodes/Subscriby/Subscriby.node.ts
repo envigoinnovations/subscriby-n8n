@@ -997,9 +997,9 @@ export class Subscriby implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['subscriber'] } },
         options: [
-          { name: 'Find by Telegram ID', value: 'findByTelegramId', action: 'Find a subscriber by telegram id', description: 'Return the subscriber whose Telegram user ID matches' },
+          { name: 'Find by Connector Account', value: 'findByIdentity', action: 'Find a subscriber by connector account', description: 'Return the subscriber holding a given account on a connector' },
         ],
-        default: 'findByTelegramId',
+        default: 'findByIdentity',
       },
       {
         displayName: 'Project ID',
@@ -1010,13 +1010,22 @@ export class Subscriby implements INodeType {
         displayOptions: { show: { resource: ['subscriber'] } },
       },
       {
-        displayName: 'Telegram ID',
-        name: 'telegramId',
+        displayName: 'Connector',
+        name: 'connector',
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['subscriber'], operation: ['findByTelegramId'] } },
-        description: 'Numeric Telegram user ID (the value Telegram hands to bots)',
+        displayOptions: { show: { resource: ['subscriber'], operation: ['findByIdentity'] } },
+        description: 'Key of the connector the account lives on, as the Connector › List operation lists them',
+      },
+      {
+        displayName: 'Account ID',
+        name: 'accountId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['subscriber'], operation: ['findByIdentity'] } },
+        description: 'The platform\'s own ID for the account, as Member › List Identities shows it',
       },
 
       // === ACCESS CODE ===
@@ -3088,14 +3097,15 @@ async function dispatchSubscriber(
 ): Promise<IDataObject> {
   const projectId = this.getNodeParameter('projectId', i) as string;
 
-  if (operation === 'findByTelegramId') {
-    const telegramId = this.getNodeParameter('telegramId', i) as string;
+  if (operation === 'findByIdentity') {
+    const connector = this.getNodeParameter('connector', i) as string;
+    const accountId = this.getNodeParameter('accountId', i) as string;
     return subscribyApiRequest.call(
       this,
       'GET',
       `/projects/${projectId}/members`,
       undefined,
-      { telegram_id: telegramId },
+      { identity: `${connector}:${accountId}` },
     );
   }
 

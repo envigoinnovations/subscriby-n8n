@@ -72,7 +72,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Plan                 | Create, Update, Publish, Unpublish, Start Next Season, Arrange Storefront Order, Get, List, Delete, Find by Name |
 | Pass Window          | List, Get, Create, Cancel, Remind Queue                                                                          |
 | Subscription         | Cancel, Get, List, List Grants, Reissue Grants, Pause Access, Unpause Access, Reactivate, Remind Pass Holder     |
-| Subscriber           | Find by Telegram ID                                                                                              |
+| Subscriber           | Find by Connector Account                                                                                              |
 | Member               | Ban, Unban, Kick, Get, List                                                                                      |
 | Broadcast            | Send, Preview, List Audiences                                                                                    |
 | Support Conversation | List, Get, List Messages, Reply, Resolve, Reopen, Assign, Block Contact, Unblock Contact                         |
