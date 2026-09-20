@@ -28,6 +28,7 @@
     "access": "public"
   },
   "scripts": {
+  "prepare": "git config core.hooksPath .githooks || exit 0",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "build": "npm run verify:surface && npm run clean && tsc && gulp build:icons",
     "dev": "tsc --watch",

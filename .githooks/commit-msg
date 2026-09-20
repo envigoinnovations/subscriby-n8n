@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+# Refuse a commit whose message credits an AI assistant.
+#
+# GitHub lists every Co-Authored-By trailer as a contributor, so one stray
+# trailer puts a bot on the repository's contributor list until the history is
+# rewritten. The people who own this code are its only authors.
+
+message="$1"
+
+if grep -qiE '^Co-Authored-By:.*(Claude|Anthropic)|noreply@anthropic\.com|Generated with \[?Claude' "$message"; then
+    echo "commit-msg: the message credits Claude (a Co-Authored-By trailer or a 'Generated with' line). Remove it and commit again." >&2
+    exit 1
+fi
+
+exit 0
