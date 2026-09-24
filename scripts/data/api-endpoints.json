@@ -270,7 +270,7 @@
             "name": "api.v1.ping",
             "method": "GET",
             "uri": "/api/v1/ping",
-            "action": "Closure",
+            "action": "App\\Http\\Controllers\\Api\\PingController",
             "entity": "ping",
             "required_ability": null
         },
