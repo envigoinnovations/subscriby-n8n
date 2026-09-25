@@ -28,7 +28,7 @@ Restart the n8n process after install.
 
 ## Setup
 
-1. Mint an API token at `https://app.subscriby.net/settings/tokens`. Every token is auto-bound to a team (`scope:team:<uuid>`); you pick the abilities it carries. See the [ability catalogue](https://docs.subscriby.net/api/abilities) for the full list. Minimums per use-case:
+1. Mint an API token at `https://app.subscriby.net/settings/tokens`. Every token is auto-bound to a team (`scope:team:<uuid>`); you pick the abilities it carries. See the [ability catalogue](https://docs.subscriby.net/api/v1/abilities) for the full list. Minimums per use-case:
    - **Trigger node** — `webhook-endpoint:manage`. Restrict to a single project by also scoping the token to that project (`scope:project:<uuid>`).
    - **Read-only workflows** — combine `*:view` / `*:view-any` abilities for the resources you list or fetch (e.g. `project:view-any`, `project-subscription:view`, `project-subscription-plan:view`, `project-access-code:view-any`, `team-member:view-any`, `role:view`, `group:view`, `project-recovery:view-any`, `activity:read`, `dashboard:read`, `distribution:read`, `billing:read`).
    - **Write workflows** — add the matching `*:create` / `*:update` / `*:delete` abilities (e.g. `project:create`, `project-subscription-plan:update`, `project-access-code:create`, `project-resource:delete`). Cancelling a subscription is `project-subscription:update`; banning/kicking a member is `project-user:update`.
@@ -37,7 +37,7 @@ Restart the n8n process after install.
 
 ## Supported events (145)
 
-The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/event-reference). This table is generated from that file by `npm run sync:readme` — do not edit it by hand.
+The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/v1/event-reference). This table is generated from that file by `npm run sync:readme` — do not edit it by hand.
 
 | Family | Count | Events |
 | ------ | ----- | ------ |
@@ -122,8 +122,8 @@ n8n start
 
 - [Subscriby documentation](https://docs.subscriby.net)
 - [n8n integration guide](https://docs.subscriby.net/integrations/n8n)
-- [API reference](https://docs.subscriby.net/api)
-- [Event reference](https://docs.subscriby.net/webhooks/event-reference)
+- [API reference](https://docs.subscriby.net/api/v1)
+- [Event reference](https://docs.subscriby.net/webhooks/v1/event-reference)
 
 ## License
 

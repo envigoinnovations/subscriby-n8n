@@ -11,7 +11,7 @@
     ],
     "credentialDocumentation": [
       {
-        "url": "https://docs.subscriby.net/api/authentication"
+        "url": "https://docs.subscriby.net/api/v1/authentication"
       }
     ]
   }

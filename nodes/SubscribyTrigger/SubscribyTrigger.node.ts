@@ -21,7 +21,7 @@ import { EVENT_CATALOG } from './events';
  *  - webhook(): validates SB-Signature, returns event envelope to the workflow
  *
  * Subscribed event names match the catalog at
- * https://docs.subscriby.net/webhooks/event-reference. The authoritative list is
+ * https://docs.subscriby.net/webhooks/v1/event-reference. The authoritative list is
  * EVENT_CATALOG in ./events.ts, which mirrors Subscriby's WebhookEvent enum —
  * read the count from there rather than restating it here, which is how this
  * comment came to claim 73 events and omit the coupon and support families.

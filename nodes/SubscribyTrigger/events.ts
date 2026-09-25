@@ -7,7 +7,7 @@
  * derive from it.
  *
  * Event names mirror the catalogue published at
- * https://docs.subscriby.net/webhooks/event-reference.
+ * https://docs.subscriby.net/webhooks/v1/event-reference.
  */
 export const EVENT_CATALOG = [
   { family: 'Access Code', name: 'Access Code — Expired', value: 'access_code.expired' },

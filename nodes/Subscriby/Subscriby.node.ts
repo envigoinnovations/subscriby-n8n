@@ -17,7 +17,7 @@ import {
 
 /**
  * Primary action node — exposes every write + search route documented at
- * https://docs.subscriby.net/api. Triggers live in SubscribyTrigger.
+ * https://docs.subscriby.net/api/v1. Triggers live in SubscribyTrigger.
  *
  * Convention mirrors the Subscriby REST surface: (resource, operation)
  * maps 1:1 to a single route.
