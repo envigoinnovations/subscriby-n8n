@@ -41,6 +41,8 @@ const docsCopy = join(root, "..", "SubscribyDocs", "scripts", "data", "n8n-opera
  * the checks below spell them, each with the reason it stays off n8n.
  */
 const DELIBERATELY_ABSENT = new Map([
+  ["POST /me/export", "An archive of the creator's own account is asked for in person, from Settings or the API, and lands in their inbox; it is not an automation step."],
+  ["GET /me/export", "An archive of the creator's own account is asked for in person, from Settings or the API, and lands in their inbox; it is not an automation step."],
   ["GET /me/alert-destinations", "Where a creator's own alerts go is set on the dashboard or in the apps; Account › Get Me reads it."],
   ["PUT /me/alert-destinations", "Where a creator's own alerts go is set on the dashboard or in the apps; Account › Get Me reads it."],
   ["GET /me/identities", "The creator's own linked accounts are account security, managed in person."],

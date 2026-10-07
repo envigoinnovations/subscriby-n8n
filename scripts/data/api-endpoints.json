@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 189,
+    "count": 191,
     "items": [
         {
             "name": "api.v1.activity.index",
@@ -161,6 +161,22 @@
             "action": "App\\Http\\Controllers\\Api\\V1\\AlertDestinationController@update",
             "entity": "me",
             "required_ability": "account:write"
+        },
+        {
+            "name": "api.v1.me.export.show",
+            "method": "GET",
+            "uri": "/api/v1/me/export",
+            "action": "App\\Http\\Controllers\\Api\\V1\\AccountExportController@show",
+            "entity": "me",
+            "required_ability": "account:export"
+        },
+        {
+            "name": "api.v1.me.export.store",
+            "method": "POST",
+            "uri": "/api/v1/me/export",
+            "action": "App\\Http\\Controllers\\Api\\V1\\AccountExportController@store",
+            "entity": "me",
+            "required_ability": "account:export"
         },
         {
             "name": "api.v1.me.identities.index",
