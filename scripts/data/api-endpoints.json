@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 191,
+    "count": 206,
     "items": [
         {
             "name": "api.v1.activity.index",
@@ -809,6 +809,126 @@
             "action": "App\\Http\\Controllers\\Api\\V1\\RecoverySettingsController@removeStandbyInstallation",
             "entity": "recovery",
             "required_ability": "project-recovery:delete"
+        },
+        {
+            "name": "api.v1.referral-affiliates.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/referral-affiliates",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ReferralAffiliateController@index",
+            "entity": "referral-affiliates",
+            "required_ability": "project-referral:view-any"
+        },
+        {
+            "name": "api.v1.referral-affiliates.store",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/referral-affiliates",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ReferralAffiliateController@store",
+            "entity": "referral-affiliates",
+            "required_ability": "project-referral:create"
+        },
+        {
+            "name": "api.v1.referral-affiliates.show",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/referral-affiliates/{affiliate}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ReferralAffiliateController@show",
+            "entity": "referral-affiliates",
+            "required_ability": "project-referral:view"
+        },
+        {
+            "name": "api.v1.referral-affiliates.approve",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/referral-affiliates/{affiliate}/approve",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ReferralAffiliateController@approve",
+            "entity": "referral-affiliates",
+            "required_ability": "project-referral:update"
+        },
+        {
+            "name": "api.v1.referral-affiliates.suspend",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/referral-affiliates/{affiliate}/suspend",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ReferralAffiliateController@suspend",
+            "entity": "referral-affiliates",
+            "required_ability": "project-referral:update"
+        },
+        {
+            "name": "api.v1.referral-payouts.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/referral-payouts",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ReferralPayoutController@index",
+            "entity": "referral-payouts",
+            "required_ability": "project-referral:view-any"
+        },
+        {
+            "name": "api.v1.referral-payouts.store",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/referral-payouts",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ReferralPayoutController@store",
+            "entity": "referral-payouts",
+            "required_ability": "project-referral:update"
+        },
+        {
+            "name": "api.v1.referral-program.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/projects/{project}/referral-program",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ReferralProgramController@destroy",
+            "entity": "referral-program",
+            "required_ability": "project-referral:delete"
+        },
+        {
+            "name": "api.v1.referral-program.show",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/referral-program",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ReferralProgramController@show",
+            "entity": "referral-program",
+            "required_ability": "project-referral:view"
+        },
+        {
+            "name": "api.v1.referral-program.update",
+            "method": "PUT",
+            "uri": "/api/v1/projects/{project}/referral-program",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ReferralProgramController@update",
+            "entity": "referral-program",
+            "required_ability": "project-referral:update"
+        },
+        {
+            "name": "api.v1.referral-program.activate",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/referral-program/activate",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ReferralProgramController@activate",
+            "entity": "referral-program",
+            "required_ability": "project-referral:update"
+        },
+        {
+            "name": "api.v1.referral-program.deactivate",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/referral-program/deactivate",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ReferralProgramController@deactivate",
+            "entity": "referral-program",
+            "required_ability": "project-referral:update"
+        },
+        {
+            "name": "api.v1.referral-rewards.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/referral-rewards",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ReferralRewardController@index",
+            "entity": "referral-rewards",
+            "required_ability": "project-referral:view-any"
+        },
+        {
+            "name": "api.v1.referrals.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/referrals",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ReferralController@index",
+            "entity": "referrals",
+            "required_ability": "project-referral:view-any"
+        },
+        {
+            "name": "api.v1.referrals.show",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/referrals/{referral}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ReferralController@show",
+            "entity": "referrals",
+            "required_ability": "project-referral:view"
         },
         {
             "name": "api.v1.resources.index",

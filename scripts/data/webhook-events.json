@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 145,
+    "count": 155,
     "items": [
         {
             "name": "project.created",
@@ -507,6 +507,133 @@
                 "coupon_id",
                 "max_redemptions",
                 "redemptions_count"
+            ]
+        },
+        {
+            "name": "referral.program_updated",
+            "family": "referral",
+            "required_ability": "project-referral:view",
+            "payload_keys": [
+                "changes",
+                "program"
+            ]
+        },
+        {
+            "name": "referral.affiliate_joined",
+            "family": "referral",
+            "required_ability": "project-referral:view",
+            "payload_keys": [
+                "affiliate",
+                "status",
+                "subscriber_id"
+            ]
+        },
+        {
+            "name": "referral.affiliate_approved",
+            "family": "referral",
+            "required_ability": "project-referral:view",
+            "payload_keys": [
+                "affiliate",
+                "status",
+                "subscriber_id"
+            ]
+        },
+        {
+            "name": "referral.affiliate_suspended",
+            "family": "referral",
+            "required_ability": "project-referral:view",
+            "payload_keys": [
+                "affiliate",
+                "status",
+                "subscriber_id"
+            ]
+        },
+        {
+            "name": "referral.captured",
+            "family": "referral",
+            "required_ability": "project-referral:view",
+            "payload_keys": [
+                "affiliate_id",
+                "connector",
+                "expires_at",
+                "referral_id",
+                "source",
+                "subscriber_id"
+            ]
+        },
+        {
+            "name": "referral.converted",
+            "family": "referral",
+            "required_ability": "project-referral:view",
+            "payload_keys": [
+                "affiliate_id",
+                "commission_ends_at",
+                "referral_id",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "referral.reward_earned",
+            "family": "referral",
+            "required_ability": "project-referral:view",
+            "payload_keys": [
+                "affiliate_id",
+                "amount",
+                "beneficiary",
+                "currency_id",
+                "days",
+                "hold_until",
+                "kind",
+                "payment_id",
+                "referral_id",
+                "reward_id",
+                "status"
+            ]
+        },
+        {
+            "name": "referral.reward_approved",
+            "family": "referral",
+            "required_ability": "project-referral:view",
+            "payload_keys": [
+                "affiliate_id",
+                "amount",
+                "beneficiary",
+                "currency_id",
+                "days",
+                "hold_until",
+                "kind",
+                "payment_id",
+                "referral_id",
+                "reward_id",
+                "status"
+            ]
+        },
+        {
+            "name": "referral.reward_reversed",
+            "family": "referral",
+            "required_ability": "project-referral:view",
+            "payload_keys": [
+                "affiliate_id",
+                "amount",
+                "clawback_reward_id",
+                "currency_id",
+                "reason",
+                "referral_id",
+                "reward_id"
+            ]
+        },
+        {
+            "name": "referral.payout_recorded",
+            "family": "referral",
+            "required_ability": "project-referral:view",
+            "payload_keys": [
+                "affiliate_id",
+                "amount",
+                "currency_id",
+                "payout_id",
+                "reference",
+                "rewards_paid"
             ]
         },
         {

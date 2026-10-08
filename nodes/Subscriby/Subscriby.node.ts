@@ -68,6 +68,7 @@ export class Subscriby implements INodeType {
           { name: 'Plan', value: 'plan' },
           { name: 'Project', value: 'project' },
           { name: 'Recovery', value: 'recovery' },
+          { name: 'Referral Program', value: 'referral' },
           { name: 'Resource', value: 'resource' },
           { name: 'Role', value: 'role' },
           { name: 'Subscriber', value: 'subscriber' },
@@ -1234,6 +1235,253 @@ export class Subscriby implements INodeType {
         options: [
           { displayName: 'Active', name: 'active', type: 'boolean', default: true, description: 'Whether to return only codes that are switched on (or, when off, only codes that are switched off)' },
           { displayName: 'Code', name: 'code', type: 'string', default: '', description: 'Exact code to look up' },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+        ],
+      },
+
+      // === REFERRAL PROGRAM ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['referral'] } },
+        options: [
+          { name: 'Activate Program', value: 'activateProgram', action: 'Activate a referral program', description: 'Switch the programme on: links and codes attribute again, settled payments earn again, and every affiliate is told the terms as they now stand' },
+          { name: 'Add Affiliate', value: 'addAffiliate', action: 'Add a referral affiliate', description: "Enrol a member by hand, approved whatever the programme's switches say, and hand them their code, links and the terms" },
+          { name: 'Approve Affiliate', value: 'approveAffiliate', action: 'Approve a referral affiliate', description: 'Approve a pending or suspended affiliate so their code counts from now on' },
+          { name: 'Deactivate Program', value: 'deactivateProgram', action: 'Deactivate a referral program', description: 'Switch the programme off: links stop attributing and payments stop earning at once; what affiliates already earned stays' },
+          { name: 'Delete Program', value: 'deleteProgram', action: 'Delete a referral program', description: 'Remove the programme. Refused while any affiliate is still owed a commission.' },
+          { name: 'Get Affiliate', value: 'getAffiliate', action: 'Get a referral affiliate', description: 'Fetch one affiliate with their code, status and balances per currency; never their payout details' },
+          { name: 'Get Program', value: 'getProgram', action: 'Get a referral program', description: "Fetch the project's programme: what referrers earn, what friends get, who may join and which plans count" },
+          { name: 'Get Referral', value: 'getReferral', action: 'Get a referral', description: 'Fetch one referral by UUID: how the friend arrived, whether they paid and until when the affiliate earns on them' },
+          { name: 'List Affiliates', value: 'listAffiliates', action: 'List referral affiliates', description: 'List the members enrolled in the programme, optionally by status or member' },
+          { name: 'List Payouts', value: 'listPayouts', action: 'List referral payouts', description: 'List the payouts recorded against affiliates, optionally for one affiliate' },
+          { name: 'List Referrals', value: 'listReferrals', action: 'List referrals', description: 'List the friends affiliates brought in, optionally by status, affiliate or since an instant' },
+          { name: 'List Rewards', value: 'listRewards', action: 'List referral rewards', description: 'List the ledger of what each settled payment earned, optionally by affiliate, status or beneficiary' },
+          { name: 'Record Payout', value: 'recordPayout', action: 'Record a referral payout', description: "File money already paid to an affiliate outside Subscriby, capped at their payable balance in that currency" },
+          { name: 'Suspend Affiliate', value: 'suspendAffiliate', action: 'Suspend a referral affiliate', description: 'Stop an affiliate earning: their code no longer counts new friends; what they earned stays' },
+          { name: 'Update Program', value: 'updateProgram', action: 'Update a referral program', description: 'Set up or change the programme. The first call creates it; later calls change only the fields given.' },
+        ],
+        default: 'getProgram',
+      },
+      {
+        displayName: 'Project ID',
+        name: 'projectId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['referral'] } },
+      },
+      {
+        displayName: 'Affiliate ID',
+        name: 'affiliateId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['referral'], operation: ['getAffiliate', 'approveAffiliate', 'suspendAffiliate', 'recordPayout'] } },
+      },
+      {
+        displayName: 'Referral ID',
+        name: 'referralId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['referral'], operation: ['getReferral'] } },
+      },
+      {
+        displayName: 'Member ID',
+        name: 'memberId',
+        type: 'string',
+        default: '',
+        required: true,
+        description: 'The member to enrol, as the Member resource lists them',
+        displayOptions: { show: { resource: ['referral'], operation: ['addAffiliate'] } },
+      },
+      {
+        displayName: 'Amount',
+        name: 'amount',
+        type: 'number',
+        typeOptions: { numberPrecision: 2 },
+        default: 0,
+        required: true,
+        description: "What was paid, greater than zero and at most the affiliate's payable balance in the currency",
+        displayOptions: { show: { resource: ['referral'], operation: ['recordPayout'] } },
+      },
+      {
+        displayName: 'Currency ID',
+        name: 'currencyId',
+        type: 'string',
+        default: '',
+        required: true,
+        description: 'Currency UUID the commissions were earned in; a balance exists per currency',
+        displayOptions: { show: { resource: ['referral'], operation: ['recordPayout'] } },
+      },
+      {
+        displayName: 'Additional Fields',
+        name: 'referralPayoutFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['referral'], operation: ['recordPayout'] } },
+        options: [
+          { displayName: 'Note', name: 'note', type: 'string', default: '', description: 'A note for your records, at most 1,000 characters' },
+          { displayName: 'Reference', name: 'reference', type: 'string', default: '', description: 'Your own reference, such as a transfer ID, at most 120 characters' },
+        ],
+      },
+      {
+        displayName: 'Program Fields',
+        name: 'referralProgramFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['referral'], operation: ['updateProgram'] } },
+        options: [
+          { displayName: 'Active', name: 'active', type: 'boolean', default: true, description: 'Whether the programme is on; prefer the Activate and Deactivate operations' },
+          { displayName: 'Approval Required', name: 'approval_required', type: 'boolean', default: false, description: 'Whether you approve each affiliate before their code counts' },
+          { displayName: 'Commission Currency ID', name: 'commission_currency_id', type: 'string', default: '', description: 'Currency UUID a fixed commission is paid in; cleared for a percentage' },
+          { displayName: 'Commission Period (Months)', name: 'commission_period_months', type: 'number', typeOptions: { minValue: 0, maxValue: 36 }, default: 0, description: "0 for the friend's first payment only, 1-36 months; leave the field out of a save for life" },
+          {
+            displayName: 'Commission Type',
+            name: 'commission_type',
+            type: 'options',
+            options: [
+              { name: 'Fixed Amount on the First Payment', value: 'fixed' },
+              { name: 'Percentage of Every Settled Payment', value: 'percentage' },
+            ],
+            default: 'percentage',
+            description: 'For a cash reward',
+          },
+          { displayName: 'Commission Value', name: 'commission_value', type: 'number', typeOptions: { numberPrecision: 4 }, default: 10, description: '0.0001-100 for a percentage, any amount above zero for a fixed commission' },
+          { displayName: 'Count Every Plan', name: 'count_every_plan', type: 'boolean', default: false, description: 'Whether a conversion on any plan counts, including plans added later; overrides Plan IDs' },
+          { displayName: 'Customers Only', name: 'customers_only', type: 'boolean', default: false, description: 'Whether only members with a live membership may join' },
+          { displayName: 'Friend Coupon ID', name: 'friend_coupon_id', type: 'string', default: '', description: "One of the project's coupon codes, applied at the friend's checkout, for a coupon friend reward" },
+          { displayName: 'Friend Reward Days', name: 'friend_reward_days', type: 'number', typeOptions: { minValue: 1, maxValue: 3650 }, default: 3, description: "Days banked on the friend's first purchase, for a free-days friend reward" },
+          {
+            displayName: 'Friend Reward Kind',
+            name: 'friend_reward_kind',
+            type: 'options',
+            options: [
+              { name: 'A Coupon Applied at Their Checkout', value: 'coupon' },
+              { name: 'Free Membership Days on Their First Purchase', value: 'free_days' },
+              { name: 'Nothing', value: 'none' },
+            ],
+            default: 'none',
+          },
+          { displayName: 'Hold Days', name: 'hold_days', type: 'number', typeOptions: { minValue: 0, maxValue: 90 }, default: 14, description: 'Days a cash commission waits before it is payable, so a refund can take it back' },
+          { displayName: 'Minimum Payout', name: 'minimum_payout', type: 'number', typeOptions: { numberPrecision: 2 }, default: 0, description: 'A guide for you only, the balance an affiliate reaches before you pay; nothing is enforced' },
+          { displayName: 'Payout Details Label', name: 'payout_details_label', type: 'string', default: '', description: 'The question affiliates answer so you can pay them, such as "PayPal email"' },
+          { displayName: 'Plan IDs', name: 'plan_ids', type: 'string', default: '', description: 'Comma-separated plan UUIDs a conversion must be on to count; see Count Every Plan for every plan' },
+          { displayName: 'Reward Days', name: 'reward_days', type: 'number', typeOptions: { minValue: 1, maxValue: 3650 }, default: 7, description: 'Days a referrer earns per converted friend, for a free-days reward' },
+          {
+            displayName: 'Reward Kind',
+            name: 'reward_kind',
+            type: 'options',
+            options: [
+              { name: 'Cash Commission You Pay Out', value: 'cash' },
+              { name: 'Free Membership Days', value: 'free_days' },
+            ],
+            default: 'free_days',
+          },
+          { displayName: 'Terms', name: 'terms', type: 'string', typeOptions: { rows: 4 }, default: '', description: 'Your own terms, shown to affiliates and referred friends, at most 5,000 characters' },
+        ],
+      },
+      {
+        displayName: 'Filters',
+        name: 'referralAffiliateListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['referral'], operation: ['listAffiliates'] } },
+        options: [
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Member ID', name: 'member_id', type: 'string', default: '', description: "Find one member's affiliate row" },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+          {
+            displayName: 'Status',
+            name: 'status',
+            type: 'options',
+            options: [
+              { name: 'Approved', value: 'approved' },
+              { name: 'Pending', value: 'pending' },
+              { name: 'Suspended', value: 'suspended' },
+            ],
+            default: 'approved',
+          },
+        ],
+      },
+      {
+        displayName: 'Filters',
+        name: 'referralListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['referral'], operation: ['listReferrals'] } },
+        options: [
+          { displayName: 'Affiliate ID', name: 'affiliate_id', type: 'string', default: '', description: "List one affiliate's referrals" },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+          { displayName: 'Since', name: 'since', type: 'dateTime', default: '', description: 'Only referrals whose friend arrived on or after this instant' },
+          {
+            displayName: 'Status',
+            name: 'status',
+            type: 'options',
+            options: [
+              { name: 'Converted', value: 'converted' },
+              { name: 'Expired', value: 'expired' },
+              { name: 'Rejected', value: 'rejected' },
+              { name: 'Touched', value: 'touched' },
+            ],
+            default: 'touched',
+          },
+        ],
+      },
+      {
+        displayName: 'Filters',
+        name: 'referralRewardListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['referral'], operation: ['listRewards'] } },
+        options: [
+          { displayName: 'Affiliate ID', name: 'affiliate_id', type: 'string', default: '', description: "List one affiliate's rewards" },
+          {
+            displayName: 'Beneficiary',
+            name: 'beneficiary',
+            type: 'options',
+            options: [
+              { name: 'Friend', value: 'friend' },
+              { name: 'Referrer', value: 'referrer' },
+            ],
+            default: 'referrer',
+          },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+          {
+            displayName: 'Status',
+            name: 'status',
+            type: 'options',
+            options: [
+              { name: 'Applied', value: 'applied' },
+              { name: 'Approved', value: 'approved' },
+              { name: 'Paid', value: 'paid' },
+              { name: 'Pending', value: 'pending' },
+              { name: 'Reversed', value: 'reversed' },
+            ],
+            default: 'approved',
+          },
+        ],
+      },
+      {
+        displayName: 'Filters',
+        name: 'referralPayoutListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['referral'], operation: ['listPayouts'] } },
+        options: [
+          { displayName: 'Affiliate ID', name: 'affiliate_id', type: 'string', default: '', description: "List one affiliate's payouts" },
           { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
           { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
         ],
@@ -2538,6 +2786,8 @@ async function dispatch(
       return dispatchSupportSettings.call(this, operation, i);
     case 'coupon':
       return dispatchCoupon.call(this, operation, i);
+    case 'referral':
+      return dispatchReferral.call(this, operation, i);
     case 'creatorTask':
       return dispatchCreatorTask.call(this, operation, i);
     case 'recovery':
@@ -3492,6 +3742,135 @@ async function dispatchCoupon(
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown coupon operation: ${operation}`);
+}
+
+/**
+ * The programme's PUT body: the collection's fields, with the comma-separated
+ * plan list split and "Count Every Plan" sent as the empty list the API reads
+ * as every plan.
+ */
+function referralProgramBody(fields: IDataObject): IDataObject {
+  const body: IDataObject = { ...fields };
+  const everyPlan = body.count_every_plan === true;
+  delete body.count_every_plan;
+
+  if (everyPlan) {
+    body.plan_ids = [];
+  } else if (typeof body.plan_ids === 'string') {
+    body.plan_ids = idList(body.plan_ids);
+  }
+
+  return body;
+}
+
+async function dispatchReferral(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  const projectId = this.getNodeParameter('projectId', i) as string;
+
+  if (operation === 'getProgram') {
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/referral-program`);
+  }
+
+  if (operation === 'updateProgram') {
+    const fields = this.getNodeParameter('referralProgramFields', i, {}) as IDataObject;
+    return subscribyApiRequest.call(this, 'PUT', `/projects/${projectId}/referral-program`, referralProgramBody(fields));
+  }
+
+  if (operation === 'activateProgram') {
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/referral-program/activate`);
+  }
+
+  if (operation === 'deactivateProgram') {
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/referral-program/deactivate`);
+  }
+
+  if (operation === 'deleteProgram') {
+    return subscribyApiRequest.call(this, 'DELETE', `/projects/${projectId}/referral-program`);
+  }
+
+  if (operation === 'listAffiliates') {
+    const filters = this.getNodeParameter('referralAffiliateListFilters', i, {}) as IDataObject;
+    const qs = compactBody({ status: filters.status, member_id: filters.member_id });
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/referral-affiliates`, qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/referral-affiliates`, undefined, qs);
+  }
+
+  if (operation === 'addAffiliate') {
+    const memberId = this.getNodeParameter('memberId', i) as string;
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/referral-affiliates`, { member_id: memberId });
+  }
+
+  if (operation === 'listReferrals') {
+    const filters = this.getNodeParameter('referralListFilters', i, {}) as IDataObject;
+    const qs = compactBody({ status: filters.status, affiliate_id: filters.affiliate_id, since: filters.since });
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/referrals`, qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/referrals`, undefined, qs);
+  }
+
+  if (operation === 'getReferral') {
+    const referralId = this.getNodeParameter('referralId', i) as string;
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/referrals/${referralId}`);
+  }
+
+  if (operation === 'listRewards') {
+    const filters = this.getNodeParameter('referralRewardListFilters', i, {}) as IDataObject;
+    const qs = compactBody({ status: filters.status, beneficiary: filters.beneficiary, affiliate_id: filters.affiliate_id });
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/referral-rewards`, qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/referral-rewards`, undefined, qs);
+  }
+
+  if (operation === 'listPayouts') {
+    const filters = this.getNodeParameter('referralPayoutListFilters', i, {}) as IDataObject;
+    const qs = compactBody({ affiliate_id: filters.affiliate_id });
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/referral-payouts`, qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/referral-payouts`, undefined, qs);
+  }
+
+  const affiliateId = this.getNodeParameter('affiliateId', i) as string;
+
+  if (operation === 'getAffiliate') {
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/referral-affiliates/${affiliateId}`);
+  }
+
+  if (operation === 'approveAffiliate') {
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/referral-affiliates/${affiliateId}/approve`);
+  }
+
+  if (operation === 'suspendAffiliate') {
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/referral-affiliates/${affiliateId}/suspend`);
+  }
+
+  if (operation === 'recordPayout') {
+    const extras = this.getNodeParameter('referralPayoutFields', i, {}) as IDataObject;
+    const body = compactBody({
+      affiliate_id: affiliateId,
+      amount: this.getNodeParameter('amount', i) as number,
+      currency_id: this.getNodeParameter('currencyId', i) as string,
+      ...extras,
+    });
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/referral-payouts`, body);
+  }
+
+  throw new NodeOperationError(this.getNode(), `Unknown referral operation: ${operation}`);
 }
 
 async function dispatchCreatorTask(
