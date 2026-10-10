@@ -63,6 +63,7 @@ export class Subscriby implements INodeType {
           { name: 'Group', value: 'group' },
           { name: 'Member', value: 'member' },
           { name: 'Notification', value: 'notification' },
+          { name: 'Partner Program', value: 'partner' },
           { name: 'Pass Window', value: 'passWindow' },
           { name: 'Payment Method', value: 'paymentMethod' },
           { name: 'Plan', value: 'plan' },
@@ -1487,6 +1488,134 @@ export class Subscriby implements INodeType {
         ],
       },
 
+      // === PARTNER PROGRAM ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['partner'] } },
+        options: [
+          { name: 'Accept Terms', value: 'acceptTerms', action: 'Accept the partner terms', description: 'Record that you accept the Partner Program Terms as they stand today, which every payout rail requires' },
+          { name: 'Get', value: 'get', action: 'Get the partner program', description: "Fetch where the token's creator stands in the Partner Program: the application's state, the code and links once approved, the commission ladder, the referral tallies, the balances, the payout rail and whether it is complete (never the destination itself), the tax declaration, the terms and the commitments" },
+          { name: 'Get Referral', value: 'getReferral', action: 'Get a partner referral', description: 'Fetch one creator you referred by the referral UUID: how they arrived, whether their first paid invoice converted them and until when you earn on them' },
+          { name: 'List Payouts', value: 'listPayouts', action: 'List partner payouts', description: 'List the cash payouts Subscriby made to you as a partner, newest first' },
+          { name: 'List Referrals', value: 'listReferrals', action: 'List partner referrals', description: 'List the creators you brought to Subscriby as a partner, each named by display name alone, optionally by status' },
+          { name: 'List Rewards', value: 'listRewards', action: 'List partner rewards', description: 'List your Partner Program commission ledger, one row per paid invoice of a creator you referred plus the clawbacks, optionally by status' },
+          { name: 'Update Payout Details', value: 'updatePayoutDetails', action: 'Update the partner payout details', description: 'Write how you are paid as a partner: the rail, what it pays to and the tax declaration; nothing ever returns the destination' },
+        ],
+        default: 'get',
+      },
+      {
+        displayName: 'Referral ID',
+        name: 'partnerReferralId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['partner'], operation: ['getReferral'] } },
+        description: 'UUID of the referral, from List Referrals or the Partner — Referral Signed Up event',
+      },
+      {
+        displayName: 'Payout Method',
+        name: 'partnerPayoutMethod',
+        type: 'options',
+        options: [
+          { name: 'PayPal', value: 'paypal' },
+          { name: 'Remitly (Bank Account)', value: 'remitly' },
+          { name: 'Subscriby Credit on Your Own Invoices', value: 'credit' },
+          { name: 'USDT on TRC20', value: 'crypto' },
+          { name: 'Wise (Bank Account)', value: 'wise' },
+        ],
+        default: 'paypal',
+        required: true,
+        displayOptions: { show: { resource: ['partner'], operation: ['updatePayoutDetails'] } },
+        description: 'The rail to be paid by; the credit rail is accepted while it is open',
+      },
+      {
+        displayName: 'Payout Fields',
+        name: 'partnerPayoutFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['partner'], operation: ['updatePayoutDetails'] } },
+        options: [
+          { displayName: 'Accept Terms', name: 'accept_terms', type: 'boolean', default: false, description: 'Whether to accept the Partner Program Terms with this save; a rail cannot be saved until they are accepted' },
+          { displayName: 'Account Holder', name: 'bank_holder', type: 'string', default: '', description: 'The name on the bank account, for Wise and Remitly' },
+          { displayName: 'Account Holder Address', name: 'bank_address', type: 'string', default: '', description: 'Optional, when the transfer needs one' },
+          { displayName: 'Account Number or IBAN', name: 'bank_account_number', type: 'string', default: '', description: 'Letters, digits, spaces and dashes, at most 40 characters, for Wise and Remitly' },
+          { displayName: 'Bank', name: 'bank_name', type: 'string', default: '', description: 'For Wise and Remitly' },
+          { displayName: 'Bank Country', name: 'bank_country', type: 'string', default: '', description: 'Two-letter ISO country code, for Wise and Remitly' },
+          { displayName: 'Branch, Routing, Sort or IFSC Code', name: 'bank_branch_code', type: 'string', default: '', description: 'Optional, when the transfer needs one' },
+          { displayName: 'Legal Name', name: 'legal_name', type: 'string', default: '', description: 'The name a payment is made out to; required on every cash rail' },
+          { displayName: 'PayPal Email or Wallet Address', name: 'details', type: 'string', default: '', description: 'What a single-detail rail pays to, for PayPal and USDT' },
+          { displayName: 'SWIFT or BIC', name: 'bank_swift', type: 'string', default: '', description: 'Optional, 8 or 11 characters' },
+          { displayName: 'Tax Country', name: 'tax_country', type: 'string', default: '', description: 'Two-letter ISO code of your country of tax residence; required on every cash rail' },
+          { displayName: 'US Person', name: 'us_person', type: 'boolean', default: false, description: 'Whether you are a US person for tax purposes' },
+        ],
+      },
+      {
+        displayName: 'Filters',
+        name: 'partnerReferralListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['partner'], operation: ['listReferrals'] } },
+        options: [
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+          {
+            displayName: 'Status',
+            name: 'status',
+            type: 'options',
+            options: [
+              { name: 'Converted', value: 'converted' },
+              { name: 'Expired', value: 'expired' },
+              { name: 'Rejected', value: 'rejected' },
+              { name: 'Signed Up', value: 'signed_up' },
+              { name: 'Under Review', value: 'under_review' },
+            ],
+            default: 'signed_up',
+          },
+        ],
+      },
+      {
+        displayName: 'Filters',
+        name: 'partnerRewardListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['partner'], operation: ['listRewards'] } },
+        options: [
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+          {
+            displayName: 'Status',
+            name: 'status',
+            type: 'options',
+            options: [
+              { name: 'Approved', value: 'approved' },
+              { name: 'Credited', value: 'credited' },
+              { name: 'Paid', value: 'paid' },
+              { name: 'Pending', value: 'pending' },
+              { name: 'Reversed', value: 'reversed' },
+            ],
+            default: 'approved',
+          },
+        ],
+      },
+      {
+        displayName: 'Filters',
+        name: 'partnerPayoutListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['partner'], operation: ['listPayouts'] } },
+        options: [
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+        ],
+      },
+
       // === CREATOR TASK ===
       {
         displayName: 'Operation',
@@ -2788,6 +2917,8 @@ async function dispatch(
       return dispatchCoupon.call(this, operation, i);
     case 'referral':
       return dispatchReferral.call(this, operation, i);
+    case 'partner':
+      return dispatchPartner.call(this, operation, i);
     case 'creatorTask':
       return dispatchCreatorTask.call(this, operation, i);
     case 'recovery':
@@ -3871,6 +4002,85 @@ async function dispatchReferral(
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown referral operation: ${operation}`);
+}
+
+/**
+ * The partner payout body: the rail, and only the fields the workflow filled,
+ * so a blank collection field never overwrites a stored value with an empty
+ * string and a rail left behind keeps nothing on file.
+ */
+function partnerPayoutBody(method: string, fields: IDataObject): IDataObject {
+  const body: IDataObject = { method };
+
+  for (const [key, value] of Object.entries(fields)) {
+    if (typeof value === 'boolean') {
+      body[key] = value;
+    } else if (typeof value === 'string' && value.trim() !== '') {
+      body[key] = value.trim();
+    }
+  }
+
+  return body;
+}
+
+async function dispatchPartner(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  if (operation === 'get') {
+    return subscribyApiRequest.call(this, 'GET', '/me/partner');
+  }
+
+  if (operation === 'getReferral') {
+    const referralId = this.getNodeParameter('partnerReferralId', i) as string;
+    return subscribyApiRequest.call(this, 'GET', `/me/partner/referrals/${referralId}`);
+  }
+
+  if (operation === 'listReferrals') {
+    const filters = this.getNodeParameter('partnerReferralListFilters', i, {}) as IDataObject;
+    const qs = compactBody({ status: filters.status });
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', '/me/partner/referrals', qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(this, 'GET', '/me/partner/referrals', undefined, qs);
+  }
+
+  if (operation === 'listRewards') {
+    const filters = this.getNodeParameter('partnerRewardListFilters', i, {}) as IDataObject;
+    const qs = compactBody({ status: filters.status });
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', '/me/partner/rewards', qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(this, 'GET', '/me/partner/rewards', undefined, qs);
+  }
+
+  if (operation === 'listPayouts') {
+    const filters = this.getNodeParameter('partnerPayoutListFilters', i, {}) as IDataObject;
+    const qs: IDataObject = {};
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', '/me/partner/payouts', qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(this, 'GET', '/me/partner/payouts', undefined, qs);
+  }
+
+  if (operation === 'updatePayoutDetails') {
+    const method = this.getNodeParameter('partnerPayoutMethod', i) as string;
+    const fields = this.getNodeParameter('partnerPayoutFields', i, {}) as IDataObject;
+    return subscribyApiRequest.call(this, 'PUT', '/me/partner/payout-details', partnerPayoutBody(method, fields));
+  }
+
+  if (operation === 'acceptTerms') {
+    return subscribyApiRequest.call(this, 'POST', '/me/partner/terms/accept');
+  }
+
+  throw new NodeOperationError(this.getNode(), `Unknown partner operation: ${operation}`);
 }
 
 async function dispatchCreatorTask(

@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 155,
+    "count": 165,
     "items": [
         {
             "name": "project.created",
@@ -634,6 +634,132 @@
                 "payout_id",
                 "reference",
                 "rewards_paid"
+            ]
+        },
+        {
+            "name": "partner.referral_signed_up",
+            "family": "partner",
+            "required_ability": "account:read",
+            "payload_keys": [
+                "expires_at",
+                "referral_id",
+                "referred_name",
+                "source"
+            ]
+        },
+        {
+            "name": "partner.referral_converted",
+            "family": "partner",
+            "required_ability": "account:read",
+            "payload_keys": [
+                "commission_ends_at",
+                "commission_percent",
+                "plan",
+                "referral_id"
+            ]
+        },
+        {
+            "name": "partner.reward_earned",
+            "family": "partner",
+            "required_ability": "account:read",
+            "payload_keys": [
+                "amount",
+                "base_amount",
+                "currency",
+                "hold_until",
+                "invoice_id",
+                "referral_id",
+                "reward_id",
+                "status"
+            ]
+        },
+        {
+            "name": "partner.reward_approved",
+            "family": "partner",
+            "required_ability": "account:read",
+            "payload_keys": [
+                "amount",
+                "base_amount",
+                "currency",
+                "hold_until",
+                "invoice_id",
+                "referral_id",
+                "reward_id",
+                "status"
+            ]
+        },
+        {
+            "name": "partner.reward_credited",
+            "family": "partner",
+            "required_ability": "account:read",
+            "payload_keys": [
+                "amount",
+                "balance_transaction_id",
+                "currency",
+                "referral_id",
+                "reward_id"
+            ]
+        },
+        {
+            "name": "partner.reward_reversed",
+            "family": "partner",
+            "required_ability": "account:read",
+            "payload_keys": [
+                "amount",
+                "clawback_reward_id",
+                "currency",
+                "reason",
+                "referral_id",
+                "reward_id"
+            ]
+        },
+        {
+            "name": "partner.payout_recorded",
+            "family": "partner",
+            "required_ability": "account:read",
+            "payload_keys": [
+                "amount",
+                "currency",
+                "method",
+                "payout_id",
+                "reference",
+                "rewards_paid"
+            ]
+        },
+        {
+            "name": "partner.application_approved",
+            "family": "partner",
+            "required_ability": "account:read",
+            "payload_keys": [
+                "code",
+                "commission_percent",
+                "joined_at",
+                "partner_id",
+                "proof_due_at"
+            ]
+        },
+        {
+            "name": "partner.application_rejected",
+            "family": "partner",
+            "required_ability": "account:read",
+            "payload_keys": [
+                "partner_id",
+                "reapply_at",
+                "reason"
+            ]
+        },
+        {
+            "name": "partner.rate_changed",
+            "family": "partner",
+            "required_ability": "account:read",
+            "payload_keys": [
+                "commission_percent",
+                "commitment_points",
+                "partner_id",
+                "paying_referrals",
+                "previous_percent",
+                "reason",
+                "volume_points"
             ]
         },
         {

@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 206,
+    "count": 213,
     "items": [
         {
             "name": "api.v1.activity.index",
@@ -215,6 +215,62 @@
             "method": "POST",
             "uri": "/api/v1/me/notifications/{notification}/read",
             "action": "App\\Http\\Controllers\\Api\\V1\\NotificationController@read",
+            "entity": "me",
+            "required_ability": "account:write"
+        },
+        {
+            "name": "api.v1.me.partner.show",
+            "method": "GET",
+            "uri": "/api/v1/me/partner",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PartnerController@show",
+            "entity": "me",
+            "required_ability": "account:read"
+        },
+        {
+            "name": "api.v1.me.partner.payout-details.update",
+            "method": "PUT",
+            "uri": "/api/v1/me/partner/payout-details",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PartnerController@updatePayoutDetails",
+            "entity": "me",
+            "required_ability": "account:write"
+        },
+        {
+            "name": "api.v1.me.partner.payouts.index",
+            "method": "GET",
+            "uri": "/api/v1/me/partner/payouts",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PartnerController@payouts",
+            "entity": "me",
+            "required_ability": "account:read"
+        },
+        {
+            "name": "api.v1.me.partner.referrals.index",
+            "method": "GET",
+            "uri": "/api/v1/me/partner/referrals",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PartnerController@referrals",
+            "entity": "me",
+            "required_ability": "account:read"
+        },
+        {
+            "name": "api.v1.me.partner.referrals.show",
+            "method": "GET",
+            "uri": "/api/v1/me/partner/referrals/{referral}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PartnerController@showReferral",
+            "entity": "me",
+            "required_ability": "account:read"
+        },
+        {
+            "name": "api.v1.me.partner.rewards.index",
+            "method": "GET",
+            "uri": "/api/v1/me/partner/rewards",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PartnerController@rewards",
+            "entity": "me",
+            "required_ability": "account:read"
+        },
+        {
+            "name": "api.v1.me.partner.terms.accept",
+            "method": "POST",
+            "uri": "/api/v1/me/partner/terms/accept",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PartnerController@acceptTerms",
             "entity": "me",
             "required_ability": "account:write"
         },

@@ -4,8 +4,8 @@
 
 Provides two nodes:
 
-- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, plans, projects, project resources, payment methods, connector installations and outages, billing, groups, roles, teams, team members, member support conversations, saved replies and inbox settings, message broadcasts, and the Disaster Recovery ledger (155 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
-- **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 29 resources across creator-facing surfaces (projects, plans, pass windows, subscriptions, subscribers, members, broadcasts, support conversations, canned replies, support inbox settings, coupons, creator tasks, the notification centre, the Disaster Recovery ledger, the Connector Directory and a project's installations, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, distribution links).
+- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, plans, projects, project resources, payment methods, connector installations and outages, billing, groups, roles, teams, team members, member support conversations, saved replies and inbox settings, message broadcasts, and the Disaster Recovery ledger (165 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
+- **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 31 resources across creator-facing surfaces (projects, plans, pass windows, subscriptions, subscribers, members, broadcasts, support conversations, canned replies, support inbox settings, coupons, the Referral Program, the Partner Program, creator tasks, the notification centre, the Disaster Recovery ledger, the Connector Directory and a project's installations, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, distribution links).
 
 ## Installation
 
@@ -35,7 +35,7 @@ Restart the n8n process after install.
 2. In n8n, **Credentials → New → Subscriby API** and paste the `sbt_...` token. Leave the base URL at the default unless you are self-hosting.
 3. Add a **Subscriby Trigger** node, pick one or more events, optionally scope to a single project, and activate the workflow. On activation n8n registers the endpoint with Subscriby. Deactivating the workflow deletes the endpoint.
 
-## Supported events (155)
+## Supported events (165)
 
 The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/event-reference). This table is generated from that file by `npm run sync:readme` — do not edit it by hand.
 
@@ -47,6 +47,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Support | 12 | `support.canned_reply.created`, `support.canned_reply.deleted`, `support.canned_reply.updated`, `support.conversation.assigned`, `support.conversation.blocked`, `support.conversation.opened`, `support.conversation.reopened`, `support.conversation.resolved`, `support.conversation.unblocked`, `support.message.received`, `support.message.sent`, `support.settings.updated` |
 | Billing | 10 | `billing.account_locked`, `billing.grace_period_warning`, `billing.invoice_created`, `billing.invoice_overdue`, `billing.invoice_paid`, `billing.payment_failed`, `billing.tier_cancelled`, `billing.tier_downgraded`, `billing.tier_upgraded`, `billing.trial_ending` |
 | Connector | 10 | `connector.connected`, `connector.disconnected`, `connector.doctor_completed`, `connector.installed`, `connector.settings_updated`, `connector.outage_closed`, `connector.outage_compensated`, `connector.outage_opened`, `connector.status_changed`, `connector.uninstalled` |
+| Partner | 10 | `partner.application_approved`, `partner.application_rejected`, `partner.payout_recorded`, `partner.rate_changed`, `partner.referral_converted`, `partner.referral_signed_up`, `partner.reward_approved`, `partner.reward_credited`, `partner.reward_earned`, `partner.reward_reversed` |
 | Referral | 10 | `referral.affiliate_approved`, `referral.affiliate_joined`, `referral.affiliate_suspended`, `referral.captured`, `referral.converted`, `referral.payout_recorded`, `referral.program_updated`, `referral.reward_approved`, `referral.reward_earned`, `referral.reward_reversed` |
 | Pass | 8 | `pass.holder_missed`, `pass.holder_moved`, `pass.holder_queued`, `pass.holder_stranded`, `pass.window_cancelled`, `pass.window_closed`, `pass.window_opened`, `pass.window_scheduled` |
 | Pass Series | 8 | `pass_series.completed`, `pass_series.leg_added`, `pass_series.leg_completed`, `pass_series.leg_dropped`, `pass_series.leg_substituted`, `pass_series.presale_opened`, `pass_series.purchased`, `pass_series.seats_exhausted` |
@@ -63,7 +64,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Broadcast | 2 | `broadcast.completed`, `broadcast.queued` |
 | Creator Task | 2 | `creator_task.completed`, `creator_task.opened` |
 | Project Payment Method | 2 | `project.payment_method.deleted`, `project.payment_method.updated` |
-| **Total** | **155** | |
+| **Total** | **165** | |
 
 ## Supported actions
 
@@ -82,6 +83,8 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Access Code          | Bulk Generate, List, Delete, Preview                                                                             |
 | Coupon               | Create, Update, Activate, Deactivate, Delete, List, Get                                                          |
 | Creator Task         | List, Complete                                                                                                   |
+| Referral Program     | Get Program, Update Program, Activate Program, Deactivate Program, Delete Program, List Affiliates, Get Affiliate, Add Affiliate, Approve Affiliate, Suspend Affiliate, List Referrals, Get Referral, List Rewards, List Payouts, Record Payout |
+| Partner Program      | Get, List Referrals, Get Referral, List Rewards, List Payouts, Update Payout Details, Accept Terms              |
 | Recovery             | Get Readiness, List Incidents, Get Incident, List Operations, Get Operation, Get Roll Call, Get Allowances       |
 | Resource             | Create, Update, Activate, Deactivate, List, Get, Unlink, Delete                                                  |
 | Payment Method       | List, Get, Activate, Deactivate, Sync Plans, Delete                                                              |
