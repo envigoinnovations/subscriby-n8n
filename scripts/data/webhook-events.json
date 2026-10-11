@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 165,
+    "count": 168,
     "items": [
         {
             "name": "project.created",
@@ -760,6 +760,31 @@
                 "previous_percent",
                 "reason",
                 "volume_points"
+            ]
+        },
+        {
+            "name": "link.created",
+            "family": "link",
+            "required_ability": "project-link:view",
+            "payload_keys": [
+                "link"
+            ]
+        },
+        {
+            "name": "link.updated",
+            "family": "link",
+            "required_ability": "project-link:view",
+            "payload_keys": [
+                "changes",
+                "link"
+            ]
+        },
+        {
+            "name": "link.archived",
+            "family": "link",
+            "required_ability": "project-link:view",
+            "payload_keys": [
+                "link"
             ]
         },
         {
