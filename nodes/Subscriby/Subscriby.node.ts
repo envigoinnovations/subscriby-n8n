@@ -72,6 +72,7 @@ export class Subscriby implements INodeType {
           { name: 'Referral Program', value: 'referral' },
           { name: 'Resource', value: 'resource' },
           { name: 'Role', value: 'role' },
+          { name: 'Smart Link', value: 'smartLink' },
           { name: 'Subscriber', value: 'subscriber' },
           { name: 'Subscription', value: 'subscription' },
           { name: 'Support Conversation', value: 'supportConversation' },
@@ -1238,6 +1239,133 @@ export class Subscriby implements INodeType {
           { displayName: 'Code', name: 'code', type: 'string', default: '', description: 'Exact code to look up' },
           { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
           { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+        ],
+      },
+
+      // === SMART LINK ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['smartLink'] } },
+        options: [
+          { name: 'Archive', value: 'archive', action: 'Archive a smart link', description: 'Put a link out of use. It stops counting and crediting; the members, purchases and revenue it brought keep their figures.' },
+          { name: 'Create', value: 'create', action: 'Create a smart link', description: 'Mint a tracked address for one channel, answering the stable code and the three addresses to share' },
+          { name: 'Funnel', value: 'funnel', action: 'Get the smart link funnel', description: "One link's lifetime funnel, or every link with the Direct row and totals that add up to the project's figures" },
+          { name: 'Get', value: 'get', action: 'Get a smart link', description: 'Fetch a Smart Link by UUID, with its three addresses' },
+          { name: 'List', value: 'list', action: 'List smart links', description: "List a project's Smart Links, newest first, optionally by archived state or a name or address search" },
+          { name: 'Update', value: 'update', action: 'Update a smart link', description: 'Change a link. Fields you leave out keep their stored values; the code never changes.' },
+        ],
+        default: 'list',
+      },
+      {
+        displayName: 'Project ID',
+        name: 'projectId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['smartLink'] } },
+      },
+      {
+        displayName: 'Smart Link ID',
+        name: 'linkId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['smartLink'], operation: ['get', 'update', 'archive'] } },
+        description: 'UUID of the Smart Link',
+      },
+      {
+        displayName: 'Smart Link ID',
+        name: 'funnelLinkId',
+        type: 'string',
+        default: '',
+        displayOptions: { show: { resource: ['smartLink'], operation: ['funnel'] } },
+        description: 'UUID of one link for its row alone. Leave empty for every link with the Direct row and the totals.',
+      },
+      {
+        displayName: 'Name',
+        name: 'name',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['smartLink'], operation: ['create'] } },
+        description: 'A creator-facing label, 2-120 characters, never shown to visitors',
+      },
+      {
+        displayName: 'Address',
+        name: 'slug',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['smartLink'], operation: ['create'] } },
+        description: 'The segment after /go/ in the web address: 2-32 letters, digits and hyphens, lowercased and unique per project. The code behind the link never changes, so it can be renamed later.',
+      },
+      {
+        displayName: 'Destination',
+        name: 'destination',
+        type: 'options',
+        options: [
+          { name: "One Plan's Checkout", value: 'plan' },
+          { name: 'Portal Home', value: 'portal' },
+          { name: "The Project's Bot", value: 'bot' },
+        ],
+        default: 'portal',
+        displayOptions: { show: { resource: ['smartLink'], operation: ['create'] } },
+        description: "Where the link sends people. A plan destination needs a Plan ID; a bot destination lands on the portal home while no bot is connected.",
+      },
+      {
+        displayName: 'Additional Fields',
+        name: 'smartLinkFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['smartLink'], operation: ['create'] } },
+        options: [
+          { displayName: 'Expires At', name: 'expires_at', type: 'dateTime', default: '', description: 'When the link stops counting and crediting; must be in the future. Empty runs until archived.' },
+          { displayName: 'Plan ID', name: 'plan_id', type: 'string', default: '', description: "The plan a plan destination opens; one of the project's plans" },
+        ],
+      },
+      {
+        displayName: 'Update Fields',
+        name: 'smartLinkUpdateFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['smartLink'], operation: ['update'] } },
+        options: [
+          { displayName: 'Address', name: 'slug', type: 'string', default: '', description: 'A new segment after /go/, 2-32 letters, digits and hyphens; the old address stops answering' },
+          { displayName: 'Clear Expiry', name: 'clear_expires_at', type: 'boolean', default: false, description: 'Whether to remove the expiry so the link runs until archived' },
+          {
+            displayName: 'Destination',
+            name: 'destination',
+            type: 'options',
+            options: [
+              { name: "One Plan's Checkout", value: 'plan' },
+              { name: 'Portal Home', value: 'portal' },
+              { name: "The Project's Bot", value: 'bot' },
+            ],
+            default: 'portal',
+            description: 'A plan destination needs a Plan ID, sent here or already stored; leaving a plan destination drops the stored plan',
+          },
+          { displayName: 'Expires At', name: 'expires_at', type: 'dateTime', default: '', description: 'When the link stops counting; must be in the future' },
+          { displayName: 'Name', name: 'name', type: 'string', default: '', description: 'A new creator-facing label, 2-120 characters' },
+          { displayName: 'Plan ID', name: 'plan_id', type: 'string', default: '', description: 'The plan a plan destination opens' },
+        ],
+      },
+      {
+        displayName: 'Filters',
+        name: 'smartLinkListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['smartLink'], operation: ['list'] } },
+        options: [
+          { displayName: 'Archived', name: 'archived', type: 'boolean', default: false, description: 'Whether to return only archived links (or, when off, only links still in use, expired ones included)' },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+          { displayName: 'Search', name: 'search', type: 'string', default: '', description: 'Keep links whose name or address contains this text' },
         ],
       },
 
@@ -2915,6 +3043,8 @@ async function dispatch(
       return dispatchSupportSettings.call(this, operation, i);
     case 'coupon':
       return dispatchCoupon.call(this, operation, i);
+    case 'smartLink':
+      return dispatchSmartLink.call(this, operation, i);
     case 'referral':
       return dispatchReferral.call(this, operation, i);
     case 'partner':
@@ -3873,6 +4003,96 @@ async function dispatchCoupon(
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown coupon operation: ${operation}`);
+}
+
+/**
+ * Turn the flat Smart Link fields n8n collects into the body the API expects.
+ *
+ * "Clear Expiry" is a switch rather than a blank, because an empty n8n field
+ * is indistinguishable from an untouched one; ticked, it sends `expires_at`
+ * as null, which the API reads as "run until archived". A blank date or plan
+ * is left out so the stored value stands.
+ */
+function smartLinkBody(fields: IDataObject): IDataObject {
+  const body: IDataObject = { ...fields };
+
+  if (body.clear_expires_at === true) {
+    body.expires_at = null;
+  }
+
+  delete body.clear_expires_at;
+
+  if (body.expires_at === '') {
+    delete body.expires_at;
+  }
+
+  if (body.plan_id === '') {
+    delete body.plan_id;
+  }
+
+  return body;
+}
+
+async function dispatchSmartLink(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  const projectId = this.getNodeParameter('projectId', i) as string;
+
+  if (operation === 'list') {
+    const filters = this.getNodeParameter('smartLinkListFilters', i, {}) as IDataObject;
+    const qs: IDataObject = {};
+    if (filters.archived !== undefined) {
+      qs.archived = filters.archived ? 'true' : 'false';
+    }
+    if (filters.search) {
+      qs.search = filters.search;
+    }
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/links`, qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/links`, undefined, qs);
+  }
+
+  if (operation === 'create') {
+    const extras = this.getNodeParameter('smartLinkFields', i, {}) as IDataObject;
+    const body = smartLinkBody({
+      name: this.getNodeParameter('name', i) as string,
+      slug: this.getNodeParameter('slug', i) as string,
+      destination: this.getNodeParameter('destination', i) as string,
+      ...extras,
+    });
+
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/links`, body);
+  }
+
+  if (operation === 'funnel') {
+    const funnelLinkId = this.getNodeParameter('funnelLinkId', i, '') as string;
+    if (funnelLinkId) {
+      return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/links/${funnelLinkId}/funnel`);
+    }
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/links/funnel`);
+  }
+
+  const linkId = this.getNodeParameter('linkId', i) as string;
+
+  if (operation === 'get') {
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/links/${linkId}`);
+  }
+
+  if (operation === 'update') {
+    const fields = this.getNodeParameter('smartLinkUpdateFields', i, {}) as IDataObject;
+    return subscribyApiRequest.call(this, 'PATCH', `/projects/${projectId}/links/${linkId}`, smartLinkBody(fields));
+  }
+
+  if (operation === 'archive') {
+    return subscribyApiRequest.call(this, 'DELETE', `/projects/${projectId}/links/${linkId}`);
+  }
+
+  throw new NodeOperationError(this.getNode(), `Unknown smart link operation: ${operation}`);
 }
 
 /**

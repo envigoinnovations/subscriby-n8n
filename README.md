@@ -4,8 +4,8 @@
 
 Provides two nodes:
 
-- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, plans, projects, project resources, payment methods, connector installations and outages, billing, groups, roles, teams, team members, member support conversations, saved replies and inbox settings, message broadcasts, and the Disaster Recovery ledger (165 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
-- **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 31 resources across creator-facing surfaces (projects, plans, pass windows, subscriptions, subscribers, members, broadcasts, support conversations, canned replies, support inbox settings, coupons, the Referral Program, the Partner Program, creator tasks, the notification centre, the Disaster Recovery ledger, the Connector Directory and a project's installations, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, distribution links).
+- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, Smart Links, plans, projects, project resources, payment methods, connector installations and outages, billing, groups, roles, teams, team members, member support conversations, saved replies and inbox settings, message broadcasts, and the Disaster Recovery ledger (168 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
+- **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 32 resources across creator-facing surfaces (projects, plans, pass windows, subscriptions, subscribers, members, broadcasts, support conversations, canned replies, support inbox settings, coupons, Smart Links, the Referral Program, the Partner Program, creator tasks, the notification centre, the Disaster Recovery ledger, the Connector Directory and a project's installations, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, distribution links).
 
 ## Installation
 
@@ -35,7 +35,7 @@ Restart the n8n process after install.
 2. In n8n, **Credentials → New → Subscriby API** and paste the `sbt_...` token. Leave the base URL at the default unless you are self-hosting.
 3. Add a **Subscriby Trigger** node, pick one or more events, optionally scope to a single project, and activate the workflow. On activation n8n registers the endpoint with Subscriby. Deactivating the workflow deletes the endpoint.
 
-## Supported events (165)
+## Supported events (168)
 
 The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/event-reference). This table is generated from that file by `npm run sync:readme` — do not edit it by hand.
 
@@ -60,11 +60,12 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Team Member | 4 | `team.member.invited`, `team.member.joined`, `team.member.removed`, `team.member.role_changed` |
 | Access Code | 3 | `access_code.expired`, `access_code.generated`, `access_code.redeemed` |
 | Role | 3 | `role.created`, `role.deleted`, `role.updated` |
+| Smart Link | 3 | `link.archived`, `link.created`, `link.updated` |
 | Team | 3 | `team.created`, `team.deleted`, `team.updated` |
 | Broadcast | 2 | `broadcast.completed`, `broadcast.queued` |
 | Creator Task | 2 | `creator_task.completed`, `creator_task.opened` |
 | Project Payment Method | 2 | `project.payment_method.deleted`, `project.payment_method.updated` |
-| **Total** | **165** | |
+| **Total** | **168** | |
 
 ## Supported actions
 
@@ -82,6 +83,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Support Settings     | Get, Update                                                                                                      |
 | Access Code          | Bulk Generate, List, Delete, Preview                                                                             |
 | Coupon               | Create, Update, Activate, Deactivate, Delete, List, Get                                                          |
+| Smart Link           | Create, Update, Archive, List, Get, Funnel                                                                       |
 | Creator Task         | List, Complete                                                                                                   |
 | Referral Program     | Get Program, Update Program, Activate Program, Deactivate Program, Delete Program, List Affiliates, Get Affiliate, Add Affiliate, Approve Affiliate, Suspend Affiliate, List Referrals, Get Referral, List Rewards, List Payouts, Record Payout |
 | Partner Program      | Get, List Referrals, Get Referral, List Rewards, List Payouts, Update Payout Details, Accept Terms              |

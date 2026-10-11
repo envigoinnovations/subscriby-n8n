@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 213,
+    "count": 220,
     "items": [
         {
             "name": "api.v1.activity.index",
@@ -585,6 +585,62 @@
             "action": "App\\Http\\Controllers\\Api\\V1\\DistributionController@portalUrl",
             "entity": "distribution",
             "required_ability": "distribution:read"
+        },
+        {
+            "name": "api.v1.links.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/links",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SmartLinkController@index",
+            "entity": "links",
+            "required_ability": "project-link:view-any"
+        },
+        {
+            "name": "api.v1.links.store",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/links",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SmartLinkController@store",
+            "entity": "links",
+            "required_ability": "project-link:create"
+        },
+        {
+            "name": "api.v1.links.funnel",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/links/funnel",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SmartLinkController@funnel",
+            "entity": "links",
+            "required_ability": "project-link:view-any"
+        },
+        {
+            "name": "api.v1.links.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/projects/{project}/links/{smartLink}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SmartLinkController@destroy",
+            "entity": "links",
+            "required_ability": "project-link:delete"
+        },
+        {
+            "name": "api.v1.links.show",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/links/{smartLink}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SmartLinkController@show",
+            "entity": "links",
+            "required_ability": "project-link:view"
+        },
+        {
+            "name": "api.v1.links.update",
+            "method": "PATCH",
+            "uri": "/api/v1/projects/{project}/links/{smartLink}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SmartLinkController@update",
+            "entity": "links",
+            "required_ability": "project-link:update"
+        },
+        {
+            "name": "api.v1.links.link-funnel",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/links/{smartLink}/funnel",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SmartLinkController@linkFunnel",
+            "entity": "links",
+            "required_ability": "project-link:view"
         },
         {
             "name": "api.v1.members.index",
