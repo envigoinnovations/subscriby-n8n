@@ -1379,11 +1379,12 @@ export class Subscriby implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['retention'] } },
         options: [
-          { name: 'Get Settings', value: 'getSettings', action: 'Get the revenue recovery settings', description: "Fetch the project's grace window with the notice ladder in words, the daily digest, the cancellation question and the three offers the cancellation screen can make. The row is created with the defaults on the first read." },
-          { name: 'Get Stats', value: 'getStats', action: 'Get the revenue recovery stats', description: 'What the programme did over a period: failed renewals, reminders, pauses, recoveries with their US dollars, win-back messages and members won back, the cancellation screens with their offers, and why members cancelled' },
-          { name: 'List Activity', value: 'listActivity', action: 'List the revenue recovery activity', description: 'The ledger behind every figure: one row per notice, offer, feedback and win-back message, newest first, optionally one kind' },
+          { name: 'Get Settings', value: 'getSettings', action: 'Get the revenue recovery settings', description: "Fetch the project's grace window with the notice ladder in words, the daily digest, the cancellation question, the three offers the cancellation screen can make, the checkout window after which a checkout counts as stalled and the trial reminder before a cardless trial ends. The row is created with the defaults on the first read." },
+          { name: 'Get Stats', value: 'getStats', action: 'Get the revenue recovery stats', description: 'What the programme did over a period: failed renewals, reminders, pauses, recoveries with their US dollars, win-back messages and members won back, the cancellation screens with their offers, why members cancelled, and the leads, checkouts and trials the sequences nurtured' },
+          { name: 'List Activity', value: 'listActivity', action: 'List the revenue recovery activity', description: 'The ledger behind every figure: one row per notice, offer, feedback and sequence message, newest first, optionally one kind' },
           { name: 'List Cancellations', value: 'listCancellations', action: 'List the cancellation feedback', description: 'The cancellation screens members reached, newest first, with the reason, their words, the offer shown and taken, optionally by reason or surface' },
-          { name: 'Update Settings', value: 'updateSettings', action: 'Update the revenue recovery settings', description: 'Change the grace window, the digest, the cancellation question or the offers. Fields you leave out keep their stored values.' },
+          { name: 'List Checkouts', value: 'listCheckouts', action: 'List the checkouts', description: 'Every checkout a member started on the portal or in the project bot, newest first, with the member, the plan, the rail, where they started, when it stalled and what became of it, optionally the stalled or the recovered ones, one plan or one member' },
+          { name: 'Update Settings', value: 'updateSettings', action: 'Update the revenue recovery settings', description: 'Change the grace window, the digest, the cancellation question, the offers, the checkout window or the trial reminder. Fields you leave out keep their stored values.' },
         ],
         default: 'getSettings',
       },
@@ -1424,6 +1425,7 @@ export class Subscriby implements INodeType {
         displayOptions: { show: { resource: ['retention'], operation: ['updateSettings'] } },
         options: [
           { displayName: 'Ask Why On Cancel', name: 'cancel_feedback_enabled', type: 'boolean', default: true, description: 'Whether the cancellation screen asks the member why before the offer' },
+          { displayName: 'Checkout Stall Hours', name: 'checkout_stall_hours', type: 'number', typeOptions: { minValue: 1, maxValue: 24 }, default: 1, description: 'How many hours a checkout may stay open with no payment before it counts as stalled and the stalled-checkout sequences start' },
           { displayName: 'Clear Discount Coupon', name: 'clear_discount_coupon', type: 'boolean', default: false, description: 'Whether to remove the discount offer' },
           { displayName: 'Clear Return Coupon', name: 'clear_return_coupon', type: 'boolean', default: false, description: 'Whether to remove the return coupon offer' },
           { displayName: 'Daily Digest', name: 'digest_enabled', type: 'boolean', default: true, description: 'Whether the owner gets one message a day with the failures, reminders, pauses and recoveries, only on a day something happened' },
@@ -1431,6 +1433,7 @@ export class Subscriby implements INodeType {
           { displayName: 'Grace Days', name: 'grace_days', type: 'number', typeOptions: { minValue: 0, maxValue: 30 }, default: 7, description: "How many days a failed renewal keeps the member's access while the gateway retries. 0 pauses access at the failure." },
           { displayName: 'Offer A Pause', name: 'offer_pause_enabled', type: 'boolean', default: false, description: 'Whether a cancelling member whose gateway can hold the charge is offered one billing cycle on hold' },
           { displayName: 'Return Coupon ID', name: 'offer_return_coupon_id', type: 'string', default: '', description: "One of the project's coupons, handed to a cancelling member on the way out on every payment method" },
+          { displayName: 'Trial Notice Days', name: 'trial_notice_days', type: 'number', typeOptions: { minValue: 1, maxValue: 14 }, default: 3, description: 'How many days before a trial without a card ends its trial-ending sequences start. A shorter trial enrols at its start.' },
         ],
       },
       {
@@ -1507,6 +1510,22 @@ export class Subscriby implements INodeType {
           { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
         ],
       },
+      {
+        displayName: 'Filters',
+        name: 'checkoutListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['retention'], operation: ['listCheckouts'] } },
+        options: [
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Member ID', name: 'member_id', type: 'string', default: '', description: "Keep only one member's checkouts, by their member ID as the Member resource lists them" },
+          { displayName: 'Plan ID', name: 'plan_id', type: 'string', default: '', description: 'Keep only the checkouts of one plan' },
+          { displayName: 'Recovered', name: 'recovered', type: 'boolean', default: true, description: 'Whether to keep only the stalled checkouts a payment finished after all (or, when off, the stalled ones still open)' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+          { displayName: 'Stalled', name: 'stalled', type: 'boolean', default: true, description: 'Whether to keep only the checkouts the hourly sweep counted as stalled (or, when off, the ones it never did)' },
+        ],
+      },
 
       // === SEQUENCE ===
       {
@@ -1516,7 +1535,7 @@ export class Subscriby implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['sequence'] } },
         options: [
-          { name: 'Create', value: 'create', action: 'Create a sequence', description: 'Build a win-back sequence with its steps in one call: the ordered messages a member who leaves receives on the days you choose, each with the way back as a button' },
+          { name: 'Create', value: 'create', action: 'Create a sequence', description: 'Build a sequence with its steps in one call: the ordered messages a member receives on the days you choose after they leave, arrive as a lead, stall a checkout or near the end of a trial, each with the way to the plan as a button' },
           { name: 'Delete', value: 'delete', action: 'Delete a sequence', description: 'Put a sequence out of use. Every member part-way through leaves it; the row and its history stay for the figures.' },
           { name: 'Get', value: 'get', action: 'Get a sequence', description: 'Fetch a sequence by UUID, with its steps in order and how it has done' },
           { name: 'List', value: 'list', action: 'List sequences', description: "List a project's sequences, newest first, each with its steps and counts, optionally by running state or trigger" },
@@ -1560,14 +1579,19 @@ export class Subscriby implements INodeType {
         displayOptions: { show: { resource: ['sequence'], operation: ['create'] } },
         options: [
           { displayName: 'Active', name: 'active', type: 'boolean', default: true, description: 'Whether the sequence enrols and sends from the start' },
-          { displayName: 'Steps', name: 'steps', type: 'json', default: '[]', description: 'The steps in the order they go out, at most 8, as a JSON list: [{"delay_days": 3, "body": "Hi {name}, {project} is still here: {link}", "coupon_id": null}]. Each waits its days after the step before (the first after the member leaves); the message takes {name}, {project}, {coupon}, {discount} and {link}.' },
+          { displayName: 'Steps', name: 'steps', type: 'json', default: '[]', description: 'The steps in the order they go out, at most 8, as a JSON list: [{"delay_days": 3, "body": "Hi {name}, {project} is still here: {link}", "coupon_id": null}]. Each waits its days after the step before (the first after the trigger\'s moment, and the first alone may wait 0 days for the next hourly run); the message takes {name}, {project}, {coupon}, {discount} and {link}.' },
           {
             displayName: 'Trigger',
             name: 'trigger',
             type: 'options',
-            options: [{ name: 'Member Churned', value: 'churned' }],
+            options: [
+              { name: 'Checkout Stalled', value: 'stalled_checkout' },
+              { name: 'Member Churned', value: 'churned' },
+              { name: 'New Lead', value: 'lead' },
+              { name: 'Trial Ending', value: 'trial_ending' },
+            ],
             default: 'churned',
-            description: 'What enrols a member. Only "Member Churned" (their last live membership ended) is available today.',
+            description: 'What enrols a member: their last live membership ended, they arrived without buying, a checkout they started stayed open past the project\'s window, or a trial without a card is about to end',
           },
         ],
       },
@@ -1587,9 +1611,14 @@ export class Subscriby implements INodeType {
             displayName: 'Trigger',
             name: 'trigger',
             type: 'options',
-            options: [{ name: 'Member Churned', value: 'churned' }],
+            options: [
+              { name: 'Checkout Stalled', value: 'stalled_checkout' },
+              { name: 'Member Churned', value: 'churned' },
+              { name: 'New Lead', value: 'lead' },
+              { name: 'Trial Ending', value: 'trial_ending' },
+            ],
             default: 'churned',
-            description: 'What enrols a member. Only "Member Churned" is available today.',
+            description: 'What enrols a member. Members already part-way through keep their passage.',
           },
         ],
       },
@@ -1608,7 +1637,12 @@ export class Subscriby implements INodeType {
             displayName: 'Trigger',
             name: 'trigger',
             type: 'options',
-            options: [{ name: 'Member Churned', value: 'churned' }],
+            options: [
+              { name: 'Checkout Stalled', value: 'stalled_checkout' },
+              { name: 'Member Churned', value: 'churned' },
+              { name: 'New Lead', value: 'lead' },
+              { name: 'Trial Ending', value: 'trial_ending' },
+            ],
             default: 'churned',
             description: 'Keep the sequences on one trigger',
           },
@@ -1632,7 +1666,7 @@ export class Subscriby implements INodeType {
               { name: 'Sequence Deleted', value: 'deleted' },
               { name: 'Sequence Switched Off', value: 'disabled' },
               { name: 'Unreachable', value: 'opted_out' },
-              { name: 'Won Back', value: 'reactivated' },
+              { name: 'Won Back Or Converted', value: 'reactivated' },
             ],
             default: 'reactivated',
             description: 'Keep only the passages that ended this way',
@@ -4451,6 +4485,28 @@ async function dispatchRetention(
     }
     qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
     return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/retention/activity`, undefined, qs);
+  }
+
+  if (operation === 'listCheckouts') {
+    const filters = this.getNodeParameter('checkoutListFilters', i, {}) as IDataObject;
+    const qs: IDataObject = {};
+    for (const key of ['stalled', 'recovered'] as const) {
+      if (typeof filters[key] === 'boolean') {
+        qs[key] = filters[key] ? 'true' : 'false';
+      }
+    }
+    if (filters.plan_id) {
+      qs.plan_id = filters.plan_id;
+    }
+    if (filters.member_id) {
+      qs.member_id = filters.member_id;
+    }
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/retention/checkouts`, qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/retention/checkouts`, undefined, qs);
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown revenue recovery operation: ${operation}`);

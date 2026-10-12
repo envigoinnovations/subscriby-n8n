@@ -86,7 +86,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Access Code          | Bulk Generate, List, Delete, Preview                                                                             |
 | Coupon               | Create, Update, Activate, Deactivate, Delete, List, Get                                                          |
 | Smart Link           | Create, Update, Archive, List, Get, Funnel                                                                       |
-| Revenue Recovery     | Get Settings, Update Settings, Get Stats, List Cancellations, List Activity                                      |
+| Revenue Recovery     | Get Settings, Update Settings, Get Stats, List Cancellations, List Activity, List Checkouts                      |
 | Sequence             | List, Create, Get, Update, Delete, List Enrollments                                                             |
 | Creator Task         | List, Complete                                                                                                   |
 | Referral Program     | Get Program, Update Program, Activate Program, Deactivate Program, Delete Program, List Affiliates, Get Affiliate, Add Affiliate, Approve Affiliate, Suspend Affiliate, List Referrals, Get Referral, List Rewards, List Payouts, Record Payout |
