@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 173,
+    "count": 180,
     "items": [
         {
             "name": "project.created",
@@ -1046,6 +1046,81 @@
                 "resumes_at",
                 "subscriber_id",
                 "subscription_id"
+            ]
+        },
+        {
+            "name": "sequence.created",
+            "family": "sequence",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "sequence"
+            ]
+        },
+        {
+            "name": "sequence.updated",
+            "family": "sequence",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "sequence"
+            ]
+        },
+        {
+            "name": "sequence.deleted",
+            "family": "sequence",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "sequence"
+            ]
+        },
+        {
+            "name": "sequence.enrolled",
+            "family": "sequence",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "enrollment_id",
+                "next_due_at",
+                "sequence_id",
+                "subscriber_id",
+                "subscription_id",
+                "trigger"
+            ]
+        },
+        {
+            "name": "sequence.step_sent",
+            "family": "sequence",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "coupon_code",
+                "enrollment_id",
+                "position",
+                "sent_at",
+                "sequence_id",
+                "step_id",
+                "subscriber_id"
+            ]
+        },
+        {
+            "name": "sequence.converted",
+            "family": "sequence",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "converted_at",
+                "enrollment_id",
+                "payment_id",
+                "sequence_id",
+                "subscriber_id"
+            ]
+        },
+        {
+            "name": "sequence.exited",
+            "family": "sequence",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "enrollment_id",
+                "exited_at",
+                "reason",
+                "sequence_id",
+                "subscriber_id"
             ]
         },
         {
