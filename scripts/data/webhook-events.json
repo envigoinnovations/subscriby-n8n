@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 171,
+    "count": 173,
     "items": [
         {
             "name": "project.created",
@@ -1017,6 +1017,35 @@
                 "subscriber_id",
                 "subscription_id",
                 "suspended_at"
+            ]
+        },
+        {
+            "name": "subscription.cancellation_feedback",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "cancellation_id",
+                "feedback",
+                "offer_shown",
+                "plan_id",
+                "reason",
+                "subscriber_id",
+                "subscription_id",
+                "surface"
+            ]
+        },
+        {
+            "name": "subscription.offer_taken",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "cancellation_id",
+                "coupon_code",
+                "offer",
+                "plan_id",
+                "resumes_at",
+                "subscriber_id",
+                "subscription_id"
             ]
         },
         {
