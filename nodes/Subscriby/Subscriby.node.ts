@@ -71,7 +71,9 @@ export class Subscriby implements INodeType {
           { name: 'Recovery', value: 'recovery' },
           { name: 'Referral Program', value: 'referral' },
           { name: 'Resource', value: 'resource' },
+          { name: 'Revenue Recovery', value: 'retention' },
           { name: 'Role', value: 'role' },
+          { name: 'Sequence', value: 'sequence' },
           { name: 'Smart Link', value: 'smartLink' },
           { name: 'Subscriber', value: 'subscriber' },
           { name: 'Subscription', value: 'subscription' },
@@ -1366,6 +1368,275 @@ export class Subscriby implements INodeType {
           { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
           { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
           { displayName: 'Search', name: 'search', type: 'string', default: '', description: 'Keep links whose name or address contains this text' },
+        ],
+      },
+
+      // === REVENUE RECOVERY ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['retention'] } },
+        options: [
+          { name: 'Get Settings', value: 'getSettings', action: 'Get the revenue recovery settings', description: "Fetch the project's grace window with the notice ladder in words, the daily digest, the cancellation question and the three offers the cancellation screen can make. The row is created with the defaults on the first read." },
+          { name: 'Get Stats', value: 'getStats', action: 'Get the revenue recovery stats', description: 'What the programme did over a period: failed renewals, reminders, pauses, recoveries with their US dollars, win-back messages and members won back, the cancellation screens with their offers, and why members cancelled' },
+          { name: 'List Activity', value: 'listActivity', action: 'List the revenue recovery activity', description: 'The ledger behind every figure: one row per notice, offer, feedback and win-back message, newest first, optionally one kind' },
+          { name: 'List Cancellations', value: 'listCancellations', action: 'List the cancellation feedback', description: 'The cancellation screens members reached, newest first, with the reason, their words, the offer shown and taken, optionally by reason or surface' },
+          { name: 'Update Settings', value: 'updateSettings', action: 'Update the revenue recovery settings', description: 'Change the grace window, the digest, the cancellation question or the offers. Fields you leave out keep their stored values.' },
+        ],
+        default: 'getSettings',
+      },
+      {
+        displayName: 'Project ID',
+        name: 'projectId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['retention'] } },
+      },
+      {
+        displayName: 'Period',
+        name: 'period',
+        type: 'options',
+        options: [
+          { name: 'All Time', value: 'all' },
+          { name: 'Last 14 Days', value: '14d' },
+          { name: 'Last 30 Days', value: '30d' },
+          { name: 'Last 60 Days', value: '60d' },
+          { name: 'Last 7 Days', value: '7d' },
+          { name: 'Last 90 Days', value: '90d' },
+          { name: 'Last Year', value: '1y' },
+          { name: 'Month To Date', value: 'mtd' },
+          { name: 'Quarter To Date', value: 'qtd' },
+          { name: 'Year To Date', value: 'ytd' },
+        ],
+        default: '30d',
+        displayOptions: { show: { resource: ['retention'], operation: ['getStats'] } },
+        description: 'The window the figures cover. The members in grace and paused right now ignore it.',
+      },
+      {
+        displayName: 'Update Fields',
+        name: 'retentionUpdateFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['retention'], operation: ['updateSettings'] } },
+        options: [
+          { displayName: 'Ask Why On Cancel', name: 'cancel_feedback_enabled', type: 'boolean', default: true, description: 'Whether the cancellation screen asks the member why before the offer' },
+          { displayName: 'Clear Discount Coupon', name: 'clear_discount_coupon', type: 'boolean', default: false, description: 'Whether to remove the discount offer' },
+          { displayName: 'Clear Return Coupon', name: 'clear_return_coupon', type: 'boolean', default: false, description: 'Whether to remove the return coupon offer' },
+          { displayName: 'Daily Digest', name: 'digest_enabled', type: 'boolean', default: true, description: 'Whether the owner gets one message a day with the failures, reminders, pauses and recoveries, only on a day something happened' },
+          { displayName: 'Discount Coupon ID', name: 'offer_discount_coupon_id', type: 'string', default: '', description: "One of the project's coupons, applied to a cancelling member's renewals where the gateway can carry it" },
+          { displayName: 'Grace Days', name: 'grace_days', type: 'number', typeOptions: { minValue: 0, maxValue: 30 }, default: 7, description: "How many days a failed renewal keeps the member's access while the gateway retries. 0 pauses access at the failure." },
+          { displayName: 'Offer A Pause', name: 'offer_pause_enabled', type: 'boolean', default: false, description: 'Whether a cancelling member whose gateway can hold the charge is offered one billing cycle on hold' },
+          { displayName: 'Return Coupon ID', name: 'offer_return_coupon_id', type: 'string', default: '', description: "One of the project's coupons, handed to a cancelling member on the way out on every payment method" },
+        ],
+      },
+      {
+        displayName: 'Filters',
+        name: 'cancellationListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['retention'], operation: ['listCancellations'] } },
+        options: [
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          {
+            displayName: 'Reason',
+            name: 'reason',
+            type: 'options',
+            options: [
+              { name: 'Content Was Not What I Expected', value: 'content_not_expected' },
+              { name: 'Found Another Community', value: 'found_another_community' },
+              { name: 'Got What I Needed', value: 'got_what_i_needed' },
+              { name: 'Not Enough Content', value: 'not_enough_content' },
+              { name: 'Not The Right Fit', value: 'not_the_right_fit' },
+              { name: 'Not Using It Enough', value: 'not_using_enough' },
+              { name: 'Other', value: 'other' },
+              { name: 'Signed Up By Mistake', value: 'signed_up_by_mistake' },
+              { name: 'Taking A Break', value: 'taking_a_break' },
+              { name: 'Technical Problems', value: 'technical_problems' },
+              { name: 'Too Expensive', value: 'too_expensive' },
+            ],
+            default: 'too_expensive',
+            description: 'Keep only the records whose member gave this reason',
+          },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+          {
+            displayName: 'Surface',
+            name: 'surface',
+            type: 'options',
+            options: [
+              { name: 'Connector Chat', value: 'bot' },
+              { name: 'Portal', value: 'portal' },
+            ],
+            default: 'portal',
+            description: 'Keep only the screens answered there',
+          },
+        ],
+      },
+      {
+        displayName: 'Filters',
+        name: 'activityListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['retention'], operation: ['listActivity'] } },
+        options: [
+          {
+            displayName: 'Kind',
+            name: 'kind',
+            type: 'options',
+            options: [
+              { name: 'Access Paused', value: 'access_suspended' },
+              { name: 'Access Restored', value: 'access_restored' },
+              { name: 'Feedback', value: 'feedback' },
+              { name: 'Grace Final Warning', value: 'grace_final_warning' },
+              { name: 'Grace Reminder', value: 'grace_reminder' },
+              { name: 'Offer Shown', value: 'offer_shown' },
+              { name: 'Offer Taken', value: 'offer_taken' },
+              { name: 'Payment Failed Notice', value: 'payment_failed_notice' },
+              { name: 'Payment Recovered', value: 'payment_recovered' },
+              { name: 'Win-Back Step', value: 'sequence_step' },
+            ],
+            default: 'payment_recovered',
+            description: 'Keep only one kind of row',
+          },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+        ],
+      },
+
+      // === SEQUENCE ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['sequence'] } },
+        options: [
+          { name: 'Create', value: 'create', action: 'Create a sequence', description: 'Build a win-back sequence with its steps in one call: the ordered messages a member who leaves receives on the days you choose, each with the way back as a button' },
+          { name: 'Delete', value: 'delete', action: 'Delete a sequence', description: 'Put a sequence out of use. Every member part-way through leaves it; the row and its history stay for the figures.' },
+          { name: 'Get', value: 'get', action: 'Get a sequence', description: 'Fetch a sequence by UUID, with its steps in order and how it has done' },
+          { name: 'List', value: 'list', action: 'List sequences', description: "List a project's sequences, newest first, each with its steps and counts, optionally by running state or trigger" },
+          { name: 'List Enrollments', value: 'listEnrollments', action: 'List sequence enrollments', description: 'The passages members made through one sequence, newest first, optionally by the way out' },
+          { name: 'Update', value: 'update', action: 'Update a sequence', description: 'Change a sequence. Fields you leave out keep their stored values; Steps replaces the whole list in order.' },
+        ],
+        default: 'list',
+      },
+      {
+        displayName: 'Project ID',
+        name: 'projectId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['sequence'] } },
+      },
+      {
+        displayName: 'Sequence ID',
+        name: 'sequenceId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['sequence'], operation: ['get', 'update', 'delete', 'listEnrollments'] } },
+        description: 'UUID of the sequence',
+      },
+      {
+        displayName: 'Name',
+        name: 'name',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['sequence'], operation: ['create'] } },
+        description: 'A creator-facing label, 1-120 characters',
+      },
+      {
+        displayName: 'Additional Fields',
+        name: 'sequenceFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['sequence'], operation: ['create'] } },
+        options: [
+          { displayName: 'Active', name: 'active', type: 'boolean', default: true, description: 'Whether the sequence enrols and sends from the start' },
+          { displayName: 'Steps', name: 'steps', type: 'json', default: '[]', description: 'The steps in the order they go out, at most 8, as a JSON list: [{"delay_days": 3, "body": "Hi {name}, {project} is still here: {link}", "coupon_id": null}]. Each waits its days after the step before (the first after the member leaves); the message takes {name}, {project}, {coupon}, {discount} and {link}.' },
+          {
+            displayName: 'Trigger',
+            name: 'trigger',
+            type: 'options',
+            options: [{ name: 'Member Churned', value: 'churned' }],
+            default: 'churned',
+            description: 'What enrols a member. Only "Member Churned" (their last live membership ended) is available today.',
+          },
+        ],
+      },
+      {
+        displayName: 'Update Fields',
+        name: 'sequenceUpdateFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['sequence'], operation: ['update'] } },
+        options: [
+          { displayName: 'Active', name: 'active', type: 'boolean', default: true, description: 'Whether the sequence runs. Off lets every member part-way through go and enrols nobody until it runs again.' },
+          { displayName: 'Clear Steps', name: 'clear_steps', type: 'boolean', default: false, description: 'Whether to remove every step' },
+          { displayName: 'Name', name: 'name', type: 'string', default: '', description: 'A new creator-facing label, 1-120 characters' },
+          { displayName: 'Steps', name: 'steps', type: 'json', default: '[]', description: 'The whole list of steps in order, at most 8, as a JSON list; it replaces the stored list, and a step still at its place keeps its ID. An empty list leaves the steps alone; tick Clear Steps to remove them all.' },
+          {
+            displayName: 'Trigger',
+            name: 'trigger',
+            type: 'options',
+            options: [{ name: 'Member Churned', value: 'churned' }],
+            default: 'churned',
+            description: 'What enrols a member. Only "Member Churned" is available today.',
+          },
+        ],
+      },
+      {
+        displayName: 'Filters',
+        name: 'sequenceListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['sequence'], operation: ['list'] } },
+        options: [
+          { displayName: 'Active', name: 'active', type: 'boolean', default: true, description: 'Whether to return only running sequences (or, when off, only paused ones)' },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+          {
+            displayName: 'Trigger',
+            name: 'trigger',
+            type: 'options',
+            options: [{ name: 'Member Churned', value: 'churned' }],
+            default: 'churned',
+            description: 'Keep the sequences on one trigger',
+          },
+        ],
+      },
+      {
+        displayName: 'Filters',
+        name: 'enrollmentListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['sequence'], operation: ['listEnrollments'] } },
+        options: [
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+          {
+            displayName: 'Way Out',
+            name: 'exit_reason',
+            type: 'options',
+            options: [
+              { name: 'Sequence Deleted', value: 'deleted' },
+              { name: 'Sequence Switched Off', value: 'disabled' },
+              { name: 'Unreachable', value: 'opted_out' },
+              { name: 'Won Back', value: 'reactivated' },
+            ],
+            default: 'reactivated',
+            description: 'Keep only the passages that ended this way',
+          },
         ],
       },
 
@@ -3045,6 +3316,10 @@ async function dispatch(
       return dispatchCoupon.call(this, operation, i);
     case 'smartLink':
       return dispatchSmartLink.call(this, operation, i);
+    case 'retention':
+      return dispatchRetention.call(this, operation, i);
+    case 'sequence':
+      return dispatchSequence.call(this, operation, i);
     case 'referral':
       return dispatchReferral.call(this, operation, i);
     case 'partner':
@@ -4093,6 +4368,210 @@ async function dispatchSmartLink(
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown smart link operation: ${operation}`);
+}
+
+/**
+ * The retention settings' PUT body: the collection's fields, with the two
+ * "Clear" switches sent as null coupons, because an empty n8n field is
+ * indistinguishable from an untouched one, and a blank coupon left out so
+ * the stored value stands.
+ */
+function retentionSettingsBody(fields: IDataObject): IDataObject {
+  const body: IDataObject = { ...fields };
+
+  if (body.clear_discount_coupon === true) {
+    body.offer_discount_coupon_id = null;
+  }
+
+  if (body.clear_return_coupon === true) {
+    body.offer_return_coupon_id = null;
+  }
+
+  delete body.clear_discount_coupon;
+  delete body.clear_return_coupon;
+
+  if (body.offer_discount_coupon_id === '') {
+    delete body.offer_discount_coupon_id;
+  }
+
+  if (body.offer_return_coupon_id === '') {
+    delete body.offer_return_coupon_id;
+  }
+
+  return body;
+}
+
+async function dispatchRetention(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  const projectId = this.getNodeParameter('projectId', i) as string;
+
+  if (operation === 'getSettings') {
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/retention`);
+  }
+
+  if (operation === 'updateSettings') {
+    const fields = this.getNodeParameter('retentionUpdateFields', i, {}) as IDataObject;
+    return subscribyApiRequest.call(this, 'PUT', `/projects/${projectId}/retention`, retentionSettingsBody(fields));
+  }
+
+  if (operation === 'getStats') {
+    const period = this.getNodeParameter('period', i, '30d') as string;
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/retention/stats`, undefined, { period });
+  }
+
+  if (operation === 'listCancellations') {
+    const filters = this.getNodeParameter('cancellationListFilters', i, {}) as IDataObject;
+    const qs: IDataObject = {};
+    if (filters.reason) {
+      qs.reason = filters.reason;
+    }
+    if (filters.surface) {
+      qs.surface = filters.surface;
+    }
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/retention/cancellations`, qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/retention/cancellations`, undefined, qs);
+  }
+
+  if (operation === 'listActivity') {
+    const filters = this.getNodeParameter('activityListFilters', i, {}) as IDataObject;
+    const qs: IDataObject = {};
+    if (filters.kind) {
+      qs.kind = filters.kind;
+    }
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/retention/activity`, qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/retention/activity`, undefined, qs);
+  }
+
+  throw new NodeOperationError(this.getNode(), `Unknown revenue recovery operation: ${operation}`);
+}
+
+/**
+ * The steps a sequence write carries: the JSON field parsed into the list
+ * the API takes. An empty list means "leave the steps alone" unless the
+ * "Clear Steps" switch is on, because the field's default is an empty list
+ * and a user who adds the field without filling it in has asked for nothing.
+ */
+function sequenceStepsFrom(this: IExecuteFunctions, raw: unknown, clear: boolean): IDataObject[] | undefined {
+  if (clear) {
+    return [];
+  }
+
+  if (raw === undefined || raw === null || raw === '') {
+    return undefined;
+  }
+
+  let parsed: unknown = raw;
+
+  if (typeof raw === 'string') {
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      throw new NodeOperationError(this.getNode(), 'Steps must be a JSON list of objects with delay_days, body and an optional coupon_id.');
+    }
+  }
+
+  if (!Array.isArray(parsed)) {
+    throw new NodeOperationError(this.getNode(), 'Steps must be a JSON list of objects with delay_days, body and an optional coupon_id.');
+  }
+
+  return parsed.length === 0 ? undefined : (parsed as IDataObject[]);
+}
+
+async function dispatchSequence(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  const projectId = this.getNodeParameter('projectId', i) as string;
+
+  if (operation === 'list') {
+    const filters = this.getNodeParameter('sequenceListFilters', i, {}) as IDataObject;
+    const qs: IDataObject = {};
+    if (filters.active !== undefined) {
+      qs.active = filters.active ? 'true' : 'false';
+    }
+    if (filters.trigger) {
+      qs.trigger = filters.trigger;
+    }
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/sequences`, qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/sequences`, undefined, qs);
+  }
+
+  if (operation === 'create') {
+    const extras = this.getNodeParameter('sequenceFields', i, {}) as IDataObject;
+    const body: IDataObject = { name: this.getNodeParameter('name', i) as string };
+    if (extras.trigger) {
+      body.trigger = extras.trigger;
+    }
+    if (extras.active !== undefined) {
+      body.active = extras.active;
+    }
+    const steps = sequenceStepsFrom.call(this, extras.steps, false);
+    if (steps !== undefined) {
+      body.steps = steps;
+    }
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/sequences`, body);
+  }
+
+  const sequenceId = this.getNodeParameter('sequenceId', i) as string;
+
+  if (operation === 'get') {
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/sequences/${sequenceId}`);
+  }
+
+  if (operation === 'update') {
+    const fields = this.getNodeParameter('sequenceUpdateFields', i, {}) as IDataObject;
+    const body: IDataObject = {};
+    if (fields.name) {
+      body.name = fields.name;
+    }
+    if (fields.trigger) {
+      body.trigger = fields.trigger;
+    }
+    if (fields.active !== undefined) {
+      body.active = fields.active;
+    }
+    const steps = sequenceStepsFrom.call(this, fields.steps, fields.clear_steps === true);
+    if (steps !== undefined) {
+      body.steps = steps;
+    }
+    return subscribyApiRequest.call(this, 'PATCH', `/projects/${projectId}/sequences/${sequenceId}`, body);
+  }
+
+  if (operation === 'delete') {
+    return subscribyApiRequest.call(this, 'DELETE', `/projects/${projectId}/sequences/${sequenceId}`);
+  }
+
+  if (operation === 'listEnrollments') {
+    const filters = this.getNodeParameter('enrollmentListFilters', i, {}) as IDataObject;
+    const qs: IDataObject = {};
+    if (filters.exit_reason) {
+      qs.exit_reason = filters.exit_reason;
+    }
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/sequences/${sequenceId}/enrollments`, qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/sequences/${sequenceId}/enrollments`, undefined, qs);
+  }
+
+  throw new NodeOperationError(this.getNode(), `Unknown sequence operation: ${operation}`);
 }
 
 /**

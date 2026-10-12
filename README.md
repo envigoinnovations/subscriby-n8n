@@ -5,7 +5,7 @@
 Provides two nodes:
 
 - **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, Smart Links, plans, projects, project resources, payment methods, connector installations and outages, billing, groups, roles, teams, team members, member support conversations, saved replies and inbox settings, message broadcasts, and the Disaster Recovery ledger (180 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
-- **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 32 resources across creator-facing surfaces (projects, plans, pass windows, subscriptions, subscribers, members, broadcasts, support conversations, canned replies, support inbox settings, coupons, Smart Links, the Referral Program, the Partner Program, creator tasks, the notification centre, the Disaster Recovery ledger, the Connector Directory and a project's installations, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, distribution links).
+- **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 34 resources across creator-facing surfaces (projects, plans, pass windows, subscriptions, subscribers, members, broadcasts, support conversations, canned replies, support inbox settings, coupons, Smart Links, Revenue Recovery and its win-back sequences, the Referral Program, the Partner Program, creator tasks, the notification centre, the Disaster Recovery ledger, the Connector Directory and a project's installations, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, distribution links).
 
 ## Installation
 
@@ -85,6 +85,8 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Access Code          | Bulk Generate, List, Delete, Preview                                                                             |
 | Coupon               | Create, Update, Activate, Deactivate, Delete, List, Get                                                          |
 | Smart Link           | Create, Update, Archive, List, Get, Funnel                                                                       |
+| Revenue Recovery     | Get Settings, Update Settings, Get Stats, List Cancellations, List Activity                                      |
+| Sequence             | List, Create, Get, Update, Delete, List Enrollments                                                             |
 | Creator Task         | List, Complete                                                                                                   |
 | Referral Program     | Get Program, Update Program, Activate Program, Deactivate Program, Delete Program, List Affiliates, Get Affiliate, Add Affiliate, Approve Affiliate, Suspend Affiliate, List Referrals, Get Referral, List Rewards, List Payouts, Record Payout |
 | Partner Program      | Get, List Referrals, Get Referral, List Rewards, List Payouts, Update Payout Details, Accept Terms              |

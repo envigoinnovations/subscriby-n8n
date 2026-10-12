@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 220,
+    "count": 231,
     "items": [
         {
             "name": "api.v1.activity.index",
@@ -1185,6 +1185,94 @@
             "action": "App\\Http\\Controllers\\Api\\V1\\ProjectController@restore",
             "entity": "projects",
             "required_ability": "project:update"
+        },
+        {
+            "name": "api.v1.retention.show",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/retention",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RetentionController@show",
+            "entity": "retention",
+            "required_ability": "project-subscription:view"
+        },
+        {
+            "name": "api.v1.retention.update",
+            "method": "PUT",
+            "uri": "/api/v1/projects/{project}/retention",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RetentionController@update",
+            "entity": "retention",
+            "required_ability": "project-subscription:update"
+        },
+        {
+            "name": "api.v1.retention.activity",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/retention/activity",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RetentionController@activity",
+            "entity": "retention",
+            "required_ability": "project-subscription:view-any"
+        },
+        {
+            "name": "api.v1.retention.cancellations",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/retention/cancellations",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RetentionController@cancellations",
+            "entity": "retention",
+            "required_ability": "project-subscription:view-any"
+        },
+        {
+            "name": "api.v1.retention.stats",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/retention/stats",
+            "action": "App\\Http\\Controllers\\Api\\V1\\RetentionController@stats",
+            "entity": "retention",
+            "required_ability": "project-subscription:view-any"
+        },
+        {
+            "name": "api.v1.sequences.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/sequences",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SequenceController@index",
+            "entity": "sequences",
+            "required_ability": "project-sequence:view-any"
+        },
+        {
+            "name": "api.v1.sequences.store",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/sequences",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SequenceController@store",
+            "entity": "sequences",
+            "required_ability": "project-sequence:create"
+        },
+        {
+            "name": "api.v1.sequences.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/projects/{project}/sequences/{sequence}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SequenceController@destroy",
+            "entity": "sequences",
+            "required_ability": "project-sequence:delete"
+        },
+        {
+            "name": "api.v1.sequences.show",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/sequences/{sequence}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SequenceController@show",
+            "entity": "sequences",
+            "required_ability": "project-sequence:view"
+        },
+        {
+            "name": "api.v1.sequences.update",
+            "method": "PATCH",
+            "uri": "/api/v1/projects/{project}/sequences/{sequence}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SequenceController@update",
+            "entity": "sequences",
+            "required_ability": "project-sequence:update"
+        },
+        {
+            "name": "api.v1.sequences.enrollments",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/sequences/{sequence}/enrollments",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SequenceController@enrollments",
+            "entity": "sequences",
+            "required_ability": "project-sequence:view-any"
         },
         {
             "name": "api.v1.support-canned-replies.index",

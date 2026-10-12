@@ -1051,7 +1051,7 @@
         {
             "name": "sequence.created",
             "family": "sequence",
-            "required_ability": "project-subscription:view",
+            "required_ability": "project-sequence:view",
             "payload_keys": [
                 "sequence"
             ]
@@ -1059,7 +1059,7 @@
         {
             "name": "sequence.updated",
             "family": "sequence",
-            "required_ability": "project-subscription:view",
+            "required_ability": "project-sequence:view",
             "payload_keys": [
                 "sequence"
             ]
@@ -1067,7 +1067,7 @@
         {
             "name": "sequence.deleted",
             "family": "sequence",
-            "required_ability": "project-subscription:view",
+            "required_ability": "project-sequence:view",
             "payload_keys": [
                 "sequence"
             ]
@@ -1075,7 +1075,7 @@
         {
             "name": "sequence.enrolled",
             "family": "sequence",
-            "required_ability": "project-subscription:view",
+            "required_ability": "project-sequence:view",
             "payload_keys": [
                 "enrollment_id",
                 "next_due_at",
@@ -1088,7 +1088,7 @@
         {
             "name": "sequence.step_sent",
             "family": "sequence",
-            "required_ability": "project-subscription:view",
+            "required_ability": "project-sequence:view",
             "payload_keys": [
                 "coupon_code",
                 "enrollment_id",
@@ -1102,7 +1102,7 @@
         {
             "name": "sequence.converted",
             "family": "sequence",
-            "required_ability": "project-subscription:view",
+            "required_ability": "project-sequence:view",
             "payload_keys": [
                 "converted_at",
                 "enrollment_id",
@@ -1114,7 +1114,7 @@
         {
             "name": "sequence.exited",
             "family": "sequence",
-            "required_ability": "project-subscription:view",
+            "required_ability": "project-sequence:view",
             "payload_keys": [
                 "enrollment_id",
                 "exited_at",
