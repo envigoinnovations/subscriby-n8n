@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 168,
+    "count": 171,
     "items": [
         {
             "name": "project.created",
@@ -977,6 +977,46 @@
                 "subscriber_id",
                 "subscription_id",
                 "to_plan_id"
+            ]
+        },
+        {
+            "name": "subscription.payment_recovered",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "access_restored",
+                "payment_id",
+                "plan_id",
+                "provider",
+                "recovered_at",
+                "subscriber_id",
+                "subscription_id"
+            ]
+        },
+        {
+            "name": "subscription.access_suspended",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "grace_days",
+                "grace_ends_at",
+                "payment_failed_at",
+                "plan_id",
+                "subscriber_id",
+                "subscription_id",
+                "suspended_at"
+            ]
+        },
+        {
+            "name": "subscription.access_restored",
+            "family": "subscription",
+            "required_ability": "project-subscription:view",
+            "payload_keys": [
+                "plan_id",
+                "restored_at",
+                "subscriber_id",
+                "subscription_id",
+                "suspended_at"
             ]
         },
         {

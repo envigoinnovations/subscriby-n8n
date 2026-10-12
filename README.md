@@ -4,7 +4,7 @@
 
 Provides two nodes:
 
-- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, Smart Links, plans, projects, project resources, payment methods, connector installations and outages, billing, groups, roles, teams, team members, member support conversations, saved replies and inbox settings, message broadcasts, and the Disaster Recovery ledger (168 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
+- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, Smart Links, plans, projects, project resources, payment methods, connector installations and outages, billing, groups, roles, teams, team members, member support conversations, saved replies and inbox settings, message broadcasts, and the Disaster Recovery ledger (171 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
 - **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 32 resources across creator-facing surfaces (projects, plans, pass windows, subscriptions, subscribers, members, broadcasts, support conversations, canned replies, support inbox settings, coupons, Smart Links, the Referral Program, the Partner Program, creator tasks, the notification centre, the Disaster Recovery ledger, the Connector Directory and a project's installations, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, distribution links).
 
 ## Installation
@@ -35,13 +35,13 @@ Restart the n8n process after install.
 2. In n8n, **Credentials → New → Subscriby API** and paste the `sbt_...` token. Leave the base URL at the default unless you are self-hosting.
 3. Add a **Subscriby Trigger** node, pick one or more events, optionally scope to a single project, and activate the workflow. On activation n8n registers the endpoint with Subscriby. Deactivating the workflow deletes the endpoint.
 
-## Supported events (168)
+## Supported events (171)
 
 The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/event-reference). This table is generated from that file by `npm run sync:readme` — do not edit it by hand.
 
 | Family | Count | Events |
 | ------ | ----- | ------ |
-| Subscription | 16 | `subscription.activated`, `subscription.cancelled`, `subscription.created`, `subscription.downgraded`, `subscription.expired`, `subscription.past_due`, `subscription.paused`, `subscription.reactivated`, `subscription.refunded`, `subscription.renewed`, `subscription.trial_converting`, `subscription.trial_expired`, `subscription.trial_started`, `subscription.unpaid`, `subscription.unpaused`, `subscription.upgraded` |
+| Subscription | 19 | `subscription.access_restored`, `subscription.access_suspended`, `subscription.activated`, `subscription.cancelled`, `subscription.created`, `subscription.downgraded`, `subscription.expired`, `subscription.past_due`, `subscription.paused`, `subscription.payment_recovered`, `subscription.reactivated`, `subscription.refunded`, `subscription.renewed`, `subscription.trial_converting`, `subscription.trial_expired`, `subscription.trial_started`, `subscription.unpaid`, `subscription.unpaused`, `subscription.upgraded` |
 | Member | 15 | `member.banned`, `member.churned`, `member.converted`, `member.identity_linked`, `member.identity_unlinked`, `member.joined`, `member.kicked`, `member.removed`, `member.resource_added`, `member.resource_pending`, `member.access_extended`, `member.resource_reissued`, `member.resource_removed`, `member.trial_joined`, `member.unbanned` |
 | Recovery | 13 | `recovery.identity_relinked`, `recovery.incident_opened`, `recovery.incident_resolved`, `recovery.operation_completed`, `recovery.operation_failed`, `recovery.operation_reverted`, `recovery.operation_started`, `recovery.readiness_changed`, `recovery.installation_failed_over`, `recovery.resource_failed_over`, `recovery.resource_replaced`, `recovery.standby_registered`, `recovery.standby_removed` |
 | Support | 12 | `support.canned_reply.created`, `support.canned_reply.deleted`, `support.canned_reply.updated`, `support.conversation.assigned`, `support.conversation.blocked`, `support.conversation.opened`, `support.conversation.reopened`, `support.conversation.resolved`, `support.conversation.unblocked`, `support.message.received`, `support.message.sent`, `support.settings.updated` |
@@ -65,7 +65,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Broadcast | 2 | `broadcast.completed`, `broadcast.queued` |
 | Creator Task | 2 | `creator_task.completed`, `creator_task.opened` |
 | Project Payment Method | 2 | `project.payment_method.deleted`, `project.payment_method.updated` |
-| **Total** | **168** | |
+| **Total** | **171** | |
 
 ## Supported actions
 
