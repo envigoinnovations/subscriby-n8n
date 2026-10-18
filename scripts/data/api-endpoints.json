@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 232,
+    "count": 234,
     "items": [
         {
             "name": "api.v1.activity.index",
@@ -337,6 +337,22 @@
             "action": "App\\Http\\Controllers\\Api\\V1\\MeRecoveryController@confirmHandshake",
             "entity": "me",
             "required_ability": "project-recovery:create"
+        },
+        {
+            "name": "api.v1.me.transaction-fees.index",
+            "method": "GET",
+            "uri": "/api/v1/me/transaction-fees",
+            "action": "App\\Http\\Controllers\\Api\\V1\\TransactionFeeController@index",
+            "entity": "me",
+            "required_ability": "account:read"
+        },
+        {
+            "name": "api.v1.me.transaction-fees.summary",
+            "method": "GET",
+            "uri": "/api/v1/me/transaction-fees/summary",
+            "action": "App\\Http\\Controllers\\Api\\V1\\TransactionFeeController@summary",
+            "entity": "me",
+            "required_ability": "account:read"
         },
         {
             "name": "api.v1.ping",

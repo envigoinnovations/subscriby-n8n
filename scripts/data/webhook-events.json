@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 183,
+    "count": 187,
     "items": [
         {
             "name": "project.created",
@@ -760,6 +760,52 @@
                 "previous_percent",
                 "reason",
                 "volume_points"
+            ]
+        },
+        {
+            "name": "copilot_credits.purchased",
+            "family": "copilot_credits",
+            "required_ability": "account:read",
+            "payload_keys": [
+                "balance_cents",
+                "bonus_cents",
+                "currency",
+                "pack",
+                "paid_cents",
+                "purchase_id"
+            ]
+        },
+        {
+            "name": "copilot_credits.granted",
+            "family": "copilot_credits",
+            "required_ability": "account:read",
+            "payload_keys": [
+                "balance_cents",
+                "cents",
+                "expires_at",
+                "grant_id",
+                "kind"
+            ]
+        },
+        {
+            "name": "copilot_credits.low",
+            "family": "copilot_credits",
+            "required_ability": "account:read",
+            "payload_keys": [
+                "balance_cents",
+                "threshold_cents"
+            ]
+        },
+        {
+            "name": "copilot_credits.refunded",
+            "family": "copilot_credits",
+            "required_ability": "account:read",
+            "payload_keys": [
+                "balance_cents",
+                "bonus_voided_cents",
+                "pack",
+                "purchase_id",
+                "refunded_cents"
             ]
         },
         {
