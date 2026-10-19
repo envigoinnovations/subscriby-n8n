@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 239,
+    "count": 243,
     "items": [
         {
             "name": "api.v1.activity.index",
@@ -161,6 +161,38 @@
             "action": "App\\Http\\Controllers\\Api\\V1\\AlertDestinationController@update",
             "entity": "me",
             "required_ability": "account:write"
+        },
+        {
+            "name": "api.v1.me.copilot-credits.show",
+            "method": "GET",
+            "uri": "/api/v1/me/copilot-credits",
+            "action": "App\\Http\\Controllers\\Api\\V1\\CopilotCreditController@show",
+            "entity": "me",
+            "required_ability": "account:read"
+        },
+        {
+            "name": "api.v1.me.copilot-credits.packs.store",
+            "method": "POST",
+            "uri": "/api/v1/me/copilot-credits/packs",
+            "action": "App\\Http\\Controllers\\Api\\V1\\CopilotCreditController@storePack",
+            "entity": "me",
+            "required_ability": "account:write"
+        },
+        {
+            "name": "api.v1.me.copilot-credits.settings.update",
+            "method": "PATCH",
+            "uri": "/api/v1/me/copilot-credits/settings",
+            "action": "App\\Http\\Controllers\\Api\\V1\\CopilotCreditController@updateSettings",
+            "entity": "me",
+            "required_ability": "account:write"
+        },
+        {
+            "name": "api.v1.me.copilot-credits.statement",
+            "method": "GET",
+            "uri": "/api/v1/me/copilot-credits/statement",
+            "action": "App\\Http\\Controllers\\Api\\V1\\CopilotCreditController@statement",
+            "entity": "me",
+            "required_ability": "account:read"
         },
         {
             "name": "api.v1.me.export.show",

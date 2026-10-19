@@ -57,6 +57,8 @@ export class Subscriby implements INodeType {
           { name: 'Broadcast', value: 'broadcast' },
           { name: 'Canned Reply', value: 'cannedReply' },
           { name: 'Connector', value: 'connector' },
+          // eslint-disable-next-line n8n-nodes-base/node-param-resource-with-plural-option
+          { name: 'Copilot Credits', value: 'copilotCredits' },
           { name: 'Coupon', value: 'coupon' },
           { name: 'Creator Task', value: 'creatorTask' },
           { name: 'Distribution', value: 'distribution' },
@@ -2768,6 +2770,61 @@ export class Subscriby implements INodeType {
         ],
       },
 
+      // === COPILOT CREDITS ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['copilotCredits'] } },
+        options: [
+          { name: 'Get Balance', value: 'get', action: 'Get copilot credits', description: "Read the creator's Copilot Credits in one object: the balance, this month's allowance and usage, the prices, the packs on sale and the settings" },
+          { name: 'List Statement', value: 'listStatement', action: 'List copilot credits statement', description: 'List the last twelve months of packs, grants, refunds, lapses and usage, newest first' },
+          { name: 'Update Settings', value: 'updateSettings', action: 'Update copilot credits settings', description: 'Change the auto top-up and the monthly cap. Fields you leave out keep their stored values.' },
+        ],
+        default: 'get',
+      },
+      {
+        displayName: 'Update Fields',
+        name: 'copilotCreditSettingsFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['copilotCredits'], operation: ['updateSettings'] } },
+        options: [
+          {
+            displayName: 'Auto Top-Up Below (Cents)',
+            name: 'auto_topup_below_cents',
+            type: 'number',
+            typeOptions: { minValue: 100, maxValue: 10000 },
+            default: 500,
+            description: 'The balance in US cents under which the auto top-up buys, 100 to 10000',
+          },
+          {
+            displayName: 'Auto Top-Up Pack',
+            name: 'auto_topup_pack',
+            type: 'options',
+            options: [
+              { name: 'Max ($100)', value: 'max', description: 'The $100 pack with $15 free on top' },
+              { name: 'Off', value: 'off', description: 'Switch the auto top-up off' },
+              { name: 'Plus ($50)', value: 'plus', description: 'The $50 pack with $7.50 free on top' },
+              { name: 'Regular ($25)', value: 'regular', description: 'The $25 pack with $2.50 free on top' },
+              { name: 'Starter ($10)', value: 'starter', description: 'The $10 pack' },
+            ],
+            default: 'regular',
+            description: 'The pack bought when the balance falls under the threshold. Switching it on needs a card on file.',
+          },
+          {
+            displayName: 'Monthly Spend Cap (Cents)',
+            name: 'monthly_spend_cap_cents',
+            type: 'number',
+            typeOptions: { minValue: 0, maxValue: 1000000 },
+            default: 2000,
+            description: 'The paid credit in US cents the Copilot may draw in a calendar month, 0 to 1000000. The free allowance is never capped.',
+          },
+        ],
+      },
+
       // === ACCOUNT ===
       {
         displayName: 'Operation',
@@ -3473,6 +3530,8 @@ async function dispatch(
       return dispatchSupportSettings.call(this, operation, i);
     case 'knowledge':
       return dispatchKnowledge.call(this, operation, i);
+    case 'copilotCredits':
+      return dispatchCopilotCredits.call(this, operation, i);
     case 'coupon':
       return dispatchCoupon.call(this, operation, i);
     case 'smartLink':
@@ -5261,6 +5320,31 @@ async function dispatchToken(
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown token operation: ${operation}`);
+}
+
+async function dispatchCopilotCredits(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  if (operation === 'get') {
+    return subscribyApiRequest.call(this, 'GET', '/me/copilot-credits');
+  }
+
+  if (operation === 'listStatement') {
+    const rows = await subscribyApiRequestAllItems.call(this, 'GET', '/me/copilot-credits/statement');
+    return { data: rows };
+  }
+
+  if (operation === 'updateSettings') {
+    const fields = { ...(this.getNodeParameter('copilotCreditSettingsFields', i, {}) as IDataObject) };
+    if (fields.auto_topup_pack === 'off') {
+      fields.auto_topup_pack = null;
+    }
+    return subscribyApiRequest.call(this, 'PATCH', '/me/copilot-credits/settings', fields);
+  }
+
+  throw new NodeOperationError(this.getNode(), `Unknown copilot credits operation: ${operation}`);
 }
 
 async function dispatchAccount(this: IExecuteFunctions, operation: string): Promise<IDataObject> {
