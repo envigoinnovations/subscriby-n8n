@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 187,
+    "count": 190,
     "items": [
         {
             "name": "project.created",
@@ -806,6 +806,35 @@
                 "pack",
                 "purchase_id",
                 "refunded_cents"
+            ]
+        },
+        {
+            "name": "knowledge.created",
+            "family": "knowledge",
+            "required_ability": "project-knowledge:view",
+            "payload_keys": [
+                "entry",
+                "project_id"
+            ]
+        },
+        {
+            "name": "knowledge.updated",
+            "family": "knowledge",
+            "required_ability": "project-knowledge:view",
+            "payload_keys": [
+                "changes",
+                "entry",
+                "project_id",
+                "text_changed"
+            ]
+        },
+        {
+            "name": "knowledge.deleted",
+            "family": "knowledge",
+            "required_ability": "project-knowledge:view",
+            "payload_keys": [
+                "entry",
+                "project_id"
             ]
         },
         {

@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 234,
+    "count": 239,
     "items": [
         {
             "name": "api.v1.activity.index",
@@ -601,6 +601,46 @@
             "action": "App\\Http\\Controllers\\Api\\V1\\DistributionController@portalUrl",
             "entity": "distribution",
             "required_ability": "distribution:read"
+        },
+        {
+            "name": "api.v1.knowledge.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/knowledge",
+            "action": "App\\Http\\Controllers\\Api\\V1\\KnowledgeController@index",
+            "entity": "knowledge",
+            "required_ability": "project-knowledge:view-any"
+        },
+        {
+            "name": "api.v1.knowledge.store",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/knowledge",
+            "action": "App\\Http\\Controllers\\Api\\V1\\KnowledgeController@store",
+            "entity": "knowledge",
+            "required_ability": "project-knowledge:create"
+        },
+        {
+            "name": "api.v1.knowledge.destroy",
+            "method": "DELETE",
+            "uri": "/api/v1/projects/{project}/knowledge/{entry}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\KnowledgeController@destroy",
+            "entity": "knowledge",
+            "required_ability": "project-knowledge:delete"
+        },
+        {
+            "name": "api.v1.knowledge.show",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/knowledge/{entry}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\KnowledgeController@show",
+            "entity": "knowledge",
+            "required_ability": "project-knowledge:view"
+        },
+        {
+            "name": "api.v1.knowledge.update",
+            "method": "PATCH",
+            "uri": "/api/v1/projects/{project}/knowledge/{entry}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\KnowledgeController@update",
+            "entity": "knowledge",
+            "required_ability": "project-knowledge:update"
         },
         {
             "name": "api.v1.links.index",

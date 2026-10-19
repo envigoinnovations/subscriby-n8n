@@ -61,6 +61,7 @@ export class Subscriby implements INodeType {
           { name: 'Creator Task', value: 'creatorTask' },
           { name: 'Distribution', value: 'distribution' },
           { name: 'Group', value: 'group' },
+          { name: 'Knowledge', value: 'knowledge' },
           { name: 'Member', value: 'member' },
           { name: 'Notification', value: 'notification' },
           { name: 'Partner Program', value: 'partner' },
@@ -977,6 +978,20 @@ export class Subscriby implements INodeType {
         options: [
           { displayName: 'Agent Name', name: 'agent_name', type: 'string', default: '', description: 'The name members see on replies, up to 60 characters. Empty falls back to the project name.' },
           { displayName: 'Auto Reply', name: 'auto_reply', type: 'string', typeOptions: { rows: 3 }, default: '', description: 'Sent automatically when a member opens a thread, up to 1000 characters. Empty sends nothing.' },
+          {
+            displayName: 'Copilot Answers Members',
+            name: 'copilot_answers',
+            type: 'boolean',
+            default: false,
+            description: "Whether Subscriby Copilot answers members' own-subscription questions and what the project's Knowledge covers in the inbox and the project bot, marked as automated. Everything else still waits for a person.",
+          },
+          {
+            displayName: 'Copilot on the Portal Page',
+            name: 'copilot_portal',
+            type: 'boolean',
+            default: false,
+            description: "Whether a signed-in member finds the same Copilot in a chat on the project's portal page",
+          },
           { displayName: 'Enabled', name: 'enabled', type: 'boolean', default: true, description: 'Whether members can open support threads with the bot' },
           { displayName: 'Notify by Email', name: 'notify_email', type: 'boolean', default: true, description: 'Whether the creator is emailed about new threads' },
           {
@@ -991,6 +1006,116 @@ export class Subscriby implements INodeType {
             default: 'none',
             description: 'Where new threads go besides the dashboard inbox',
           },
+        ],
+      },
+
+      // === KNOWLEDGE ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['knowledge'] } },
+        options: [
+          { name: 'Create', value: 'create', action: 'Create a knowledge entry', description: 'Teach Subscriby Copilot a question with its answer, or a document sent as text' },
+          { name: 'Delete', value: 'delete', action: 'Delete a knowledge entry', description: 'Remove an entry with its passages. The Copilot stops answering from it at once.' },
+          { name: 'Get', value: 'get', action: 'Get a knowledge entry', description: 'Fetch one entry by UUID, with its text' },
+          { name: 'List', value: 'list', action: 'List knowledge entries', description: 'List what the project has taught the Copilot, newest first, without the text' },
+          { name: 'Update', value: 'update', action: 'Update a knowledge entry', description: 'Change an entry. Fields you leave out keep their stored values.' },
+        ],
+        default: 'list',
+      },
+      {
+        displayName: 'Project ID',
+        name: 'projectId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['knowledge'] } },
+      },
+      {
+        displayName: 'Knowledge Entry ID',
+        name: 'knowledgeEntryId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['knowledge'], operation: ['get', 'update', 'delete'] } },
+        description: 'UUID of the entry',
+      },
+      {
+        displayName: 'Kind',
+        name: 'kind',
+        type: 'options',
+        options: [
+          { name: 'Document', value: 'document', description: 'A guide or a set of rules sent as text, cut into passages' },
+          { name: 'Question & Answer', value: 'question', description: 'One question with the answer the Copilot may give' },
+        ],
+        default: 'question',
+        required: true,
+        displayOptions: { show: { resource: ['knowledge'], operation: ['create'] } },
+        description: 'Which shape the entry takes. Fixed once the entry exists.',
+      },
+      {
+        displayName: 'Title',
+        name: 'title',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['knowledge'], operation: ['create'] } },
+        description: "The question, or the document's name, 2-160 characters",
+      },
+      {
+        displayName: 'Body',
+        name: 'body',
+        type: 'string',
+        typeOptions: { rows: 6 },
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['knowledge'], operation: ['create'] } },
+        description: "The answer, or the document's text, 2-50000 characters. Markdown headings are kept.",
+      },
+      {
+        displayName: 'Additional Fields',
+        name: 'knowledgeFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['knowledge'], operation: ['create'] } },
+        options: [
+          {
+            displayName: 'Audience',
+            name: 'audience',
+            type: 'options',
+            options: [
+              { name: 'Members & Team', value: 'members', description: 'The Copilot may read it to members in the inbox, the project bot and the portal chat' },
+              { name: 'Team Only', value: 'team', description: "Serves the creator's own surfaces alone" },
+            ],
+            default: 'members',
+            description: 'Who may be answered from the entry. Defaults to Members & Team.',
+          },
+        ],
+      },
+      {
+        displayName: 'Update Fields',
+        name: 'knowledgeUpdateFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['knowledge'], operation: ['update'] } },
+        options: [
+          {
+            displayName: 'Audience',
+            name: 'audience',
+            type: 'options',
+            options: [
+              { name: 'Members & Team', value: 'members', description: 'The Copilot may read it to members in the inbox, the project bot and the portal chat' },
+              { name: 'Team Only', value: 'team', description: "Serves the creator's own surfaces alone" },
+            ],
+            default: 'members',
+            description: 'Who may be answered from the entry',
+          },
+          { displayName: 'Body', name: 'body', type: 'string', typeOptions: { rows: 6 }, default: '', description: "The answer, or the document's text, 2-50000 characters. New words are cut into passages again at once." },
+          { displayName: 'Title', name: 'title', type: 'string', default: '', description: "The question, or the document's name, 2-160 characters" },
         ],
       },
 
@@ -3346,6 +3471,8 @@ async function dispatch(
       return dispatchCannedReply.call(this, operation, i);
     case 'supportSettings':
       return dispatchSupportSettings.call(this, operation, i);
+    case 'knowledge':
+      return dispatchKnowledge.call(this, operation, i);
     case 'coupon':
       return dispatchCoupon.call(this, operation, i);
     case 'smartLink':
@@ -5069,6 +5196,48 @@ async function dispatchSupportSettings(
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown support settings operation: ${operation}`);
+}
+
+async function dispatchKnowledge(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  const projectId = this.getNodeParameter('projectId', i) as string;
+
+  if (operation === 'list') {
+    const rows = await subscribyApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/knowledge`);
+    return { data: rows };
+  }
+
+  if (operation === 'create') {
+    const extras = this.getNodeParameter('knowledgeFields', i, {}) as IDataObject;
+    const body: IDataObject = {
+      kind: this.getNodeParameter('kind', i) as string,
+      title: this.getNodeParameter('title', i) as string,
+      body: this.getNodeParameter('body', i) as string,
+      ...extras,
+    };
+
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/knowledge`, body);
+  }
+
+  const entryId = this.getNodeParameter('knowledgeEntryId', i) as string;
+
+  if (operation === 'get') {
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/knowledge/${entryId}`);
+  }
+
+  if (operation === 'update') {
+    const fields = this.getNodeParameter('knowledgeUpdateFields', i, {}) as IDataObject;
+    return subscribyApiRequest.call(this, 'PATCH', `/projects/${projectId}/knowledge/${entryId}`, fields);
+  }
+
+  if (operation === 'delete') {
+    return subscribyApiRequest.call(this, 'DELETE', `/projects/${projectId}/knowledge/${entryId}`);
+  }
+
+  throw new NodeOperationError(this.getNode(), `Unknown knowledge operation: ${operation}`);
 }
 
 async function dispatchToken(
