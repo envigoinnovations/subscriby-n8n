@@ -57,8 +57,7 @@ export class Subscriby implements INodeType {
           { name: 'Broadcast', value: 'broadcast' },
           { name: 'Canned Reply', value: 'cannedReply' },
           { name: 'Connector', value: 'connector' },
-          // eslint-disable-next-line n8n-nodes-base/node-param-resource-with-plural-option
-          { name: 'Copilot Credits', value: 'copilotCredits' },
+          { name: 'Copilot Credit', value: 'copilotCredits' },
           { name: 'Coupon', value: 'coupon' },
           { name: 'Creator Task', value: 'creatorTask' },
           { name: 'Distribution', value: 'distribution' },
