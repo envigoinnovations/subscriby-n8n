@@ -85,6 +85,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Support Conversation | List, Get, List Messages, Reply, Resolve, Reopen, Assign, Block Contact, Unblock Contact                         |
 | Canned Reply         | List, Get, Create, Update, Delete                                                                                |
 | Support Settings     | Get, Update                                                                                                      |
+| Knowledge            | List, Create, Get, Update, Delete                                                                                |
 | Access Code          | Bulk Generate, List, Delete, Preview                                                                             |
 | Coupon               | Create, Update, Activate, Deactivate, Delete, List, Get                                                          |
 | Smart Link           | Create, Update, Archive, List, Get, Funnel                                                                       |
@@ -101,6 +102,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Analytics            | Get Dashboard, Get Earnings, Get Subscribers, Get Connector Analytics, Get Revenue Composition, Get Transaction Breakdown, Get Plan Performance, List Transactions |
 | Activity             | List                                                                                                             |
 | Account              | Get Me                                                                                                           |
+| Copilot Credit       | Get Balance, List Statement, Update Settings                                                                     |
 | Notification         | List, Mark Read, Mark All Read                                                                                   |
 | Team                 | Create, Update, Delete, List, Get, Get Current                                                                   |
 | Team Member          | Invite, Change Role, Remove, Cancel Invitation, List, Get                                                        |
