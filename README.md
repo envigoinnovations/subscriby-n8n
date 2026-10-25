@@ -56,7 +56,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Sequence | 7 | `sequence.converted`, `sequence.created`, `sequence.deleted`, `sequence.enrolled`, `sequence.exited`, `sequence.step_sent`, `sequence.updated` |
 | Project Resource | 6 | `project.resource.created`, `project.resource.deleted`, `project.resource.linked`, `project.resource.status_changed`, `project.resource.unlinked`, `project.resource.updated` |
 | Project | 5 | `project.archived`, `project.created`, `project.deleted`, `project.restored`, `project.updated` |
-| Copilot Credits | 4 | `copilot_credits.granted`, `copilot_credits.low`, `copilot_credits.purchased`, `copilot_credits.refunded` |
+| Copilot Credit | 4 | `copilot_credit.granted`, `copilot_credit.low`, `copilot_credit.purchased`, `copilot_credit.refunded` |
 | Group | 4 | `group.created`, `group.deleted`, `group.members_synced`, `group.updated` |
 | Payment | 4 | `payment.failed`, `payment.pending`, `payment.refunded`, `payment.succeeded` |
 | Team Member | 4 | `team.member.invited`, `team.member.joined`, `team.member.removed`, `team.member.role_changed` |

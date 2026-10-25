@@ -2777,9 +2777,9 @@ export class Subscriby implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['copilotCredits'] } },
         options: [
-          { name: 'Get Balance', value: 'get', action: 'Get copilot credits', description: "Read the creator's Copilot Credits in one object: the balance, this month's allowance and usage, the prices, the packs on sale and the settings" },
-          { name: 'List Statement', value: 'listStatement', action: 'List copilot credits statement', description: 'List the last twelve months of packs, grants, refunds, lapses and usage, newest first' },
-          { name: 'Update Settings', value: 'updateSettings', action: 'Update copilot credits settings', description: 'Change the auto top-up and the monthly cap. Fields you leave out keep their stored values.' },
+          { name: 'Get Balance', value: 'get', action: 'Get copilot credit balance', description: "Read the creator's Copilot Credits in one object: the balance, this month's allowance and usage, the prices, the packs on sale and the settings" },
+          { name: 'List Statement', value: 'listStatement', action: 'List copilot credit statement', description: 'List the last twelve months of packs, grants, refunds, lapses and usage, newest first' },
+          { name: 'Update Settings', value: 'updateSettings', action: 'Update copilot credit settings', description: 'Change the auto top-up and the monthly cap. Fields you leave out keep their stored values.' },
         ],
         default: 'get',
       },
@@ -5343,7 +5343,7 @@ async function dispatchCopilotCredits(
     return subscribyApiRequest.call(this, 'PATCH', '/me/copilot-credits/settings', fields);
   }
 
-  throw new NodeOperationError(this.getNode(), `Unknown copilot credits operation: ${operation}`);
+  throw new NodeOperationError(this.getNode(), `Unknown copilot credit operation: ${operation}`);
 }
 
 async function dispatchAccount(this: IExecuteFunctions, operation: string): Promise<IDataObject> {

@@ -763,8 +763,8 @@
             ]
         },
         {
-            "name": "copilot_credits.purchased",
-            "family": "copilot_credits",
+            "name": "copilot_credit.purchased",
+            "family": "copilot_credit",
             "required_ability": "account:read",
             "payload_keys": [
                 "balance_cents",
@@ -776,8 +776,8 @@
             ]
         },
         {
-            "name": "copilot_credits.granted",
-            "family": "copilot_credits",
+            "name": "copilot_credit.granted",
+            "family": "copilot_credit",
             "required_ability": "account:read",
             "payload_keys": [
                 "balance_cents",
@@ -788,8 +788,8 @@
             ]
         },
         {
-            "name": "copilot_credits.low",
-            "family": "copilot_credits",
+            "name": "copilot_credit.low",
+            "family": "copilot_credit",
             "required_ability": "account:read",
             "payload_keys": [
                 "balance_cents",
@@ -797,8 +797,8 @@
             ]
         },
         {
-            "name": "copilot_credits.refunded",
-            "family": "copilot_credits",
+            "name": "copilot_credit.refunded",
+            "family": "copilot_credit",
             "required_ability": "account:read",
             "payload_keys": [
                 "balance_cents",
