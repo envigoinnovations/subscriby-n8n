@@ -15,6 +15,10 @@ The Copilot Credit event family is named in the singular, as every other family 
 - The **Subscriby Trigger** family **Copilot Credit** offers `copilot_credit.purchased`, `copilot_credit.granted`, `copilot_credit.low` and `copilot_credit.refunded` in place of the plural names of 4.4.0; the payloads are unchanged, and a workflow saved on a plural name has to pick the singular one.
 - The **Copilot Credit** resource's actions read **Get copilot credit balance**, **List copilot credit statement** and **Update copilot credit settings**.
 
+##### Added
+
+- The **Project** resource's **Update** operation takes **Storefront Arrangement** among its update fields: **Manual**, the order pinned from Storefront Order, or **Live**, which puts the passes and seasons whose access is on now first, the one ending soonest at the top, then those opening soonest, then the pinned order. Live needs the project owner's time-limited passes capability (Growth, or the Passes Addon) and is refused with `TEAM_TIER_REQUIRED` without it. Every project read carries the field as `storefront_arrangement`.
+
 #### 4.4.2
 
 > 25 October 2026

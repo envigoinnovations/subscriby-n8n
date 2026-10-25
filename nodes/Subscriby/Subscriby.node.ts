@@ -147,6 +147,18 @@ export class Subscriby implements INodeType {
           { displayName: 'Name', name: 'name', type: 'string', default: '' },
           { displayName: 'Description', name: 'description', type: 'string', default: '', typeOptions: { rows: 3 } },
           { displayName: 'Website URL', name: 'website_url', type: 'string', default: '' },
+          {
+            displayName: 'Storefront Arrangement',
+            name: 'storefront_arrangement',
+            type: 'options',
+            default: 'manual',
+            description:
+              'How the portal, the embed and the bot order the plans on offer. Manual is the pinned order; Live puts the passes and seasons whose access is on now first, then those opening soonest, then the pinned order, and needs the owner\'s time-limited passes capability (Growth, or the Passes Addon).',
+            options: [
+              { name: 'Manual', value: 'manual' },
+              { name: 'Live', value: 'live' },
+            ],
+          },
         ],
       },
 
