@@ -18,6 +18,8 @@ The Copilot Credit event family is named in the singular, as every other family 
 ##### Added
 - The **Portal Design** resource opens a project's portal design, the look of its portal page: **Get** reads the published document, the draft being edited and a ten-minute preview address; **Update** changes keys in the draft (the common keys as fields, any other key of the document under **Other Keys (JSON)**) and never what members see; **Publish** makes the draft live; **Discard Draft** throws it away. The **Subscriby Trigger** family **Project** gains `project.design_published`, which names the sections that changed. Behind `project:view` and `project:update`; the REST twins live under `/v1/projects/{project}/portal-design`. Pictures are stored on the dashboard or over REST.
 
+- The **Project** resource's **Create** and **Update** operations take **Remove Subscriby Branding** (`hide_branding`): the "Powered by Subscriby" mark leaves the portal page, its social card and the bot. Off by default on every plan; turning it on needs a Starter or Growth tier, `TEAM_TIER_REQUIRED` otherwise.
+
 - The **Project** resource's **Update** operation takes **Storefront Arrangement** among its update fields: **Manual**, the order pinned from Storefront Order, or **Live**, which puts the passes and seasons whose access is on now first, the one ending soonest at the top, then those opening soonest, then the pinned order. Live needs the project owner's time-limited passes capability (Growth, or the Passes Addon) and is refused with `TEAM_TIER_REQUIRED` without it. Every project read carries the field as `storefront_arrangement`.
 
 #### 4.4.2

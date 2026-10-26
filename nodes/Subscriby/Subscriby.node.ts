@@ -129,6 +129,14 @@ export class Subscriby implements INodeType {
         description: 'URL-safe handle (lowercase letters, numbers, hyphens)',
       },
       {
+        displayName: 'Remove Subscriby Branding',
+        name: 'hide_branding',
+        type: 'boolean',
+        default: false,
+        displayOptions: { show: { resource: ['project'], operation: ['create'] } },
+        description: 'Whether to take the "Powered by Subscriby" mark off the portal page, its social card and the bot. Off by default; turning it on needs a Starter or Growth tier.',
+      },
+      {
         displayName: 'Project ID',
         name: 'projectId',
         type: 'string',
@@ -145,9 +153,9 @@ export class Subscriby implements INodeType {
         default: {},
         displayOptions: { show: { resource: ['project'], operation: ['update'] } },
         options: [
-          { displayName: 'Name', name: 'name', type: 'string', default: '' },
           { displayName: 'Description', name: 'description', type: 'string', default: '', typeOptions: { rows: 3 } },
-          { displayName: 'Website URL', name: 'website_url', type: 'string', default: '' },
+          { displayName: 'Name', name: 'name', type: 'string', default: '' },
+          { displayName: 'Remove Subscriby Branding', name: 'hide_branding', type: 'boolean', default: false, description: 'Whether to take the "Powered by Subscriby" mark off the portal page, its social card and the bot. Off by default; turning it on needs a Starter or Growth tier.' },
           {
             displayName: 'Storefront Arrangement',
             name: 'storefront_arrangement',
@@ -160,6 +168,7 @@ export class Subscriby implements INodeType {
               { name: 'Live', value: 'live' },
             ],
           },
+          { displayName: 'Website URL', name: 'website_url', type: 'string', default: '' },
         ],
       },
 
@@ -3687,6 +3696,7 @@ async function dispatchProject(
     const body = compactBody({
       name: this.getNodeParameter('name', i) as string,
       handle: this.getNodeParameter('handle', i) as string,
+      hide_branding: this.getNodeParameter('hide_branding', i, false) as boolean,
     });
     return subscribyApiRequest.call(this, 'POST', '/projects', body);
   }
