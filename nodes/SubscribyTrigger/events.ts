@@ -117,6 +117,7 @@ export const EVENT_CATALOG = [
   { family: 'Project', name: 'Project — Archived', value: 'project.archived' },
   { family: 'Project', name: 'Project — Created', value: 'project.created' },
   { family: 'Project', name: 'Project — Deleted', value: 'project.deleted' },
+  { family: 'Project', name: 'Project — Design Published', value: 'project.design_published' },
   { family: 'Project', name: 'Project — Restored', value: 'project.restored' },
   { family: 'Project', name: 'Project — Updated', value: 'project.updated' },
   { family: 'Project Resource', name: 'Project Resource — Created', value: 'project.resource.created' },

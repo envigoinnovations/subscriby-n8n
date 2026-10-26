@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 243,
+    "count": 248,
     "items": [
         {
             "name": "api.v1.activity.index",
@@ -977,6 +977,46 @@
             "action": "App\\Http\\Controllers\\Api\\V1\\PlanController@unpublish",
             "entity": "plans",
             "required_ability": "project-subscription-plan:update"
+        },
+        {
+            "name": "api.v1.portal-design.show",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/portal-design",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PortalDesignController@show",
+            "entity": "portal-design",
+            "required_ability": "project:view"
+        },
+        {
+            "name": "api.v1.portal-design.update",
+            "method": "PUT",
+            "uri": "/api/v1/projects/{project}/portal-design",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PortalDesignController@update",
+            "entity": "portal-design",
+            "required_ability": "project:update"
+        },
+        {
+            "name": "api.v1.portal-design.discard",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/portal-design/discard",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PortalDesignController@discard",
+            "entity": "portal-design",
+            "required_ability": "project:update"
+        },
+        {
+            "name": "api.v1.portal-design.images.store",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/portal-design/images/{slot}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PortalDesignController@storeImage",
+            "entity": "portal-design",
+            "required_ability": "project:update"
+        },
+        {
+            "name": "api.v1.portal-design.publish",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/portal-design/publish",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PortalDesignController@publish",
+            "entity": "portal-design",
+            "required_ability": "project:update"
         },
         {
             "name": "api.v1.recovery.members.export",

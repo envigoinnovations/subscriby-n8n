@@ -4,7 +4,7 @@
 
 Provides two nodes:
 
-- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, Smart Links, plans, projects, project resources, payment methods, connector installations and outages, billing, groups, roles, teams, team members, member support conversations, saved replies and inbox settings, what a project teaches Subscriby Copilot (Knowledge), message broadcasts, and the Disaster Recovery ledger (190 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
+- **Subscriby Trigger** — starts a workflow when a Subscriby event fires. Covers subscriptions, payments, members, access codes, coupons, Smart Links, plans, projects, project resources, payment methods, connector installations and outages, billing, groups, roles, teams, team members, member support conversations, saved replies and inbox settings, what a project teaches Subscriby Copilot (Knowledge), message broadcasts, and the Disaster Recovery ledger (191 events total). Uses the `/v1/webhook-subscriptions` lifecycle and validates the `SB-Signature` HMAC on every request.
 - **Subscriby** — action node for every documented route on `api.subscriby.net`. Covers 36 resources across creator-facing surfaces (projects, plans, pass windows, subscriptions, subscribers, members, broadcasts, support conversations, canned replies, support inbox settings, Knowledge, Copilot Credit, coupons, Smart Links, Revenue Recovery and its win-back sequences, the Referral Program, the Partner Program, creator tasks, the notification centre, the Disaster Recovery ledger, the Connector Directory and a project's installations, access codes, resources, payment methods), admin surfaces (teams, team members, roles, groups, tokens, webhook endpoints, webhook deliveries, activity log), and read-only data surfaces (analytics, distribution links).
 
 ## Installation
@@ -35,7 +35,7 @@ Restart the n8n process after install.
 2. In n8n, **Credentials → New → Subscriby API** and paste the `sbt_...` token. Leave the base URL at the default unless you are self-hosting.
 3. Add a **Subscriby Trigger** node, pick one or more events, optionally scope to a single project, and activate the workflow. On activation n8n registers the endpoint with Subscriby. Deactivating the workflow deletes the endpoint.
 
-## Supported events (190)
+## Supported events (191)
 
 The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/event-reference). This table is generated from that file by `npm run sync:readme` — do not edit it by hand.
 
@@ -54,8 +54,8 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Plan | 8 | `plan.activated`, `plan.created`, `plan.deactivated`, `plan.deleted`, `plan.order_changed`, `plan.sold_out`, `plan.sync_completed`, `plan.updated` |
 | Coupon | 7 | `coupon.activated`, `coupon.created`, `coupon.deactivated`, `coupon.deleted`, `coupon.exhausted`, `coupon.redeemed`, `coupon.updated` |
 | Sequence | 7 | `sequence.converted`, `sequence.created`, `sequence.deleted`, `sequence.enrolled`, `sequence.exited`, `sequence.step_sent`, `sequence.updated` |
+| Project | 6 | `project.archived`, `project.created`, `project.deleted`, `project.design_published`, `project.restored`, `project.updated` |
 | Project Resource | 6 | `project.resource.created`, `project.resource.deleted`, `project.resource.linked`, `project.resource.status_changed`, `project.resource.unlinked`, `project.resource.updated` |
-| Project | 5 | `project.archived`, `project.created`, `project.deleted`, `project.restored`, `project.updated` |
 | Copilot Credit | 4 | `copilot_credit.granted`, `copilot_credit.low`, `copilot_credit.purchased`, `copilot_credit.refunded` |
 | Group | 4 | `group.created`, `group.deleted`, `group.members_synced`, `group.updated` |
 | Payment | 4 | `payment.failed`, `payment.pending`, `payment.refunded`, `payment.succeeded` |
@@ -69,7 +69,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Checkout | 2 | `checkout.recovered`, `checkout.stalled` |
 | Creator Task | 2 | `creator_task.completed`, `creator_task.opened` |
 | Project Payment Method | 2 | `project.payment_method.deleted`, `project.payment_method.updated` |
-| **Total** | **190** | |
+| **Total** | **191** | |
 
 ## Supported actions
 
@@ -86,6 +86,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Canned Reply         | List, Get, Create, Update, Delete                                                                                |
 | Support Settings     | Get, Update                                                                                                      |
 | Knowledge            | List, Create, Get, Update, Delete                                                                                |
+| Portal Design        | Get, Update, Publish, Discard Draft                                                                              |
 | Access Code          | Bulk Generate, List, Delete, Preview                                                                             |
 | Coupon               | Create, Update, Activate, Deactivate, Delete, List, Get                                                          |
 | Smart Link           | Create, Update, Archive, List, Get, Funnel                                                                       |

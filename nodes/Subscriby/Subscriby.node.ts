@@ -68,6 +68,7 @@ export class Subscriby implements INodeType {
           { name: 'Partner Program', value: 'partner' },
           { name: 'Pass Window', value: 'passWindow' },
           { name: 'Payment Method', value: 'paymentMethod' },
+          { name: 'Portal Design', value: 'portalDesign' },
           { name: 'Plan', value: 'plan' },
           { name: 'Project', value: 'project' },
           { name: 'Recovery', value: 'recovery' },
@@ -1019,6 +1020,83 @@ export class Subscriby implements INodeType {
             default: 'none',
             description: 'Where new threads go besides the dashboard inbox',
           },
+        ],
+      },
+
+      // === PORTAL DESIGN ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['portalDesign'] } },
+        options: [
+          { name: 'Discard Draft', value: 'discard', action: 'Discard a portal design draft', description: 'Throw the draft away and keep what members see' },
+          { name: 'Get', value: 'get', action: 'Get a portal design', description: 'Fetch the published design, the draft and a ten-minute preview address' },
+          { name: 'Publish', value: 'publish', action: 'Publish a portal design', description: 'Make the draft the design members see' },
+          { name: 'Update', value: 'update', action: 'Update a portal design', description: 'Change keys in the draft. Keys you leave out keep their drafted values.' },
+        ],
+        default: 'get',
+      },
+      {
+        displayName: 'Project ID',
+        name: 'projectId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['portalDesign'] } },
+      },
+      {
+        displayName: 'Update Fields',
+        name: 'portalDesignFields',
+        type: 'collection',
+        placeholder: 'Add Field',
+        default: {},
+        displayOptions: { show: { resource: ['portalDesign'], operation: ['update'] } },
+        options: [
+          { displayName: 'Accent', name: 'accent', type: 'color', default: '', description: "The accent on the buttons, the highlights and the chosen plan's ring, as a hex colour" },
+          { displayName: 'Announcement', name: 'announcement_text', type: 'string', default: '', description: 'The strip across the top of the page, up to 160 characters' },
+          { displayName: 'Announcement Link', name: 'announcement_url', type: 'string', default: '', description: 'Where the strip leads, an https address' },
+          { displayName: 'Background', name: 'background', type: 'color', default: '', description: 'The page colour behind the cards' },
+          { displayName: 'Body Text', name: 'text', type: 'color', default: '', description: 'The body text colour; it must read on the surface and the background (3:1 at least)' },
+          { displayName: 'Captions', name: 'muted', type: 'color', default: '', description: 'The colour of the captions and the small print, under the same contrast rule' },
+          {
+            displayName: 'Colour Mode',
+            name: 'color_mode',
+            type: 'options',
+            options: [
+              { name: 'Dark', value: 'dark' },
+              { name: 'Follow the Visitor', value: 'system' },
+              { name: 'Light', value: 'light' },
+            ],
+            default: 'light',
+            description: 'Light or dark for everyone, or the light palette switching to the dark one when the visitor asks for a dark scheme',
+          },
+          { displayName: 'Default Language', name: 'default_locale', type: 'string', default: '', description: "The language the portal's own address opens in: en, fr, es, it, hi, bn, de, pt, tr or si; it must be among the offered languages" },
+          { displayName: 'Description', name: 'seo_description', type: 'string', default: '', description: 'The description search engines and shared links show, up to 160 characters' },
+          { displayName: 'Featured Plan ID', name: 'featured_plan_id', type: 'string', default: '', description: "The plan that carries the Most popular badge, one of the project's own plan ids" },
+          { displayName: 'Headings', name: 'heading', type: 'color', default: '', description: "The colour of the project's name and every heading, under the same contrast rule" },
+          { displayName: 'Listed by Search Engines', name: 'seo_indexable', type: 'boolean', default: true, description: 'Whether search engines may list the portal; off adds a noindex directive' },
+          { displayName: 'Other Keys (JSON)', name: 'design_json', type: 'json', default: '{}', description: 'A JSON object of any other keys of the design document, exactly as Get returns them, such as {"perks": ["Weekly calls"], "share_networks": ["x", "telegram"]}. Keys given here win over the fields above.' },
+          { displayName: 'Plan List Heading', name: 'plans_title', type: 'string', default: '', description: 'The heading over the plans, up to 60 characters' },
+          {
+            displayName: 'Preset',
+            name: 'preset',
+            type: 'options',
+            options: [
+              { name: 'Bold', value: 'bold' },
+              { name: 'Classic', value: 'classic' },
+              { name: 'Dark', value: 'dark' },
+              { name: 'Midnight', value: 'midnight' },
+              { name: 'Paper', value: 'paper' },
+              { name: 'Pastel', value: 'pastel' },
+            ],
+            default: 'classic',
+            description: 'Recolours the six colours from the preset; a colour you fill in beside it wins',
+          },
+          { displayName: 'Surface', name: 'surface', type: 'color', default: '', description: "The cards' colour" },
+          { displayName: 'Tagline', name: 'tagline', type: 'string', default: '', description: "One line under the project's name, up to 80 characters" },
+          { displayName: 'Title Suffix', name: 'seo_title_suffix', type: 'string', default: '', description: "The words after the project's name in the page title, up to 60 characters" },
         ],
       },
 
@@ -3539,6 +3617,8 @@ async function dispatch(
       return dispatchCannedReply.call(this, operation, i);
     case 'supportSettings':
       return dispatchSupportSettings.call(this, operation, i);
+    case 'portalDesign':
+      return dispatchPortalDesign.call(this, operation, i);
     case 'knowledge':
       return dispatchKnowledge.call(this, operation, i);
     case 'copilotCredits':
@@ -5266,6 +5346,46 @@ async function dispatchSupportSettings(
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown support settings operation: ${operation}`);
+}
+
+async function dispatchPortalDesign(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  const projectId = this.getNodeParameter('projectId', i) as string;
+
+  if (operation === 'get') {
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/portal-design`);
+  }
+
+  if (operation === 'update') {
+    const { design_json: designJson, ...fields } = this.getNodeParameter('portalDesignFields', i, {}) as IDataObject;
+    const body: IDataObject = {};
+    for (const [key, value] of Object.entries(fields)) {
+      if (value !== undefined && value !== null && value !== '') {
+        body[key] = value;
+      }
+    }
+    if (designJson !== undefined && designJson !== null && designJson !== '' && designJson !== '{}') {
+      const parsed = typeof designJson === 'string' ? (JSON.parse(designJson) as IDataObject) : (designJson as IDataObject);
+      if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        throw new NodeOperationError(this.getNode(), 'Other Keys must be a JSON object.');
+      }
+      Object.assign(body, parsed);
+    }
+    return subscribyApiRequest.call(this, 'PUT', `/projects/${projectId}/portal-design`, body);
+  }
+
+  if (operation === 'publish') {
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/portal-design/publish`);
+  }
+
+  if (operation === 'discard') {
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/portal-design/discard`);
+  }
+
+  throw new NodeOperationError(this.getNode(), `Unknown portal design operation: ${operation}`);
 }
 
 async function dispatchKnowledge(

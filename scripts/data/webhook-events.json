@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 190,
+    "count": 191,
     "items": [
         {
             "name": "project.created",
@@ -41,6 +41,16 @@
             "required_ability": "project:view",
             "payload_keys": [
                 "project"
+            ]
+        },
+        {
+            "name": "project.design_published",
+            "family": "project",
+            "required_ability": "project:view",
+            "payload_keys": [
+                "project",
+                "published_at",
+                "sections"
             ]
         },
         {
