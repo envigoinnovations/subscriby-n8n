@@ -180,7 +180,7 @@ export class Subscriby implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['passWindow'] } },
         options: [
-          { name: 'Cancel', value: 'cancel', action: 'Cancel a pass window', description: 'Cancel a window before it opens; holders are moved to the next window or marked for refund' },
+          { name: 'Cancel', value: 'cancel', action: 'Cancel a pass window', description: 'Cancel a window; holders are moved to the next window, dropped from their season or marked for refund, with every amount reported' },
           { name: 'Create', value: 'create', action: 'Create a pass window', description: "Add one dated window to a pass plan's schedule" },
           { name: 'Get', value: 'get', action: 'Get a pass window', description: 'Fetch one window by UUID, with its holder count and whether it is still on sale' },
           { name: 'List', value: 'list', action: 'List pass windows', description: "List the dated access windows a project's pass plans generate, with their IDs" },
@@ -204,6 +204,18 @@ export class Subscriby implements INodeType {
         required: true,
         displayOptions: { show: { resource: ['passWindow'], operation: ['get', 'cancel', 'remindQueue'] } },
         description: 'UUID of the pass window',
+      },
+      {
+        displayName: 'Season-Ticket Holders',
+        name: 'seriesHolders',
+        type: 'options',
+        options: [
+          { name: 'Drop the Date From Their Season', value: 'drop', description: 'The rest of their season stands and what the date was worth is reported per holder' },
+          { name: 'Move Them to the Next Date', value: 'substitute', description: 'Their season keeps its length; the next window on sale takes the cancelled one\'s place' },
+        ],
+        default: 'substitute',
+        displayOptions: { show: { resource: ['passWindow'], operation: ['cancel'] } },
+        description: 'What happens to holders who hold the window as one date of a season ticket. Single-date holders are always moved where a window is on sale.',
       },
       {
         displayName: 'Pass Plan ID',
@@ -3783,9 +3795,16 @@ async function dispatchPassWindow(
     return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/pass-windows/${windowId}`);
   }
 
-  if (operation === 'cancel' || operation === 'remindQueue') {
-    const verb = operation === 'cancel' ? 'cancel' : 'remind';
-    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/pass-windows/${windowId}/${verb}`);
+  if (operation === 'cancel') {
+    const seriesHolders = this.getNodeParameter('seriesHolders', i, 'substitute') as string;
+
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/pass-windows/${windowId}/cancel`, {
+      series_holders: seriesHolders,
+    });
+  }
+
+  if (operation === 'remindQueue') {
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/pass-windows/${windowId}/remind`);
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown pass window operation: ${operation}`);

@@ -252,9 +252,11 @@
             "required_ability": "project-subscription-plan:view",
             "payload_keys": [
                 "ends_at",
+                "legs_dropped",
                 "plan_id",
                 "rebound",
                 "refund_due",
+                "series_holders",
                 "starts_at",
                 "subscribers_affected",
                 "window_id"
