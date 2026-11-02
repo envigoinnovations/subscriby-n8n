@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 248,
+    "count": 252,
     "items": [
         {
             "name": "api.v1.activity.index",
@@ -507,6 +507,22 @@
             "required_ability": "project-connector:view"
         },
         {
+            "name": "api.v1.projects.connectors.actions.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/connectors/{key}/installation/actions",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ProjectConnectorController@actions",
+            "entity": "projects",
+            "required_ability": "project-connector:view"
+        },
+        {
+            "name": "api.v1.projects.connectors.actions.run",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/connectors/{key}/installation/actions/{actionKey}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ProjectConnectorController@runAction",
+            "entity": "projects",
+            "required_ability": "project-connector:update"
+        },
+        {
             "name": "api.v1.projects.connectors.doctor",
             "method": "POST",
             "uri": "/api/v1/projects/{project}/connectors/{key}/installation/doctor",
@@ -529,6 +545,14 @@
             "action": "App\\Http\\Controllers\\Api\\V1\\ProjectConnectorController@updateSettings",
             "entity": "projects",
             "required_ability": "project-connector:update"
+        },
+        {
+            "name": "api.v1.projects.connectors.spaces",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/connectors/{key}/installation/spaces",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ProjectConnectorController@spaces",
+            "entity": "projects",
+            "required_ability": "project-connector:view"
         },
         {
             "name": "api.v1.projects.connectors.verify",
@@ -1183,6 +1207,14 @@
             "method": "POST",
             "uri": "/api/v1/projects/{project}/resources",
             "action": "App\\Http\\Controllers\\Api\\V1\\ResourceController@store",
+            "entity": "resources",
+            "required_ability": "project-resource:create"
+        },
+        {
+            "name": "api.v1.resources.from-space.store",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/resources/from-space",
+            "action": "App\\Http\\Controllers\\Api\\V1\\ResourceController@storeFromSpace",
             "entity": "resources",
             "required_ability": "project-resource:create"
         },

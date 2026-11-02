@@ -2628,7 +2628,8 @@ export class Subscriby implements INodeType {
         displayOptions: { show: { resource: ['resource'] } },
         options: [
           { name: 'Activate', value: 'activate', action: 'Activate a resource', description: 'Switch a resource back on so it is delivered to members' },
-          { name: 'Create', value: 'create', action: 'Create a resource', description: 'Create a manual perk (a PDF, a token, a URL) the creator hands over by hand; a place a connector gates is linked with Request Link' },
+          { name: 'Create', value: 'create', action: 'Create a resource', description: 'Create a manual perk (a PDF, a token, a URL) the creator hands over by hand; a place a connector gates is linked with Request Link or picked with Create From Space' },
+          { name: 'Create From Space', value: 'createFromSpace', action: 'Create a resource from a place', description: "Sell a place picked from the list the connector offers (a server's role or channel): the resource is created and bound to it; the installation is asked again first, so a place it does not list is refused" },
           { name: 'Deactivate', value: 'deactivate', action: 'Deactivate a resource', description: 'Switch a resource off without deleting it; new members stop receiving it' },
           { name: 'Delete', value: 'delete', action: 'Delete a resource', description: 'Permanently delete a resource' },
           { name: 'Get', value: 'get', action: 'Get a resource', description: 'Fetch a resource by UUID' },
@@ -2663,8 +2664,17 @@ export class Subscriby implements INodeType {
         default: '',
         placeholder: 'telegram:channel',
         required: true,
-        description: 'The kind of place the connector should ask the creator to pick, spelled connector:kind as Connector → List lists each connector\'s resource kinds (telegram:channel, telegram:group, telegram:supergroup)',
-        displayOptions: { show: { resource: ['resource'], operation: ['requestLink'] } },
+        description: 'The kind of place, spelled connector:kind as Connector → List lists each connector\'s resource kinds (telegram:channel, discord:role); Request Link asks the creator to pick one, Create From Space takes the place named below',
+        displayOptions: { show: { resource: ['resource'], operation: ['requestLink', 'createFromSpace'] } },
+      },
+      {
+        displayName: 'Place',
+        name: 'externalId',
+        type: 'string',
+        default: '',
+        required: true,
+        description: "The platform's ID for the place, as Connector → List Spaces lists it under external_id",
+        displayOptions: { show: { resource: ['resource'], operation: ['createFromSpace'] } },
       },
       {
         displayName: 'Filters',
@@ -2684,7 +2694,7 @@ export class Subscriby implements INodeType {
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['resource'], operation: ['create'] } },
+        displayOptions: { show: { resource: ['resource'], operation: ['create', 'createFromSpace'] } },
       },
       {
         displayName: 'Description',
@@ -2692,7 +2702,7 @@ export class Subscriby implements INodeType {
         type: 'string',
         typeOptions: { rows: 3 },
         default: '',
-        displayOptions: { show: { resource: ['resource'], operation: ['create'] } },
+        displayOptions: { show: { resource: ['resource'], operation: ['create', 'createFromSpace'] } },
         description: 'Up to 1000 characters of well-formed HTML, shown as a perk beside the title',
       },
       {
@@ -3383,8 +3393,11 @@ export class Subscriby implements INodeType {
           { name: 'Get Uninstall Preview', value: 'getUninstallPreview', action: 'Get a connector uninstall preview', description: 'Show what uninstalling would touch, changing nothing: resources, live grants, emptied plans, the subscriptions on them' },
           { name: 'Install', value: 'install', action: 'Install a connector', description: 'Install a connector on a project as a pending installation the creator then connects from the dashboard' },
           { name: 'List', value: 'list', action: 'List connectors', description: 'List the Connectors Marketplace: every connector Subscriby knows, lane by lane, with its badges, manifest and connect form' },
+          { name: 'List Actions', value: 'listActions', action: 'List what an installation can do', description: "List what the project's installation can do for the creator right now, beyond gating: each action with its key, label, description, the fields it asks for and whether it asks for confirmation" },
           { name: 'List Installations', value: 'listInstallations', action: 'List connector installations', description: 'List every connector installation a project holds, live and standby, with its state and health' },
+          { name: 'List Spaces', value: 'listSpaces', action: 'List the places an installation could gate', description: "List the places of one kind the project's installation could gate, as the platform lists them right now; only a connector that lists its places answers" },
           { name: 'Restore Access', value: 'restoreAccess', action: 'Restore access after a reinstall', description: "Bring the places an uninstall detached back once the connector is connected again, and hand every live purchase of a plan granting them fresh access" },
+          { name: 'Run Action', value: 'runAction', action: 'Run an installation action', description: "Have the project's installation do one of the things it offers on its platform, with the answers checked against the fields the action declares; run one that asks for confirmation only when the creator agreed" },
           { name: 'Run Doctor', value: 'doctor', action: 'Run the connector doctor', description: 'Verify the installation and ask the connector about every resource it gates; one report with a finding per check' },
           { name: 'Uninstall', value: 'uninstall', action: 'Uninstall a connector', description: 'Revoke the grants, detach the resources and keep the row; the two opt-ins act on the plans left with nothing to grant' },
           { name: 'Update Settings', value: 'updateSettings', action: 'Update connector installation settings', description: "Change an installation's declared settings; keys are the field names the connector declares" },
@@ -3399,7 +3412,7 @@ export class Subscriby implements INodeType {
         default: '',
         required: true,
         description: 'The connector key as the List operation returns it, for example telegram',
-        displayOptions: { show: { resource: ['connector'], operation: ['get', 'getInstallation', 'install', 'verify', 'restoreAccess', 'updateSettings', 'disconnect', 'getUninstallPreview', 'uninstall'] } },
+        displayOptions: { show: { resource: ['connector'], operation: ['get', 'getInstallation', 'install', 'verify', 'restoreAccess', 'updateSettings', 'disconnect', 'getUninstallPreview', 'uninstall', 'listSpaces', 'listActions', 'runAction'] } },
       },
       {
         displayName: 'Project ID',
@@ -3407,7 +3420,34 @@ export class Subscriby implements INodeType {
         type: 'string',
         default: '',
         required: true,
-        displayOptions: { show: { resource: ['connector'], operation: ['listInstallations', 'getInstallation', 'install', 'verify', 'updateSettings', 'disconnect', 'getUninstallPreview', 'uninstall'] } },
+        displayOptions: { show: { resource: ['connector'], operation: ['listInstallations', 'getInstallation', 'install', 'verify', 'updateSettings', 'disconnect', 'getUninstallPreview', 'uninstall', 'listSpaces', 'listActions', 'runAction'] } },
+      },
+      {
+        displayName: 'Kind',
+        name: 'spaceKind',
+        type: 'string',
+        default: '',
+        placeholder: 'discord:role',
+        required: true,
+        description: "The kind of place to list, one of the connector's resource kinds as Connector → List lists them, as a bare word (role) or spelled connector:kind (discord:role)",
+        displayOptions: { show: { resource: ['connector'], operation: ['listSpaces'] } },
+      },
+      {
+        displayName: 'Action Key',
+        name: 'actionKey',
+        type: 'string',
+        default: '',
+        required: true,
+        description: 'The action key, as List Actions lists it',
+        displayOptions: { show: { resource: ['connector'], operation: ['runAction'] } },
+      },
+      {
+        displayName: 'Answers',
+        name: 'actionFields',
+        type: 'json',
+        default: '{}',
+        description: 'The answers to the fields the action asks for, as a JSON object keyed by field name as List Actions lists them; leave empty for an action that asks nothing',
+        displayOptions: { show: { resource: ['connector'], operation: ['runAction'] } },
       },
       {
         displayName: 'Settings',
@@ -4349,6 +4389,21 @@ async function dispatchResource(
     return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/resources/link-requests`, {
       kind: this.getNodeParameter('kind', i) as string,
     });
+  }
+
+  if (operation === 'createFromSpace') {
+    const body: IDataObject = {
+      kind: this.getNodeParameter('kind', i) as string,
+      external_id: this.getNodeParameter('externalId', i) as string,
+      title: this.getNodeParameter('title', i) as string,
+    };
+    const description = this.getNodeParameter('description', i, '') as string;
+
+    if (description) {
+      body.description = description;
+    }
+
+    return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/resources/from-space`, body);
   }
 
   if (operation === 'unlink') {
@@ -5877,6 +5932,29 @@ async function dispatchConnector(
 
   if (operation === 'doctor') {
     return subscribyApiRequest.call(this, 'POST', `${installationPath}/doctor`);
+  }
+
+  if (operation === 'listSpaces') {
+    return subscribyApiRequest.call(this, 'GET', `${installationPath}/spaces`, undefined, {
+      kind: this.getNodeParameter('spaceKind', i) as string,
+    });
+  }
+
+  if (operation === 'listActions') {
+    return subscribyApiRequest.call(this, 'GET', `${installationPath}/actions`);
+  }
+
+  if (operation === 'runAction') {
+    const actionKey = this.getNodeParameter('actionKey', i) as string;
+    const rawFields = this.getNodeParameter('actionFields', i, '{}');
+    const fields = typeof rawFields === 'string' ? (JSON.parse(rawFields) as IDataObject) : (rawFields as IDataObject);
+    const body: IDataObject = {};
+
+    if (Object.keys(fields).length > 0) {
+      body.fields = fields;
+    }
+
+    return subscribyApiRequest.call(this, 'POST', `${installationPath}/actions/${encodeURIComponent(actionKey)}`, body);
   }
 
   if (operation === 'restoreAccess') {
