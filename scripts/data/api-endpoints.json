@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 252,
+    "count": 256,
     "items": [
         {
             "name": "api.v1.activity.index",
@@ -443,6 +443,14 @@
             "required_ability": "project:update"
         },
         {
+            "name": "api.v1.broadcasts.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/broadcasts",
+            "action": "App\\Http\\Controllers\\Api\\V1\\BroadcastController@index",
+            "entity": "broadcasts",
+            "required_ability": "broadcast:read"
+        },
+        {
             "name": "api.v1.broadcasts.store",
             "method": "POST",
             "uri": "/api/v1/projects/{project}/broadcasts",
@@ -463,6 +471,30 @@
             "method": "GET",
             "uri": "/api/v1/projects/{project}/broadcasts/preview",
             "action": "App\\Http\\Controllers\\Api\\V1\\BroadcastController@preview",
+            "entity": "broadcasts",
+            "required_ability": "broadcast:send"
+        },
+        {
+            "name": "api.v1.broadcasts.show",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/broadcasts/{broadcast}",
+            "action": "App\\Http\\Controllers\\Api\\V1\\BroadcastController@show",
+            "entity": "broadcasts",
+            "required_ability": "broadcast:read"
+        },
+        {
+            "name": "api.v1.broadcasts.failures",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/broadcasts/{broadcast}/failures",
+            "action": "App\\Http\\Controllers\\Api\\V1\\BroadcastController@failures",
+            "entity": "broadcasts",
+            "required_ability": "broadcast:read"
+        },
+        {
+            "name": "api.v1.broadcasts.retry",
+            "method": "POST",
+            "uri": "/api/v1/projects/{project}/broadcasts/{broadcast}/retry",
+            "action": "App\\Http\\Controllers\\Api\\V1\\BroadcastController@retry",
             "entity": "broadcasts",
             "required_ability": "broadcast:send"
         },

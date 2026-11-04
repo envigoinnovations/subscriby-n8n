@@ -1830,7 +1830,9 @@
             "required_ability": "broadcast:send",
             "payload_keys": [
                 "audience",
+                "broadcast_id",
                 "expiring_within_days",
+                "parent_id",
                 "pass_window_id",
                 "plan_id",
                 "project_id",
@@ -1843,8 +1845,10 @@
             "required_ability": "broadcast:send",
             "payload_keys": [
                 "audience",
+                "broadcast_id",
                 "expiring_within_days",
                 "failed",
+                "parent_id",
                 "pass_window_id",
                 "plan_id",
                 "project_id",

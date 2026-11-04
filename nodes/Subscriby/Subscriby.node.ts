@@ -281,9 +281,13 @@ export class Subscriby implements INodeType {
         noDataExpression: true,
         displayOptions: { show: { resource: ['broadcast'] } },
         options: [
+          { name: 'Get', value: 'get', action: 'Get a broadcast', description: 'Fetch one broadcast by UUID, with its tallies, the failures by reason and the line the creator reads' },
+          { name: 'List', value: 'list', action: 'List broadcasts', description: "List the project's broadcast history, newest first, optionally one face or one exact status" },
           { name: 'List Audiences', value: 'listAudiences', action: 'List broadcast audiences', description: 'List every audience segment with its current recipient count' },
+          { name: 'List Failures', value: 'listFailures', action: 'List broadcast failures', description: "List the members one broadcast could not reach, each with the reason and the platform's own words" },
           { name: 'Preview', value: 'preview', action: 'Preview a broadcast audience', description: 'Size an audience without sending anything' },
-          { name: 'Send', value: 'send', action: 'Send a broadcast', description: 'Queue a Telegram message to a segment of the project members' },
+          { name: 'Retry', value: 'retry', action: 'Retry a broadcast', description: 'Send a finished broadcast again to the members it could not reach and nobody else, as a new broadcast under the old one' },
+          { name: 'Send', value: 'send', action: 'Send a broadcast', description: 'Queue a Telegram message to a segment of the project members; answers the broadcast_id the send reports into' },
         ],
         default: 'preview',
       },
@@ -352,6 +356,67 @@ export class Subscriby implements INodeType {
         typeOptions: { minValue: 1, maxValue: 90 },
         displayOptions: { show: { resource: ['broadcast'], operation: ['send', 'preview'], broadcastAudience: ['expiring_soon'] } },
         description: 'How far ahead the Expiring Soon audience looks. Members are counted only if their access genuinely lapses: a subscription that renews by itself is not expiring, so someone appears only once they have turned renewal off.',
+      },
+      {
+        displayName: 'Broadcast ID',
+        name: 'broadcastId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['broadcast'], operation: ['get', 'listFailures', 'retry'] } },
+        description: 'UUID of the broadcast; Send answers it and List lists them',
+      },
+      {
+        displayName: 'Filters',
+        name: 'broadcastFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['broadcast'], operation: ['list'] } },
+        options: [
+          {
+            displayName: 'Filter',
+            name: 'filter',
+            type: 'options',
+            default: 'all',
+            options: [
+              { name: 'All', value: 'all' },
+              { name: 'Completed', value: 'completed' },
+              { name: 'Failed', value: 'failed' },
+              { name: 'Sending', value: 'sending' },
+            ],
+            description: 'One tab of the Broadcasts page; Sending covers queued, sending and paused by the platform',
+          },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+          {
+            displayName: 'Status',
+            name: 'status',
+            type: 'options',
+            default: 'all',
+            options: [
+              { name: 'All', value: 'all' },
+              { name: 'Completed', value: 'completed' },
+              { name: 'Failed', value: 'failed' },
+              { name: 'Paused', value: 'paused' },
+              { name: 'Queued', value: 'queued' },
+              { name: 'Sending', value: 'sending' },
+            ],
+            description: 'One exact status',
+          },
+        ],
+      },
+      {
+        displayName: 'Filters',
+        name: 'broadcastFailureFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['broadcast'], operation: ['listFailures'] } },
+        options: [
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+        ],
       },
 
       // === PLAN ===
@@ -5839,6 +5904,54 @@ async function dispatchBroadcast(
 
   if (operation === 'listAudiences') {
     return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/broadcasts/audiences`);
+  }
+
+  if (operation === 'list') {
+    const filters = this.getNodeParameter('broadcastFilters', i, {}) as IDataObject;
+
+    const qs: IDataObject = {};
+    if (filters.filter && filters.filter !== 'all') {
+      qs.filter = filters.filter;
+    }
+    if (filters.status && filters.status !== 'all') {
+      qs.status = filters.status;
+    }
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/broadcasts`, qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/broadcasts`, undefined, qs);
+  }
+
+  if (operation === 'get' || operation === 'listFailures' || operation === 'retry') {
+    const broadcastId = this.getNodeParameter('broadcastId', i) as string;
+
+    if (operation === 'get') {
+      return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/broadcasts/${broadcastId}`);
+    }
+
+    if (operation === 'retry') {
+      /*
+       * The retry is a broadcast of its own under the parent, so the answer is
+       * a fresh broadcast_id beside the parent_id; a parent still sending, one
+       * that missed nobody or one whose missed members cannot be reached now is
+       * refused with the reason.
+       */
+      return subscribyApiRequest.call(this, 'POST', `/projects/${projectId}/broadcasts/${broadcastId}/retry`);
+    }
+
+    const filters = this.getNodeParameter('broadcastFailureFilters', i, {}) as IDataObject;
+
+    const qs: IDataObject = {};
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/broadcasts/${broadcastId}/failures`, qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/broadcasts/${broadcastId}/failures`, undefined, qs);
   }
 
   const audience = this.getNodeParameter('broadcastAudience', i, 'all') as string;
