@@ -329,6 +329,7 @@ export class Subscriby implements INodeType {
           { name: 'Paused Subscriptions', value: 'paused' },
           { name: 'Trialing Users', value: 'trialing' },
           { name: 'Trialing Without a Card', value: 'trialing_cardless' },
+          { name: 'Waiting on a Connection', value: 'waiting_on_connection' },
         ],
         description: 'Which members to address. The two single-window segments also need a Pass Window ID. Expiring Soon reads the Running Out Within field.',
       },
@@ -772,6 +773,7 @@ export class Subscriby implements INodeType {
               'Revoke the access grants a member holds (every resource, or one) and issue fresh ones. The member is sent the new links by the bot.',
           },
           { name: 'Remind Pass Holder', value: 'remind', action: 'Remind a pass holder', description: 'Nudge a pass holder who has not joined their window yet. Returns whether anything was sent.' },
+          { name: 'Remind to Connect', value: 'remindConnection', action: 'Remind a member to connect', description: 'Remind a member that a place of their purchase still waits for an account they have not connected, with the door that connects it. Returns whether anything was sent.' },
           { name: 'Unpause Access', value: 'unpause', action: 'Unpause subscription access', description: 'Restore suspended access and issue fresh invite links' },
         ],
         default: 'cancel',
@@ -785,7 +787,7 @@ export class Subscriby implements INodeType {
         displayOptions: {
           show: {
             resource: ['subscription'],
-            operation: ['cancel', 'get', 'listGrants', 'pause', 'unpause', 'reactivate', 'reissueGrants', 'remind'],
+            operation: ['cancel', 'get', 'listGrants', 'pause', 'unpause', 'reactivate', 'reissueGrants', 'remind', 'remindConnection'],
           },
         },
       },
@@ -871,6 +873,7 @@ export class Subscriby implements INodeType {
         default: {},
         displayOptions: { show: { resource: ['member'], operation: ['list'] } },
         options: [
+          { displayName: 'Access', name: 'access', type: 'options', default: '', options: [{ name: 'Everyone', value: '' }, { name: 'Waiting on a Connection', value: 'waiting' }], description: 'Waiting on a Connection keeps the members whose live purchase includes a place on a platform they have not connected yet' },
           { displayName: 'Status', name: 'status', type: 'string', default: '', description: 'Filter by member status (e.g. active, banned, kicked)' },
           { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
           { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
@@ -4131,6 +4134,12 @@ async function dispatchSubscription(
     return subscribyApiRequest.call(this, 'GET', `/subscriptions/${subscriptionId}/grants`);
   }
 
+  if (operation === 'remindConnection') {
+    const subscriptionId = this.getNodeParameter('subscriptionId', i) as string;
+
+    return subscribyApiRequest.call(this, 'POST', `/subscriptions/${subscriptionId}/remind-connection`);
+  }
+
   if (operation === 'reissueGrants') {
     const subscriptionId = this.getNodeParameter('subscriptionId', i) as string;
     const resourceId = this.getNodeParameter('grantResourceId', i, '') as string;
@@ -4275,6 +4284,9 @@ async function dispatchMember(
     const qs: IDataObject = {};
     if (filters.status) {
       qs.status = filters.status;
+    }
+    if (filters.access) {
+      qs.access = filters.access;
     }
     if (filters.returnAll === true) {
       const rows = await subscribyApiRequestAllItems.call(this, 'GET', `/projects/${projectId}/members`, qs);

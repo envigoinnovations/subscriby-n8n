@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 256,
+    "count": 257,
     "items": [
         {
             "name": "api.v1.activity.index",
@@ -1711,6 +1711,14 @@
             "method": "POST",
             "uri": "/api/v1/subscriptions/{subscription}/remind",
             "action": "App\\Http\\Controllers\\Api\\V1\\SubscriptionController@remind",
+            "entity": "subscriptions",
+            "required_ability": "project-subscription:update"
+        },
+        {
+            "name": "api.v1.subscriptions.remind-connection",
+            "method": "POST",
+            "uri": "/api/v1/subscriptions/{subscription}/remind-connection",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SubscriptionController@remindConnection",
             "entity": "subscriptions",
             "required_ability": "project-subscription:update"
         },
