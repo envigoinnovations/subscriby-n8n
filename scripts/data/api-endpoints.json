@@ -1,6 +1,6 @@
 {
     "version": "2026-05-01",
-    "count": 257,
+    "count": 259,
     "items": [
         {
             "name": "api.v1.activity.index",
@@ -841,6 +841,14 @@
             "action": "App\\Http\\Controllers\\Api\\V1\\MemberController@unban",
             "entity": "members",
             "required_ability": "project-user:update"
+        },
+        {
+            "name": "api.v1.pass-roster.index",
+            "method": "GET",
+            "uri": "/api/v1/projects/{project}/pass-roster",
+            "action": "App\\Http\\Controllers\\Api\\V1\\PassRosterController@index",
+            "entity": "pass-roster",
+            "required_ability": "project-user:view-any"
         },
         {
             "name": "api.v1.pass-windows.index",
@@ -1689,6 +1697,14 @@
             "action": "App\\Http\\Controllers\\Api\\V1\\SubscriptionController@reissueGrants",
             "entity": "subscriptions",
             "required_ability": "project-subscription:update"
+        },
+        {
+            "name": "api.v1.subscriptions.pass-moves.index",
+            "method": "GET",
+            "uri": "/api/v1/subscriptions/{subscription}/pass-moves",
+            "action": "App\\Http\\Controllers\\Api\\V1\\SubscriptionController@passMoves",
+            "entity": "subscriptions",
+            "required_ability": "project-subscription:view"
         },
         {
             "name": "api.v1.subscriptions.pause",

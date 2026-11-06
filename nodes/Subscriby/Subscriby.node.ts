@@ -185,6 +185,7 @@ export class Subscriby implements INodeType {
           { name: 'Get', value: 'get', action: 'Get a pass window', description: 'Fetch one window by UUID, with its holder count and whether it is still on sale' },
           { name: 'List', value: 'list', action: 'List pass windows', description: "List the dated access windows a project's pass plans generate, with their IDs" },
           { name: 'Remind Queue', value: 'remindQueue', action: 'Remind the pass window queue', description: 'Nudge every holder of the window who has not joined yet' },
+          { name: 'Roster', value: 'roster', action: 'Get the pass roster', description: "Read the project's Pass Roster: one row per member against the dates its pass plans sell, with their standing on each date and the cancelled dates they were moved off, plus the columns and the folded moves under meta" },
         ],
         default: 'list',
       },
@@ -244,6 +245,22 @@ export class Subscriby implements INodeType {
         required: true,
         displayOptions: { show: { resource: ['passWindow'], operation: ['create'] } },
         description: 'How long the window stays open, in minutes',
+      },
+      {
+        displayName: 'Roster Options',
+        name: 'rosterFilters',
+        type: 'collection',
+        placeholder: 'Add Option',
+        default: {},
+        displayOptions: { show: { resource: ['passWindow'], operation: ['roster'] } },
+        options: [
+          { displayName: 'Member Search', name: 'search', type: 'string', default: '', description: 'Keep the members whose name or email contains this text, up to 100 characters' },
+          { displayName: 'Page', name: 'page', type: 'number', typeOptions: { minValue: 1 }, default: 1, description: 'Which page of rows to read, members by name' },
+          { displayName: 'Pass Plan ID', name: 'plan_id', type: 'string', default: '', description: 'Keep to one pass or series plan: its dates and its holders. Omit for every plan that sells dates.' },
+          { displayName: 'Rows Per Page', name: 'per_page', type: 'number', typeOptions: { minValue: 1, maxValue: 100 }, default: 100, description: 'How many rows to read per page, up to 100' },
+          { displayName: 'Span Ends', name: 'to', type: 'dateTime', default: '', description: 'Only dates starting at or before this moment are columns. Eight weeks after now when empty.' },
+          { displayName: 'Span Starts', name: 'from', type: 'dateTime', default: '', description: 'Only dates ending at or after this moment are columns. Eight weeks before now when empty.' },
+        ],
       },
       {
         displayName: 'Filters',
@@ -763,6 +780,13 @@ export class Subscriby implements INodeType {
             description:
               'List the access grants a subscription holds: one per resource and pass window, with the connector, how access was given, its state and why it failed if it did',
           },
+          {
+            name: 'List Pass Moves',
+            value: 'listPassMoves',
+            action: 'List pass moves',
+            description:
+              "List every hop a purchase's passes made, oldest first, from the project's pass move log: both dates by ID and as a person reads them, the reason, who made it and when",
+          },
           { name: 'Pause Access', value: 'pause', action: 'Pause subscription access', description: 'Suspend the member resource access. Billing is unaffected and continues on schedule.' },
           { name: 'Reactivate', value: 'reactivate', action: 'Reactivate a subscription', description: 'Call off a scheduled cancellation. Stripe only; other providers end the agreement outright.' },
           {
@@ -787,7 +811,7 @@ export class Subscriby implements INodeType {
         displayOptions: {
           show: {
             resource: ['subscription'],
-            operation: ['cancel', 'get', 'listGrants', 'pause', 'unpause', 'reactivate', 'reissueGrants', 'remind', 'remindConnection'],
+            operation: ['cancel', 'get', 'listGrants', 'listPassMoves', 'pause', 'unpause', 'reactivate', 'reissueGrants', 'remind', 'remindConnection'],
           },
         },
       },
@@ -3887,6 +3911,12 @@ async function dispatchPassWindow(
     return { data: rows };
   }
 
+  if (operation === 'roster') {
+    const options = compactBody(this.getNodeParameter('rosterFilters', i, {}) as IDataObject);
+
+    return subscribyApiRequest.call(this, 'GET', `/projects/${projectId}/pass-roster`, undefined, options);
+  }
+
   if (operation === 'create') {
     const planId = this.getNodeParameter('planId', i) as string;
     const body: IDataObject = {
@@ -4132,6 +4162,12 @@ async function dispatchSubscription(
     const subscriptionId = this.getNodeParameter('subscriptionId', i) as string;
 
     return subscribyApiRequest.call(this, 'GET', `/subscriptions/${subscriptionId}/grants`);
+  }
+
+  if (operation === 'listPassMoves') {
+    const subscriptionId = this.getNodeParameter('subscriptionId', i) as string;
+
+    return subscribyApiRequest.call(this, 'GET', `/subscriptions/${subscriptionId}/pass-moves`);
   }
 
   if (operation === 'remindConnection') {
