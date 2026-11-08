@@ -37,81 +37,81 @@ Restart the n8n process after install.
 
 ## Supported events (191)
 
-The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/v1/events). This table is generated from that file by `npm run sync:readme` — do not edit it by hand.
+The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/event-reference). This table is generated from that file by `npm run sync:readme` — do not edit it by hand.
 
 | Family | Count | Events |
 | ------ | ----- | ------ |
-| Subscription | 21 | `subscription.access_restored`, `subscription.access_suspended`, `subscription.activated`, `subscription.cancellation_feedback`, `subscription.cancelled`, `subscription.created`, `subscription.downgraded`, `subscription.expired`, `subscription.offer_taken`, `subscription.past_due`, `subscription.paused`, `subscription.payment_recovered`, `subscription.reactivated`, `subscription.refunded`, `subscription.renewed`, `subscription.trial_converting`, `subscription.trial_expired`, `subscription.trial_started`, `subscription.unpaid`, `subscription.unpaused`, `subscription.upgraded` |
-| Member | 16 | `member.banned`, `member.churned`, `member.converted`, `member.identity_linked`, `member.identity_unlinked`, `member.joined`, `member.kicked`, `member.lead_created`, `member.removed`, `member.resource_added`, `member.resource_pending`, `member.access_extended`, `member.resource_reissued`, `member.resource_removed`, `member.trial_joined`, `member.unbanned` |
-| Recovery | 13 | `recovery.identity_relinked`, `recovery.incident_opened`, `recovery.incident_resolved`, `recovery.operation_completed`, `recovery.operation_failed`, `recovery.operation_reverted`, `recovery.operation_started`, `recovery.readiness_changed`, `recovery.installation_failed_over`, `recovery.resource_failed_over`, `recovery.resource_replaced`, `recovery.standby_registered`, `recovery.standby_removed` |
-| Support | 12 | `support.canned_reply.created`, `support.canned_reply.deleted`, `support.canned_reply.updated`, `support.conversation.assigned`, `support.conversation.blocked`, `support.conversation.opened`, `support.conversation.reopened`, `support.conversation.resolved`, `support.conversation.unblocked`, `support.message.received`, `support.message.sent`, `support.settings.updated` |
-| Billing | 10 | `billing.account_locked`, `billing.grace_period_warning`, `billing.invoice_created`, `billing.invoice_overdue`, `billing.invoice_paid`, `billing.payment_failed`, `billing.tier_cancelled`, `billing.tier_downgraded`, `billing.tier_upgraded`, `billing.trial_ending` |
-| Connector | 10 | `connector.connected`, `connector.disconnected`, `connector.doctor_completed`, `connector.installed`, `connector.settings_updated`, `connector.outage_closed`, `connector.outage_compensated`, `connector.outage_opened`, `connector.status_changed`, `connector.uninstalled` |
-| Partner | 10 | `partner.application_approved`, `partner.application_rejected`, `partner.payout_recorded`, `partner.rate_changed`, `partner.referral_converted`, `partner.referral_signed_up`, `partner.reward_approved`, `partner.reward_credited`, `partner.reward_earned`, `partner.reward_reversed` |
-| Referral | 10 | `referral.affiliate_approved`, `referral.affiliate_joined`, `referral.affiliate_suspended`, `referral.captured`, `referral.converted`, `referral.payout_recorded`, `referral.program_updated`, `referral.reward_approved`, `referral.reward_earned`, `referral.reward_reversed` |
-| Pass | 8 | `pass.holder_missed`, `pass.holder_moved`, `pass.holder_queued`, `pass.holder_stranded`, `pass.window_cancelled`, `pass.window_closed`, `pass.window_opened`, `pass.window_scheduled` |
-| Pass Series | 8 | `pass_series.completed`, `pass_series.leg_added`, `pass_series.leg_completed`, `pass_series.leg_dropped`, `pass_series.leg_substituted`, `pass_series.presale_opened`, `pass_series.purchased`, `pass_series.seats_exhausted` |
-| Plan | 8 | `plan.activated`, `plan.created`, `plan.deactivated`, `plan.deleted`, `plan.order_changed`, `plan.sold_out`, `plan.sync_completed`, `plan.updated` |
-| Coupon | 7 | `coupon.activated`, `coupon.created`, `coupon.deactivated`, `coupon.deleted`, `coupon.exhausted`, `coupon.redeemed`, `coupon.updated` |
-| Sequence | 7 | `sequence.converted`, `sequence.created`, `sequence.deleted`, `sequence.enrolled`, `sequence.exited`, `sequence.step_sent`, `sequence.updated` |
-| Project | 6 | `project.archived`, `project.created`, `project.deleted`, `project.design_published`, `project.restored`, `project.updated` |
-| Project Resource | 6 | `project.resource.created`, `project.resource.deleted`, `project.resource.linked`, `project.resource.status_changed`, `project.resource.unlinked`, `project.resource.updated` |
-| Copilot Credit | 4 | `copilot_credit.granted`, `copilot_credit.low`, `copilot_credit.purchased`, `copilot_credit.refunded` |
-| Group | 4 | `group.created`, `group.deleted`, `group.members_synced`, `group.updated` |
-| Payment | 4 | `payment.failed`, `payment.pending`, `payment.refunded`, `payment.succeeded` |
-| Team Member | 4 | `team.member.invited`, `team.member.joined`, `team.member.removed`, `team.member.role_changed` |
 | Access Code | 3 | `access_code.expired`, `access_code.generated`, `access_code.redeemed` |
-| Knowledge | 3 | `knowledge.created`, `knowledge.deleted`, `knowledge.updated` |
-| Role | 3 | `role.created`, `role.deleted`, `role.updated` |
-| Smart Link | 3 | `link.archived`, `link.created`, `link.updated` |
-| Team | 3 | `team.created`, `team.deleted`, `team.updated` |
+| Billing | 10 | `billing.account_locked`, `billing.grace_period_warning`, `billing.invoice_created`, `billing.invoice_overdue`, `billing.invoice_paid`, `billing.payment_failed`, `billing.tier_cancelled`, `billing.tier_downgraded`, `billing.tier_upgraded`, `billing.trial_ending` |
 | Broadcast | 2 | `broadcast.completed`, `broadcast.queued` |
 | Checkout | 2 | `checkout.recovered`, `checkout.stalled` |
+| Connector | 10 | `connector.connected`, `connector.disconnected`, `connector.doctor_completed`, `connector.installed`, `connector.settings_updated`, `connector.outage_closed`, `connector.outage_compensated`, `connector.outage_opened`, `connector.status_changed`, `connector.uninstalled` |
+| Copilot Credit | 4 | `copilot_credit.granted`, `copilot_credit.low`, `copilot_credit.purchased`, `copilot_credit.refunded` |
+| Coupon | 7 | `coupon.activated`, `coupon.created`, `coupon.deactivated`, `coupon.deleted`, `coupon.exhausted`, `coupon.redeemed`, `coupon.updated` |
 | Creator Task | 2 | `creator_task.completed`, `creator_task.opened` |
+| Group | 4 | `group.created`, `group.deleted`, `group.members_synced`, `group.updated` |
+| Knowledge | 3 | `knowledge.created`, `knowledge.deleted`, `knowledge.updated` |
+| Member | 16 | `member.banned`, `member.churned`, `member.converted`, `member.identity_linked`, `member.identity_unlinked`, `member.joined`, `member.kicked`, `member.lead_created`, `member.removed`, `member.resource_added`, `member.resource_pending`, `member.access_extended`, `member.resource_reissued`, `member.resource_removed`, `member.trial_joined`, `member.unbanned` |
+| Partner | 10 | `partner.application_approved`, `partner.application_rejected`, `partner.payout_recorded`, `partner.rate_changed`, `partner.referral_converted`, `partner.referral_signed_up`, `partner.reward_approved`, `partner.reward_credited`, `partner.reward_earned`, `partner.reward_reversed` |
+| Pass | 8 | `pass.holder_missed`, `pass.holder_moved`, `pass.holder_queued`, `pass.holder_stranded`, `pass.window_cancelled`, `pass.window_closed`, `pass.window_opened`, `pass.window_scheduled` |
+| Pass Series | 8 | `pass_series.completed`, `pass_series.leg_added`, `pass_series.leg_completed`, `pass_series.leg_dropped`, `pass_series.leg_substituted`, `pass_series.presale_opened`, `pass_series.purchased`, `pass_series.seats_exhausted` |
+| Payment | 4 | `payment.failed`, `payment.pending`, `payment.refunded`, `payment.succeeded` |
+| Plan | 8 | `plan.activated`, `plan.created`, `plan.deactivated`, `plan.deleted`, `plan.order_changed`, `plan.sold_out`, `plan.sync_completed`, `plan.updated` |
+| Project | 6 | `project.archived`, `project.created`, `project.deleted`, `project.design_published`, `project.restored`, `project.updated` |
 | Project Payment Method | 2 | `project.payment_method.deleted`, `project.payment_method.updated` |
+| Project Resource | 6 | `project.resource.created`, `project.resource.deleted`, `project.resource.linked`, `project.resource.status_changed`, `project.resource.unlinked`, `project.resource.updated` |
+| Recovery | 13 | `recovery.identity_relinked`, `recovery.incident_opened`, `recovery.incident_resolved`, `recovery.operation_completed`, `recovery.operation_failed`, `recovery.operation_reverted`, `recovery.operation_started`, `recovery.readiness_changed`, `recovery.installation_failed_over`, `recovery.resource_failed_over`, `recovery.resource_replaced`, `recovery.standby_registered`, `recovery.standby_removed` |
+| Referral | 10 | `referral.affiliate_approved`, `referral.affiliate_joined`, `referral.affiliate_suspended`, `referral.captured`, `referral.converted`, `referral.payout_recorded`, `referral.program_updated`, `referral.reward_approved`, `referral.reward_earned`, `referral.reward_reversed` |
+| Role | 3 | `role.created`, `role.deleted`, `role.updated` |
+| Sequence | 7 | `sequence.converted`, `sequence.created`, `sequence.deleted`, `sequence.enrolled`, `sequence.exited`, `sequence.step_sent`, `sequence.updated` |
+| Smart Link | 3 | `link.archived`, `link.created`, `link.updated` |
+| Subscription | 21 | `subscription.access_restored`, `subscription.access_suspended`, `subscription.activated`, `subscription.cancellation_feedback`, `subscription.cancelled`, `subscription.created`, `subscription.downgraded`, `subscription.expired`, `subscription.offer_taken`, `subscription.past_due`, `subscription.paused`, `subscription.payment_recovered`, `subscription.reactivated`, `subscription.refunded`, `subscription.renewed`, `subscription.trial_converting`, `subscription.trial_expired`, `subscription.trial_started`, `subscription.unpaid`, `subscription.unpaused`, `subscription.upgraded` |
+| Support | 12 | `support.canned_reply.created`, `support.canned_reply.deleted`, `support.canned_reply.updated`, `support.conversation.assigned`, `support.conversation.blocked`, `support.conversation.opened`, `support.conversation.reopened`, `support.conversation.resolved`, `support.conversation.unblocked`, `support.message.received`, `support.message.sent`, `support.settings.updated` |
+| Team | 3 | `team.created`, `team.deleted`, `team.updated` |
+| Team Member | 4 | `team.member.invited`, `team.member.joined`, `team.member.removed`, `team.member.role_changed` |
 | **Total** | **191** | |
 
 ## Supported actions
 
 | Resource             | Operations                                                                                                       |
 | -------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| Project              | Create, Update, Archive, Restore, Delete, List, Get, Find by Handle                                              |
-| Plan                 | Create, Update, Publish, Unpublish, Start Next Season, Arrange Storefront Order, Get, List, Delete, Find by Name |
-| Pass Window          | List, Get, Create, Cancel, Remind Queue                                                                          |
-| Subscription         | Cancel, Get, List, List Grants, Reissue Grants, Pause Access, Unpause Access, Reactivate, Remind Pass Holder, Remind to Connect |
-| Subscriber           | Find by Connector Account                                                                                              |
-| Member               | Ban, Unban, Kick, Get, List                                                                                      |
-| Broadcast            | Send, Preview, List Audiences                                                                                    |
-| Support Conversation | List, Get, List Messages, Reply, Resolve, Reopen, Assign, Block Contact, Unblock Contact                         |
-| Canned Reply         | List, Get, Create, Update, Delete                                                                                |
-| Support Settings     | Get, Update                                                                                                      |
-| Knowledge            | List, Create, Get, Update, Delete                                                                                |
-| Portal Design        | Get, Update, Publish, Discard Draft                                                                              |
 | Access Code          | Bulk Generate, List, Delete, Preview                                                                             |
-| Coupon               | Create, Update, Activate, Deactivate, Delete, List, Get                                                          |
-| Smart Link           | Create, Update, Archive, List, Get, Funnel                                                                       |
-| Revenue Recovery     | Get Settings, Update Settings, Get Stats, List Cancellations, List Activity, List Checkouts                      |
-| Sequence             | List, Create, Get, Update, Delete, List Enrollments                                                             |
-| Creator Task         | List, Complete                                                                                                   |
-| Referral Program     | Get Program, Update Program, Activate Program, Deactivate Program, Delete Program, List Affiliates, Get Affiliate, Add Affiliate, Approve Affiliate, Suspend Affiliate, List Referrals, Get Referral, List Rewards, List Payouts, Record Payout |
-| Partner Program      | Get, List Referrals, Get Referral, List Rewards, List Payouts, Update Payout Details, Accept Terms              |
-| Recovery             | Get Readiness, List Incidents, Get Incident, List Operations, Get Operation, Get Roll Call, Get Allowances       |
-| Resource             | Create, Update, Activate, Deactivate, List, Get, Unlink, Delete                                                  |
-| Payment Method       | List, Get, Activate, Deactivate, Sync Plans, Delete                                                              |
-| Distribution         | Get Portal URL, Get Deep Link                                                                                    |
-| Connector            | List, Get, List Installations, Get Installation, Install, Verify, Restore Access, Run Doctor, Update Settings, Disconnect, Get Uninstall Preview, Uninstall |
-| Analytics            | Get Dashboard, Get Earnings, Get Subscribers, Get Connector Analytics, Get Revenue Composition, Get Transaction Breakdown, Get Plan Performance, List Transactions |
-| Activity             | List                                                                                                             |
 | Account              | Get Me                                                                                                           |
+| Activity             | List                                                                                                             |
+| Analytics            | Get Dashboard, Get Earnings, Get Subscribers, Get Connector Analytics, Get Revenue Composition, Get Transaction Breakdown, Get Plan Performance, List Transactions |
+| Broadcast            | Send, Preview, List Audiences                                                                                    |
+| Canned Reply         | List, Get, Create, Update, Delete                                                                                |
+| Connector            | List, Get, List Installations, Get Installation, Install, Verify, Restore Access, Run Doctor, Update Settings, Disconnect, Get Uninstall Preview, Uninstall |
 | Copilot Credit       | Get Balance, List Statement, Update Settings                                                                     |
+| Coupon               | Create, Update, Activate, Deactivate, Delete, List, Get                                                          |
+| Creator Task         | List, Complete                                                                                                   |
+| Distribution         | Get Portal URL, Get Deep Link                                                                                    |
+| Group                | Create, Update, Sync Members, Delete, List, Get                                                                  |
+| Knowledge            | List, Create, Get, Update, Delete                                                                                |
+| Member               | Ban, Unban, Kick, Get, List                                                                                      |
 | Notification         | List, Mark Read, Mark All Read                                                                                   |
+| Partner Program      | Get, List Referrals, Get Referral, List Rewards, List Payouts, Update Payout Details, Accept Terms              |
+| Pass Window          | List, Get, Create, Cancel, Remind Queue                                                                          |
+| Payment Method       | List, Get, Activate, Deactivate, Sync Plans, Delete                                                              |
+| Plan                 | Create, Update, Publish, Unpublish, Start Next Season, Arrange Storefront Order, Get, List, Delete, Find by Name |
+| Portal Design        | Get, Update, Publish, Discard Draft                                                                              |
+| Project              | Create, Update, Archive, Restore, Delete, List, Get, Find by Handle                                              |
+| Recovery             | Get Readiness, List Incidents, Get Incident, List Operations, Get Operation, Get Roll Call, Get Allowances       |
+| Referral Program     | Get Program, Update Program, Activate Program, Deactivate Program, Delete Program, List Affiliates, Get Affiliate, Add Affiliate, Approve Affiliate, Suspend Affiliate, List Referrals, Get Referral, List Rewards, List Payouts, Record Payout |
+| Resource             | Create, Update, Activate, Deactivate, List, Get, Unlink, Delete                                                  |
+| Revenue Recovery     | Get Settings, Update Settings, Get Stats, List Cancellations, List Activity, List Checkouts                      |
+| Role                 | Create, Update, Delete, List, Get                                                                                |
+| Sequence             | List, Create, Get, Update, Delete, List Enrollments                                                             |
+| Smart Link           | Create, Update, Archive, List, Get, Funnel                                                                       |
+| Subscriber           | Find by Connector Account                                                                                              |
+| Subscription         | Cancel, Get, List, List Grants, Reissue Grants, Pause Access, Unpause Access, Reactivate, Remind Pass Holder, Remind to Connect |
+| Support Conversation | List, Get, List Messages, Reply, Resolve, Reopen, Assign, Block Contact, Unblock Contact                         |
+| Support Settings     | Get, Update                                                                                                      |
 | Team                 | Create, Update, Delete, List, Get, Get Current                                                                   |
 | Team Member          | Invite, Change Role, Remove, Cancel Invitation, List, Get                                                        |
-| Role                 | Create, Update, Delete, List, Get                                                                                |
-| Group                | Create, Update, Sync Members, Delete, List, Get                                                                  |
 | Token                | List, Get, Revoke                                                                                                |
-| Webhook Endpoint     | List, Get, Create, Pause, Resume, Delete, Rotate Secret, Test                                                    |
 | Webhook Delivery     | List, Get, Retry, Retry Dead                                                                                     |
+| Webhook Endpoint     | List, Get, Create, Pause, Resume, Delete, Rotate Secret, Test                                                    |
 
 Every mutation automatically sends a fresh `Idempotency-Key` header so node re-runs never double-fire.
 

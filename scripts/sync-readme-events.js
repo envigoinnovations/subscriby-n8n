@@ -38,7 +38,7 @@ for (const { family, value } of entries) {
 }
 
 const rows = [...byFamily.entries()]
-  .sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0], "en"))
+  .sort((a, b) => a[0].localeCompare(b[0], "en"))
   .map(([family, values]) => {
     const list = values.map((v) => `\`${v}\``).join(", ");
     return `| ${family} | ${values.length} | ${list} |`;
