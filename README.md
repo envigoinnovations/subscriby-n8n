@@ -37,7 +37,7 @@ Restart the n8n process after install.
 
 ## Supported events (191)
 
-The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/event-reference). This table is generated from that file by `npm run sync:readme` — do not edit it by hand.
+The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/SubscribyTrigger/events.ts) and mirrors the [event reference](https://docs.subscriby.net/webhooks/v1/events). This table is generated from that file by `npm run sync:readme` — do not edit it by hand.
 
 | Family | Count | Events |
 | ------ | ----- | ------ |
@@ -138,7 +138,7 @@ n8n start
 - [Subscriby documentation](https://docs.subscriby.net)
 - [n8n integration guide](https://docs.subscriby.net/integrations/n8n)
 - [API reference](https://docs.subscriby.net/api/v1)
-- [Event reference](https://docs.subscriby.net/webhooks/v1/event-reference)
+- [Event reference](https://docs.subscriby.net/webhooks/v1/events)
 
 ## License
 
