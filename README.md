@@ -92,6 +92,7 @@ The full catalogue is defined in [`nodes/SubscribyTrigger/events.ts`](nodes/Subs
 | Notification         | List, Mark Read, Mark All Read                                                                                   |
 | Partner Program      | Get, List Referrals, Get Referral, List Rewards, List Payouts, Update Payout Details, Accept Terms              |
 | Pass Window          | List, Get, Create, Cancel, Remind Queue                                                                          |
+| Payment              | List, Get                                                                                                        |
 | Payment Method       | List, Get, Activate, Deactivate, Sync Plans, Delete                                                              |
 | Plan                 | Create, Update, Publish, Unpublish, Start Next Season, Arrange Storefront Order, Get, List, Delete, Find by Name |
 | Portal Design        | Get, Update, Publish, Discard Draft                                                                              |

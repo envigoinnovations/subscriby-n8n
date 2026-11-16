@@ -67,6 +67,7 @@ export class Subscriby implements INodeType {
           { name: 'Notification', value: 'notification' },
           { name: 'Partner Program', value: 'partner' },
           { name: 'Pass Window', value: 'passWindow' },
+          { name: 'Payment', value: 'payment' },
           { name: 'Payment Method', value: 'paymentMethod' },
           { name: 'Plan', value: 'plan' },
           { name: 'Portal Design', value: 'portalDesign' },
@@ -2820,6 +2821,49 @@ export class Subscriby implements INodeType {
         ],
       },
 
+      // === PAYMENT ===
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['payment'] } },
+        options: [
+          { name: 'Get', value: 'get', action: 'Get a payment', description: 'Fetch one payment by UUID: the amount, the gateway and its references, the fee, the member and the plan' },
+          { name: 'List', value: 'list', action: 'List payments', description: "List the payment ledger the dashboard's All Transactions page shows, newest first, across every project the credential may see or one project" },
+        ],
+        default: 'list',
+      },
+      {
+        displayName: 'Payment ID',
+        name: 'paymentId',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: { show: { resource: ['payment'], operation: ['get'] } },
+        description: 'UUID of the payment',
+      },
+      {
+        displayName: 'Filters',
+        name: 'paymentListFilters',
+        type: 'collection',
+        placeholder: 'Add Filter',
+        default: {},
+        displayOptions: { show: { resource: ['payment'], operation: ['list'] } },
+        options: [
+          { displayName: 'Connector', name: 'connector', type: 'string', default: '', description: 'A connector key: keeps to projects whose live installation is that connector' },
+          { displayName: 'From', name: 'from', type: 'dateTime', default: '', description: 'Payments that occurred at or after this moment' },
+          { displayName: 'Limit', name: 'limit', type: 'number', typeOptions: { minValue: 1 }, default: 50, description: 'Max number of results to return' },
+          { displayName: 'Method ID', name: 'methodId', type: 'string', default: '', description: 'Filter by payment method UUID' },
+          { displayName: 'Plan ID', name: 'planId', type: 'string', default: '', description: 'Filter by plan UUID' },
+          { displayName: 'Project ID', name: 'projectId', type: 'string', default: '', description: "Keep to one project's payments; blank for every project the credential may see" },
+          { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit' },
+          { displayName: 'Search', name: 'search', type: 'string', default: '', description: "Matched against the gateway references, the subscription's payment ID, or a member, plan or project name" },
+          { displayName: 'Status', name: 'status', type: 'string', default: '', description: 'Filter by payment status: successful, failed, pending or refunded' },
+          { displayName: 'To', name: 'to', type: 'dateTime', default: '', description: 'Payments that occurred at or before this moment' },
+        ],
+      },
+
       // === PAYMENT METHOD ===
       {
         displayName: 'Operation',
@@ -3798,6 +3842,8 @@ async function dispatch(
       return dispatchAccessCode.call(this, operation, i);
     case 'resource':
       return dispatchResource.call(this, operation, i);
+    case 'payment':
+      return dispatchPayment.call(this, operation, i);
     case 'paymentMethod':
       return dispatchPaymentMethod.call(this, operation, i);
     case 'webhookEndpoint':
@@ -4553,6 +4599,54 @@ async function dispatchResource(
   }
 
   throw new NodeOperationError(this.getNode(), `Unknown resource operation: ${operation}`);
+}
+
+async function dispatchPayment(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): Promise<IDataObject> {
+  if (operation === 'list') {
+    const filters = this.getNodeParameter('paymentListFilters', i, {}) as IDataObject;
+    const qs: IDataObject = {};
+    if (filters.projectId) {
+      qs.project_id = filters.projectId;
+    }
+    if (filters.status) {
+      qs.status = filters.status;
+    }
+    if (filters.planId) {
+      qs.plan_id = filters.planId;
+    }
+    if (filters.methodId) {
+      qs.method_id = filters.methodId;
+    }
+    if (filters.connector) {
+      qs.connector = filters.connector;
+    }
+    if (filters.from) {
+      qs.from = filters.from;
+    }
+    if (filters.to) {
+      qs.to = filters.to;
+    }
+    if (filters.search) {
+      qs.search = filters.search;
+    }
+    if (filters.returnAll === true) {
+      const rows = await subscribyApiRequestAllItems.call(this, 'GET', '/payments', qs);
+      return { data: rows };
+    }
+    qs.per_page = Math.min(Number(filters.limit ?? 50), 100);
+    return subscribyApiRequest.call(this, 'GET', '/payments', undefined, qs);
+  }
+
+  if (operation === 'get') {
+    const paymentId = this.getNodeParameter('paymentId', i) as string;
+    return subscribyApiRequest.call(this, 'GET', `/payments/${paymentId}`);
+  }
+
+  throw new NodeOperationError(this.getNode(), `Unknown payment operation: ${operation}`);
 }
 
 async function dispatchPaymentMethod(
